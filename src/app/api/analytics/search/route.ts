@@ -290,6 +290,14 @@ async function getErrorSummary(supabase: any, timeframe: string) {
   return NextResponse.json({ data });
 }
 
+// Interface for performance trend data
+interface PerformanceTrendData {
+  created_at: string;
+  response_time_ms: number;
+  results_count: number;
+  was_cached: boolean;
+}
+
 // Get performance trends
 async function getPerformanceTrends(supabase: any, timeframe: string) {
   const { data, error } = await supabase
@@ -305,11 +313,11 @@ async function getPerformanceTrends(supabase: any, timeframe: string) {
 
   // Process data for trends
   const trends = {
-    response_times: data?.map(d => ({
+    response_times: data?.map((d: PerformanceTrendData) => ({
       timestamp: d.created_at,
       value: d.response_time_ms
     })) || [],
-    cache_rates: data?.map(d => ({
+    cache_rates: data?.map((d: PerformanceTrendData) => ({
       timestamp: d.created_at,
       cached: d.was_cached,
       results: d.results_count
