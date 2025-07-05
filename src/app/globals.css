@@ -1,0 +1,934 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Import Material You Design Tokens */
+@import '../styles/material-you-tokens.css';
+
+/* Import Material You Animation System */
+@import '../styles/material-you-animations.css';
+
+/* Custom CSS variables */
+:root {
+  --font-inter: Inter, system-ui, sans-serif;
+  --font-poppins: Poppins, system-ui, sans-serif;
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-inter);
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+              color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poppins);
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Material You Typography Scale Utility Classes */
+.text-md-display-large {
+  font-family: var(--md-sys-typescale-display-large-font-family);
+  font-weight: var(--md-sys-typescale-display-large-font-weight);
+  font-size: var(--md-sys-typescale-display-large-font-size);
+  line-height: var(--md-sys-typescale-display-large-line-height);
+  letter-spacing: var(--md-sys-typescale-display-large-letter-spacing);
+}
+
+.text-md-display-medium {
+  font-family: var(--md-sys-typescale-display-medium-font-family);
+  font-weight: var(--md-sys-typescale-display-medium-font-weight);
+  font-size: var(--md-sys-typescale-display-medium-font-size);
+  line-height: var(--md-sys-typescale-display-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-display-medium-letter-spacing);
+}
+
+.text-md-display-small {
+  font-family: var(--md-sys-typescale-display-small-font-family);
+  font-weight: var(--md-sys-typescale-display-small-font-weight);
+  font-size: var(--md-sys-typescale-display-small-font-size);
+  line-height: var(--md-sys-typescale-display-small-line-height);
+  letter-spacing: var(--md-sys-typescale-display-small-letter-spacing);
+}
+
+.text-md-headline-large {
+  font-family: var(--md-sys-typescale-headline-large-font-family);
+  font-weight: var(--md-sys-typescale-headline-large-font-weight);
+  font-size: var(--md-sys-typescale-headline-large-font-size);
+  line-height: var(--md-sys-typescale-headline-large-line-height);
+  letter-spacing: var(--md-sys-typescale-headline-large-letter-spacing);
+}
+
+.text-md-headline-medium {
+  font-family: var(--md-sys-typescale-headline-medium-font-family);
+  font-weight: var(--md-sys-typescale-headline-medium-font-weight);
+  font-size: var(--md-sys-typescale-headline-medium-font-size);
+  line-height: var(--md-sys-typescale-headline-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-headline-medium-letter-spacing);
+}
+
+.text-md-headline-small {
+  font-family: var(--md-sys-typescale-headline-small-font-family);
+  font-weight: var(--md-sys-typescale-headline-small-font-weight);
+  font-size: var(--md-sys-typescale-headline-small-font-size);
+  line-height: var(--md-sys-typescale-headline-small-line-height);
+  letter-spacing: var(--md-sys-typescale-headline-small-letter-spacing);
+}
+
+.text-md-title-large {
+  font-family: var(--md-sys-typescale-title-large-font-family);
+  font-weight: var(--md-sys-typescale-title-large-font-weight);
+  font-size: var(--md-sys-typescale-title-large-font-size);
+  line-height: var(--md-sys-typescale-title-large-line-height);
+  letter-spacing: var(--md-sys-typescale-title-large-letter-spacing);
+}
+
+.text-md-title-medium {
+  font-family: var(--md-sys-typescale-title-medium-font-family);
+  font-weight: var(--md-sys-typescale-title-medium-font-weight);
+  font-size: var(--md-sys-typescale-title-medium-font-size);
+  line-height: var(--md-sys-typescale-title-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-title-medium-letter-spacing);
+}
+
+.text-md-title-small {
+  font-family: var(--md-sys-typescale-title-small-font-family);
+  font-weight: var(--md-sys-typescale-title-small-font-weight);
+  font-size: var(--md-sys-typescale-title-small-font-size);
+  line-height: var(--md-sys-typescale-title-small-line-height);
+  letter-spacing: var(--md-sys-typescale-title-small-letter-spacing);
+}
+
+.text-md-label-large {
+  font-family: var(--md-sys-typescale-label-large-font-family);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  font-size: var(--md-sys-typescale-label-large-font-size);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+}
+
+.text-md-label-medium {
+  font-family: var(--md-sys-typescale-label-medium-font-family);
+  font-weight: var(--md-sys-typescale-label-medium-font-weight);
+  font-size: var(--md-sys-typescale-label-medium-font-size);
+  line-height: var(--md-sys-typescale-label-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-label-medium-letter-spacing);
+}
+
+.text-md-label-small {
+  font-family: var(--md-sys-typescale-label-small-font-family);
+  font-weight: var(--md-sys-typescale-label-small-font-weight);
+  font-size: var(--md-sys-typescale-label-small-font-size);
+  line-height: var(--md-sys-typescale-label-small-line-height);
+  letter-spacing: var(--md-sys-typescale-label-small-letter-spacing);
+}
+
+.text-md-body-large {
+  font-family: var(--md-sys-typescale-body-large-font-family);
+  font-weight: var(--md-sys-typescale-body-large-font-weight);
+  font-size: var(--md-sys-typescale-body-large-font-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  letter-spacing: var(--md-sys-typescale-body-large-letter-spacing);
+}
+
+.text-md-body-medium {
+  font-family: var(--md-sys-typescale-body-medium-font-family);
+  font-weight: var(--md-sys-typescale-body-medium-font-weight);
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-body-medium-letter-spacing);
+}
+
+.text-md-body-small {
+  font-family: var(--md-sys-typescale-body-small-font-family);
+  font-weight: var(--md-sys-typescale-body-small-font-weight);
+  font-size: var(--md-sys-typescale-body-small-font-size);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+  letter-spacing: var(--md-sys-typescale-body-small-letter-spacing);
+}
+
+/* Material You Elevation Utility Classes */
+.elevation-0 {
+  box-shadow: var(--md-sys-elevation-level0);
+}
+
+.elevation-1 {
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.elevation-2 {
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+.elevation-3 {
+  box-shadow: var(--md-sys-elevation-level3);
+}
+
+.elevation-4 {
+  box-shadow: var(--md-sys-elevation-level4);
+}
+
+.elevation-5 {
+  box-shadow: var(--md-sys-elevation-level5);
+}
+
+/* Surface Container Utility Classes */
+.surface-container-lowest {
+  background-color: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface);
+}
+
+.surface-container-low {
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+}
+
+.surface-container {
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+}
+
+.surface-container-high {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
+.surface-container-highest {
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+}
+
+/* State Layer Utility Classes */
+.state-layer {
+  position: relative;
+  overflow: hidden;
+}
+
+.state-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.state-layer:hover::before {
+  background-color: currentColor;
+  opacity: var(--md-sys-state-hover-opacity);
+}
+
+.state-layer:focus::before {
+  background-color: currentColor;
+  opacity: var(--md-sys-state-focus-opacity);
+}
+
+.state-layer:active::before {
+  background-color: currentColor;
+  opacity: var(--md-sys-state-pressed-opacity);
+}
+
+/* Shape Utility Classes */
+.shape-none {
+  border-radius: var(--md-sys-shape-corner-none);
+}
+
+.shape-extra-small {
+  border-radius: var(--md-sys-shape-corner-extra-small);
+}
+
+.shape-small {
+  border-radius: var(--md-sys-shape-corner-small);
+}
+
+.shape-medium {
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.shape-large {
+  border-radius: var(--md-sys-shape-corner-large);
+}
+
+.shape-extra-large {
+  border-radius: var(--md-sys-shape-corner-extra-large);
+}
+
+.shape-full {
+  border-radius: var(--md-sys-shape-corner-full);
+}
+
+/* Motion Utility Classes */
+.duration-md-short1 {
+  transition-duration: var(--md-sys-motion-duration-short1);
+}
+
+.duration-md-short2 {
+  transition-duration: var(--md-sys-motion-duration-short2);
+}
+
+.duration-md-short3 {
+  transition-duration: var(--md-sys-motion-duration-short3);
+}
+
+.duration-md-short4 {
+  transition-duration: var(--md-sys-motion-duration-short4);
+}
+
+.duration-md-medium1 {
+  transition-duration: var(--md-sys-motion-duration-medium1);
+}
+
+.duration-md-medium2 {
+  transition-duration: var(--md-sys-motion-duration-medium2);
+}
+
+.duration-md-medium3 {
+  transition-duration: var(--md-sys-motion-duration-medium3);
+}
+
+.duration-md-medium4 {
+  transition-duration: var(--md-sys-motion-duration-medium4);
+}
+
+.ease-md-standard {
+  transition-timing-function: var(--md-sys-motion-easing-standard);
+}
+
+.ease-md-emphasized {
+  transition-timing-function: var(--md-sys-motion-easing-emphasized);
+}
+
+.ease-md-emphasized-decelerate {
+  transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.ease-md-emphasized-accelerate {
+  transition-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);
+}
+
+/* Component Utility Classes */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--md-sys-typescale-label-large-font-family);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  font-size: var(--md-sys-typescale-label-large-font-size);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+  color: var(--md-sys-color-on-primary);
+  background-color: var(--md-sys-color-primary);
+  border-radius: 9999px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 90%, transparent);
+}
+
+.btn-primary:focus {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 90%, transparent);
+  box-shadow: 0 0 0 2px var(--md-sys-color-primary), 0 0 0 4px var(--md-sys-color-surface);
+}
+
+.btn-primary:active {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 95%, transparent);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--md-sys-typescale-label-large-font-family);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  font-size: var(--md-sys-typescale-label-large-font-size);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+  color: var(--md-sys-color-on-secondary-container);
+  background-color: var(--md-sys-color-secondary-container);
+  border-radius: 9999px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 90%, transparent);
+}
+
+.btn-secondary:focus {
+  background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 90%, transparent);
+  box-shadow: 0 0 0 2px var(--md-sys-color-secondary), 0 0 0 4px var(--md-sys-color-surface);
+}
+
+.btn-secondary:active {
+  background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 95%, transparent);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--md-sys-typescale-label-large-font-family);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  font-size: var(--md-sys-typescale-label-large-font-size);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+  color: var(--md-sys-color-primary);
+  background-color: transparent;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  text-decoration: none;
+}
+
+.btn-outline:hover {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+}
+
+.btn-outline:focus {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+  box-shadow: 0 0 0 2px var(--md-sys-color-primary), 0 0 0 4px var(--md-sys-color-surface);
+}
+
+.btn-outline:active {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent);
+}
+
+.btn-outline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.card {
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+  box-shadow: var(--md-sys-elevation-level1);
+  border-radius: var(--md-sys-shape-corner-large);
+  transition: all var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+}
+
+.card-elevated {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  box-shadow: var(--md-sys-elevation-level3);
+  border-radius: var(--md-sys-shape-corner-large);
+  transition: all var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+}
+
+/* Font Family Utilities */
+.font-heading {
+  font-family: var(--font-poppins);
+}
+
+.font-body {
+  font-family: var(--font-inter);
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn-primary {
+    border: 2px solid var(--md-sys-color-outline);
+  }
+  
+  .btn-secondary {
+    border: 2px solid var(--md-sys-color-outline);
+  }
+  
+  .btn-outline {
+    border-width: 2px;
+  }
+}
+
+/* Material You Component Styles */
+@layer components {
+  /* Material You Button Styles */
+  .btn-primary {
+    @apply bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none;
+    box-shadow: var(--md-sys-elevation-level1);
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+                box-shadow var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+  
+  .btn-primary:hover {
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, var(--md-sys-color-on-primary) 8%);
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+  
+  .btn-primary:focus {
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, var(--md-sys-color-on-primary) 12%);
+    box-shadow: var(--md-sys-elevation-level1), 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
+  }
+  
+  .btn-primary:active {
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, var(--md-sys-color-on-primary) 12%);
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+  
+  .btn-secondary {
+    @apply bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none;
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+  
+  .btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 92%, var(--md-sys-color-on-secondary-container) 8%);
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+  
+  /* Material You Card Styles */
+  .card {
+    @apply bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] rounded-xl transition-all duration-200;
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+  
+  .card:hover {
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+  
+  .card-elevated {
+    @apply bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)];
+    box-shadow: var(--md-sys-elevation-level3);
+  }
+  
+  /* Material You Input Styles */
+  .input-field {
+    @apply block w-full rounded-lg border-[var(--md-sys-color-outline)] bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] transition-all duration-200;
+    font-size: var(--md-sys-typescale-body-medium-size);
+    line-height: var(--md-sys-typescale-body-medium-line-height);
+  }
+  
+  .input-field:focus {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
+  }
+  
+  .label {
+    @apply block text-[var(--md-sys-color-on-surface-variant)] mb-1;
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+  }
+  
+  /* Material You Typography Classes */
+  .text-display-large {
+    font-size: var(--md-sys-typescale-display-large-size);
+    font-weight: var(--md-sys-typescale-display-large-weight);
+    line-height: var(--md-sys-typescale-display-large-line-height);
+  }
+  
+  .text-display-medium {
+    font-size: var(--md-sys-typescale-display-medium-size);
+    font-weight: var(--md-sys-typescale-display-medium-weight);
+    line-height: var(--md-sys-typescale-display-medium-line-height);
+  }
+  
+  .text-headline-large {
+    font-size: var(--md-sys-typescale-headline-large-size);
+    font-weight: var(--md-sys-typescale-headline-large-weight);
+    line-height: var(--md-sys-typescale-headline-large-line-height);
+  }
+  
+  .text-title-large {
+    font-size: var(--md-sys-typescale-title-large-size);
+    font-weight: var(--md-sys-typescale-title-large-weight);
+    line-height: var(--md-sys-typescale-title-large-line-height);
+  }
+  
+  .text-label-large {
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+  }
+  
+  .text-body-medium {
+    font-size: var(--md-sys-typescale-body-medium-size);
+    font-weight: var(--md-sys-typescale-body-medium-weight);
+    line-height: var(--md-sys-typescale-body-medium-line-height);
+  }
+  
+  /* Material You Surface Styles */
+  .surface {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+  
+  .surface-container {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+  }
+  
+  .surface-container-high {
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+  }
+  
+  /* Material You State Layer Utilities */
+  .state-layer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .state-layer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+    pointer-events: none;
+  }
+  
+  .state-layer:hover::before {
+    background-color: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--md-sys-state-hover-opacity) * 100%), transparent);
+  }
+  
+  .state-layer:focus::before {
+    background-color: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--md-sys-state-focus-opacity) * 100%), transparent);
+  }
+  
+  .state-layer:active::before {
+    background-color: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--md-sys-state-pressed-opacity) * 100%), transparent);
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  
+  /* Material You Elevation Utilities */
+  .elevation-0 { box-shadow: var(--md-sys-elevation-level0); }
+  .elevation-1 { box-shadow: var(--md-sys-elevation-level1); }
+  .elevation-2 { box-shadow: var(--md-sys-elevation-level2); }
+  .elevation-3 { box-shadow: var(--md-sys-elevation-level3); }
+  .elevation-4 { box-shadow: var(--md-sys-elevation-level4); }
+  .elevation-5 { box-shadow: var(--md-sys-elevation-level5); }
+
+  /* Accessibility Utilities */
+  .sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .focus\:not-sr-only:focus {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: inherit !important;
+    margin: inherit !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+  }
+
+  /* Touch target sizes for mobile accessibility */
+  .touch-target {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* Focus ring utilities */
+  .focus-ring-primary:focus {
+    outline: 2px solid var(--md-sys-color-primary) !important;
+    outline-offset: 2px !important;
+  }
+
+  .focus-ring-secondary:focus {
+    outline: 2px solid var(--md-sys-color-secondary) !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Enhanced Accessibility Features */
+
+/* Skip navigation links */
+.skip-nav {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  padding: 8px 16px;
+  border-radius: var(--md-sys-shape-corner-small);
+  text-decoration: none;
+  font-weight: 600;
+  z-index: 9999;
+  transition: top var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.skip-nav:focus {
+  top: 6px;
+}
+
+/* Focus management */
+*:focus {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users, keep for keyboard users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Ensure focus is always visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* High contrast mode enhancements */
+@media (prefers-contrast: high) {
+  /* Increase border thickness for better visibility */
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline {
+    border-width: 2px !important;
+  }
+
+  .card,
+  .input-field {
+    border-width: 2px !important;
+  }
+
+  /* Enhance focus indicators */
+  *:focus,
+  *:focus-visible {
+    outline-width: 3px !important;
+    outline-offset: 3px !important;
+  }
+
+  /* Ensure sufficient contrast for interactive elements */
+  .state-layer:hover::before {
+    background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 20%, transparent) !important;
+  }
+
+  .state-layer:focus::before {
+    background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 24%, transparent) !important;
+  }
+}
+
+/* Enhanced reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Remove transforms that can cause motion sickness */
+  .card:hover {
+    transform: none !important;
+  }
+
+  .btn-primary:active,
+  .btn-secondary:active {
+    transform: none !important;
+  }
+
+  /* Disable state layer animations */
+  .state-layer::before {
+    transition: none !important;
+  }
+
+  /* Keep important accessibility transitions but make them instant */
+  .skip-nav:focus {
+    transition: none !important;
+  }
+}
+
+/* Support for users who prefer dark interfaces */
+@media (prefers-color-scheme: dark) {
+  /* This is handled by our Material You theme provider, but we can add fallbacks */
+  :root:not([data-theme]) {
+    color-scheme: dark;
+  }
+}
+
+/* Support for users who prefer light interfaces */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+  }
+}
+
+/* Print styles for accessibility */
+@media print {
+  /* Ensure good contrast in print */
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  /* Hide non-essential elements when printing */
+  .skip-nav,
+  nav[role="navigation"],
+  [aria-label*="menu"],
+  button[aria-expanded] {
+    display: none !important;
+  }
+
+  /* Ensure links are visible in print */
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+}
+
+/* Live region utilities for screen readers */
+.sr-live-polite {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  /* Live region specific */
+  speak: normal;
+  clip-path: inset(50%);
+}
+
+.sr-live-polite[aria-live="polite"] {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Ensure proper text spacing for readability */
+p, h1, h2, h3, h4, h5, h6, li {
+  /* WCAG AA compliance for text spacing */
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 0.5em;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+/* Ensure sufficient color contrast for all Material You tokens */
+/* These are automatically handled by Material You color system, 
+   but we ensure minimum contrast ratios */
+
+/* Force focus indicators to be visible even with custom styling */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* Ensure interactive elements meet minimum touch target size */
+button,
+a,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+[role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Improved keyboard navigation for tables */
+table:focus {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* Better visibility for placeholder text */
+::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.7;
+}
+
+/* Ensure disabled elements are clearly indicated */
+:disabled,
+[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+/* Enhanced focus for dropdown menus and modal dialogs */
+[role="menu"],
+[role="dialog"],
+[role="alertdialog"] {
+  outline: none; /* Remove default, we'll handle with borders/shadows */
+}
+
+[role="menu"]:focus-within,
+[role="dialog"]:focus-within,
+[role="alertdialog"]:focus-within {
+  box-shadow: 0 0 0 2px var(--md-sys-color-primary);
+} 

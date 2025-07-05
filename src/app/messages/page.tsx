@@ -1,0 +1,318 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '@/lib/auth';
+import { useRealtimeMessaging } from '@/hooks/useRealtimeMessaging';
+import { ConversationWithDetails, MessageWithProfiles, ThreadedMessage } from '@/types/messages';
+import ConversationList from '@/components/messaging/ConversationList';
+import MessageThread from '@/components/messaging/MessageThread';
+import NewMessageModal from '@/components/messaging/NewMessageModal';
+import RealtimeIndicator from '@/components/messaging/RealtimeIndicator';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import AppLayout, { useToast } from '@/components/AppLayout';
+import { MaterialYouIcon } from '@/components/ui/MaterialYouIcon';
+import { cn } from '@/lib/utils';
+
+export default function MessagesPage() {
+  const { user, loading: authLoading } = useAuth();
+  const [activeConversation, setActiveConversation] = useState<ConversationWithDetails | null>(null);
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
+  const { addToast } = useToast();
+  const hasMarkedAsRead = useRef<Set<string>>(new Set());
+  
+  // Handle new message notifications
+  const handleNewMessage = (message: MessageWithProfiles) => {
+    addToast({
+      id: `message_${message.id}`,
+      type: 'info',
+      title: `New message from ${message.sender.display_name}`,
+      message: `About ${message.listing?.title}`,
+      duration: 5000
+    });
+  };
+
+  // Use the real-time messaging hook with toast notifications
+  const {
+    conversations,
+    unreadCount,
+    loading,
+    error,
+    markMessagesAsRead,
+    markConversationAsRead,
+    sendMessage,
+    refreshConversations
+  } = useRealtimeMessaging({
+    userId: user?.id || null,
+    activeConversationId: activeConversation?.listing_id || null,
+    showToastNotifications: true,
+    onNewMessage: handleNewMessage
+  });
+
+  // Fetch messages for a specific conversation
+  const fetchMessages = async (conversationId: string) => {
+    try {
+      const response = await fetch(`/api/messages?conversation_id=${conversationId}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch messages');
+      }
+      
+      const data = await response.json();
+      return data.messages || [];
+    } catch (err) {
+      console.error('Error fetching messages:', err);
+      throw err;
+    }
+  };
+
+  // Build threaded messages from flat messages array
+  const buildThreadedMessages = (messages: MessageWithProfiles[]): ThreadedMessage[] => {
+    const messageMap = new Map<string, ThreadedMessage>();
+    const rootMessages: ThreadedMessage[] = [];
+
+    // First pass: create all threaded messages
+    messages.forEach(msg => {
+      const threadedMsg: ThreadedMessage = {
+        ...msg,
+        replies: []
+      };
+      messageMap.set(msg.id, threadedMsg);
+    });
+
+    // Second pass: build hierarchy
+    messages.forEach(msg => {
+      const threadedMsg = messageMap.get(msg.id);
+      if (!threadedMsg) return;
+
+      if (msg.parent_message_id) {
+        const parent = messageMap.get(msg.parent_message_id);
+        if (parent) {
+          parent.replies.push(threadedMsg);
+        } else {
+          rootMessages.push(threadedMsg);
+        }
+      } else {
+        rootMessages.push(threadedMsg);
+      }
+    });
+
+    return rootMessages;
+  };
+
+  // Handle conversation selection
+  const handleConversationSelect = React.useCallback(async (conversation: ConversationWithDetails) => {
+    try {
+      const conversationKey = conversation.listing_id;
+      
+      // Set active conversation first
+      setActiveConversation(conversation);
+
+      // Fetch messages for the conversation
+      const messages = await fetchMessages(conversation.listing_id);
+      const updatedConversation = { ...conversation, messages };
+      setActiveConversation(updatedConversation);
+      
+      // Mark conversation as read only once per session to avoid loops
+      const hasUnreadMessages = conversation.unread_count > 0;
+      if (hasUnreadMessages && !hasMarkedAsRead.current.has(conversationKey)) {
+        hasMarkedAsRead.current.add(conversationKey);
+        // Mark as read after setting the conversation to avoid interference
+        markConversationAsRead(conversation.listing_id);
+      }
+    } catch (err) {
+      console.error('Error selecting conversation:', err);
+    }
+  }, [markConversationAsRead]);
+
+  // Update active conversation when conversations update via real-time
+  // But only when necessary to avoid infinite loops
+  useEffect(() => {
+    if (!activeConversation || conversations.length === 0) {
+      return;
+    }
+
+    const updatedConversation = conversations.find(
+      conv => conv.listing_id === activeConversation.listing_id &&
+              conv.other_participant?.id === activeConversation.other_participant?.id
+    );
+    
+    if (updatedConversation) {
+      // Only update if the conversation actually changed in meaningful ways
+      // Avoid updating based on unread_count as it can cause loops
+      const hasSignificantChanges = 
+        updatedConversation.last_message_created_at !== activeConversation.last_message_created_at ||
+        (updatedConversation.messages?.length || 0) !== (activeConversation.messages?.length || 0);
+      
+      if (hasSignificantChanges) {
+        setActiveConversation(prev => prev ? { ...prev, ...updatedConversation } : updatedConversation);
+      }
+    }
+  }, [conversations, activeConversation?.listing_id]);
+
+  // Clear marked as read when conversations change (new session or refresh)
+  useEffect(() => {
+    hasMarkedAsRead.current.clear();
+  }, [user?.id]);
+
+  if (authLoading || loading) {
+    return (
+      <AppLayout showNavigation={true}>
+        <div className="min-h-screen flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!user) {
+    return (
+      <AppLayout showNavigation={true}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <MaterialYouIcon name="message" size="xl" className="mx-auto mb-4 text-md-sys-on-surface-variant" />
+            <h2 className="text-md-title-large text-md-sys-on-surface mb-2">Sign in to view messages</h2>
+            <p className="text-md-body-medium text-md-sys-on-surface-variant">You need to be logged in to access your messages.</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  return (
+    <AppLayout showNavigation={true} className="bg-md-sys-surface">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <MaterialYouIcon name="inbox" size="lg" className="text-md-sys-primary mr-3" />
+              <div>
+                <h1 className="text-md-display-small text-md-sys-on-surface">Messages</h1>
+                <div className="flex items-center space-x-4">
+                  <p className="text-md-body-medium text-md-sys-on-surface-variant">
+                    {unreadCount > 0 && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-3xl text-md-label-small bg-md-sys-error-container text-md-sys-on-error-container mr-2">
+                        {unreadCount} unread
+                      </span>
+                    )}
+                    <RealtimeIndicator />
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowNewMessageModal(true)}
+                className={cn(
+                  "inline-flex items-center px-6 py-3 text-md-label-large font-medium rounded-3xl shadow-md-elevation-1",
+                  "bg-md-sys-primary text-md-sys-on-primary",
+                  "hover:bg-md-sys-primary-container hover:text-md-sys-on-primary-container",
+                  "focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus:ring-offset-2",
+                  "transition-all duration-200"
+                )}
+              >
+                <MaterialYouIcon name="plus" size="sm" className="mr-2" />
+                New Message
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {loading && (
+          <div className="flex justify-center items-center h-64">
+            <LoadingSpinner />
+          </div>
+        )}
+
+        {error && (
+          <div className="rounded-3xl bg-md-sys-error-container p-4 mb-6 border border-md-sys-error/20">
+            <div className="text-md-body-medium text-md-sys-on-error-container">
+              Error loading messages: {error}
+            </div>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+            {/* Conversations List */}
+            <div className="lg:col-span-1">
+              <ConversationList
+                conversations={conversations}
+                activeConversation={activeConversation}
+                onConversationSelect={handleConversationSelect}
+                loading={loading}
+                currentUserId={user.id}
+              />
+            </div>
+
+            {/* Message Thread */}
+            <div className="lg:col-span-2">
+              {activeConversation ? (
+                <>
+                  {/* Show loading state if data is incomplete */}
+                  {!activeConversation.messages || !activeConversation.other_participant || !activeConversation.listing ? (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <LoadingSpinner />
+                        <h3 className="text-md-title-medium text-md-sys-on-surface mt-4 mb-2">
+                          Loading conversation...
+                        </h3>
+                        <p className="text-md-body-medium text-md-sys-on-surface-variant">
+                          Please wait while we load the messages
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <MessageThread
+                      conversationId={activeConversation.listing_id}
+                      messages={activeConversation.messages || []}
+                      threadedMessages={buildThreadedMessages(activeConversation.messages || [])}
+                      currentUserId={user.id}
+                      otherParticipant={{
+                        id: activeConversation.other_participant.id || 'unknown',
+                        display_name: activeConversation.other_participant.display_name || 'Unknown User',
+                        profile_image_url: activeConversation.other_participant.profile_image_url,
+                        email: activeConversation.other_participant.email || 'unknown@example.com'
+                      }}
+                      listing={{
+                        id: activeConversation.listing.id || 'unknown',
+                        title: `${activeConversation.listing.year || ''} ${activeConversation.listing.make || ''} ${activeConversation.listing.model || ''}`.trim(),
+                        make: activeConversation.listing.make || 'Unknown',
+                        model: activeConversation.listing.model || 'Unknown',
+                        year: activeConversation.listing.year || 0,
+                        price: activeConversation.listing.price || 0,
+                        status: activeConversation.listing.status || 'active'
+                      }}
+                      onSendMessage={sendMessage}
+                      onMarkAsRead={markConversationAsRead}
+                    />
+                  )}
+                </>
+              ) : (
+                <div className="h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <MaterialYouIcon name="paper-airplane" size="xl" className="mx-auto mb-4 text-md-sys-on-surface-variant" />
+                    <h3 className="text-md-title-medium text-md-sys-on-surface mb-2">
+                      Select a conversation
+                    </h3>
+                    <p className="text-md-body-medium text-md-sys-on-surface-variant">
+                      Choose a conversation from the list to start messaging
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* New Message Modal */}
+        {showNewMessageModal && (
+          <NewMessageModal
+            onClose={() => setShowNewMessageModal(false)}
+            onSendMessage={sendMessage}
+          />
+        )}
+      </div>
+    </AppLayout>
+  );
+} 

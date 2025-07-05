@@ -1,0 +1,43 @@
+﻿{
+    "retention_days":  90,
+    "notifications":  {
+                          "email":  "",
+                          "webhook":  "",
+                          "enabled":  true
+                      },
+    "compression_enabled":  true,
+    "encryption_enabled":  true,
+    "providers":  {
+                      "gcp":  {
+                                  "key_file":  "",
+                                  "bucket":  "projectcars-database-backups",
+                                  "project_id":  "",
+                                  "enabled":  false
+                              },
+                      "local_secondary":  {
+                                              "path":  "..\\..\\..\\backup-offsite",
+                                              "description":  "Secondary local storage for testing",
+                                              "enabled":  true
+                                          },
+                      "azure":  {
+                                    "storage_account":  "projectcarsbackups",
+                                    "connection_string":  "",
+                                    "container":  "database-backups",
+                                    "enabled":  false
+                                },
+                      "aws":  {
+                                  "bucket":  "projectcars-backups",
+                                  "region":  "us-east-1",
+                                  "secret_access_key":  "",
+                                  "kms_key_id":  "",
+                                  "access_key_id":  "",
+                                  "enabled":  false
+                              }
+                  },
+    "sync_schedule":  {
+                          "frequency":  "daily",
+                          "time":  "04:00",
+                          "max_concurrent":  3
+                      },
+    "enabled":  true
+}

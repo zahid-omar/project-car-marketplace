@@ -1,0 +1,237 @@
+{
+	"meta": {
+		"generatedAt": "2025-07-05T13:43:51.412Z",
+		"tasksAnalyzed": 14,
+		"totalTasks": 30,
+		"analysisCount": 28,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 3,
+			"taskTitle": "Implement User Authentication System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down each authentication feature (login, registration, email verification, password reset, protected routes, logout, user context) into separate implementation and testing subtasks. Include setup, integration, and error handling for each.",
+			"reasoning": "This task involves multiple authentication flows, integration with Supabase, UI development, and global state management. Each feature is distinct and requires careful handling of security, validation, and user experience, making the overall complexity moderate to high."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Develop Comprehensive Listing Creation Form",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Expand into subtasks for each form step, validation logic, image upload integration, modification entry, preview, submission, and Supabase storage. Include both UI and backend data handling.",
+			"reasoning": "A multi-step form with advanced validation, image uploads, and dynamic modification entry is complex. Each step and integration point (validation, storage, preview) adds to the intricacy, requiring granular subtasks for maintainability and testability."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Create Seller Dashboard",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Divide into subtasks for dashboard UI, listing management (view, edit, delete, mark-as-sold), sorting/filtering, and analytics. Include both frontend and backend logic.",
+			"reasoning": "The dashboard combines CRUD operations, UI complexity, and analytics. Each management feature (edit, delete, mark-as-sold) and analytics requires separate logic and testing, making the task moderately complex."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Implement Listing Catalog with Pagination",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down into subtasks for grid layout, pagination logic, filtering, card component, image lazy loading, sorting, and query optimization.",
+			"reasoning": "This task involves UI, server-side logic, performance optimization, and multiple user-facing features (pagination, filtering, sorting), each requiring careful implementation and testing."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Develop Advanced Search and Filtering System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Expand into subtasks for full-text search integration, advanced filter UI, modification filters, dynamic query building, results page, performance optimization, analytics, and indexing.",
+			"reasoning": "Advanced search systems are highly complex due to dynamic queries, performance requirements, analytics, and a sophisticated UI. Each aspect (search, filtering, analytics) is a significant subtask."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Create Detailed Listing View Pages",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Divide into subtasks for page layout, image gallery, listing details, seller info, inquiry button, similar listings, social sharing, and SEO optimization.",
+			"reasoning": "Comprehensive detail pages require complex UI, data integration, SEO, and interactive features, each of which should be handled as a separate subtask for clarity and maintainability."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Develop User Profiles and Account Management",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down into subtasks for profile page, account settings, profile picture, bio/social links, public profiles, privacy settings, and ratings/reviews.",
+			"reasoning": "User profile management involves multiple UI and backend features, privacy controls, and user-generated content, each with its own complexity."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Implement Internal Messaging System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Break down the messaging system into granular subtasks covering UI/UX design, backend API development, database schema design, real-time infrastructure, message threading, read/unread status, notifications, inbox/outbox management, search, moderation/reporting, and comprehensive testing for each feature.",
+			"reasoning": "This task involves multiple complex features: secure real-time messaging, threading, notifications, moderation, and search, each requiring distinct backend and frontend logic. The system must be robust, scalable, and secure, with high coupling between components and significant cognitive complexity due to real-time and moderation requirements. A high number of subtasks is needed to ensure each feature is independently testable and maintainable.[1][4][5]"
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Develop Formal Offer System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Expand the offer system into subtasks for UI/UX for buyers and sellers, backend offer management, state machine for offer statuses, counter-offer logic, analytics/history, expiration handling, notifications, security/validation, and comprehensive integration testing.",
+			"reasoning": "The offer system requires transactional integrity, state management, negotiation flows, analytics, and notifications. It has moderate to high cyclomatic and cognitive complexity due to multiple state transitions, user roles, and integration with other systems. Each major feature should be a subtask to manage dependencies and ensure clarity.[1][4][5]"
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Implement Favorites/Saved Listings Functionality",
+			"complexityScore": 6,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Decompose into subtasks for UI integration, backend API and database, dashboard management, real-time updates, search/filtering, email notifications, and end-to-end testing.",
+			"reasoning": "Favorites functionality is moderately complex, involving user interaction, real-time updates, and integration with search and notifications. The cognitive complexity is lower than messaging or offers, but still requires careful separation of concerns and robust testing.[1][5]"
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "Implement Notification System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Expand into subtasks for UI/UX, database schema, real-time delivery, email and push channels, user preferences, analytics/admin tools, and comprehensive testing for each delivery channel.",
+			"reasoning": "A notification system spans multiple delivery channels, real-time infrastructure, user preferences, and analytics. High coupling and cognitive complexity arise from the need to coordinate delivery, respect preferences, and ensure reliability across channels.[1][4][5]"
+		},
+		{
+			"taskId": 27,
+			"taskTitle": "Overhaul UI/UX to Material Design System Across Application",
+			"complexityScore": 9,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Expand into subtasks for design system setup, theme creation, component refactoring, layout updates, icon integration, motion/animation, accessibility, documentation, integration with navigation, and regression testing.",
+			"reasoning": "A full UI/UX overhaul is highly complex, requiring coordinated changes across all components, layouts, and design assets. High cognitive and cyclomatic complexity due to the scale and need for consistency and accessibility.[1][4][5]"
+		},
+		{
+			"taskId": 26,
+			"taskTitle": "Implement Material You-Inspired Navigation UI Across All Pages",
+			"complexityScore": 9,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Break down the implementation of a Material You-inspired navigation UI into subtasks covering: (1) research and design referencing Material 3 guidelines and Figma kit, (2) dynamic color theming and palette extraction, (3) responsive layout for desktop and mobile (hamburger menu), (4) adaptive typography and elevation, (5) integration of authentication state and conditional rendering, (6) notification icon integration, (7) accessibility (keyboard navigation, ARIA, color contrast), and (8) component reusability and integration across all pages.",
+			"reasoning": "This task is highly complex due to the need to deeply integrate Material You (Material 3) principles, including dynamic color theming, adaptive typography, elevation, and motion transitions, all of which require careful design and technical implementation[2][3][4]. The navigation must be fully responsive, accessible, and support conditional rendering based on authentication state, as well as integrate with notifications and be reusable across the app. Material You's dynamic color system and accessibility requirements add significant development and testing overhead[2][4]. The breadth of requirements and integration points justifies a high complexity score and the need for at least eight focused subtasks."
+		},
+		{
+			"taskId": 28,
+			"taskTitle": "Add Modification Category Dropdown to Listing Creation Form",
+			"complexityScore": 6,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down the implementation of the modification category dropdown into subtasks covering UI component creation, integration with the form, schema/database updates, state management, accessibility, styling, and updating display logic.",
+			"reasoning": "This task involves both frontend and backend changes: creating a new UI component with Material You styling, integrating it into an existing form, updating form and database schemas, ensuring accessibility, and updating display logic. While each step is straightforward, the cross-cutting nature (UI, validation, database, accessibility) increases complexity above a basic form field addition, but it does not involve highly complex logic or external integrations."
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "Develop Admin Dashboard",
+			"complexityScore": 9,
+			"recommendedSubtasks": 12,
+			"expansionPrompt": "Break down each major dashboard feature (user management, listing moderation, analytics, roles/permissions, announcements, etc.) into granular UI, backend, integration, and testing subtasks. Include security, audit logging, and edge case handling for each module.",
+			"reasoning": "This task involves multiple complex modules (user management, moderation, analytics, RBAC, notifications), each with significant UI, backend, and integration requirements. High interdependency and the need for robust security and auditability further increase complexity. More granular subtasks will help manage risk and parallelize work effectively.[1][3]"
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Implement SEO Optimizations",
+			"complexityScore": 7,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Expand each SEO area (meta tags, sitemap, structured data, URLs, canonical tags, pagination, SSR, alt tags) into implementation, validation, and regression testing subtasks. Add subtasks for SEO audit, monitoring, and documentation.",
+			"reasoning": "SEO optimization covers a broad set of technical and content-driven changes, each requiring careful implementation and validation. While individually manageable, the cumulative effort and need for ongoing monitoring and regression testing increase overall complexity.[1][3]"
+		},
+		{
+			"taskId": 16,
+			"taskTitle": "Develop Analytics and Tracking System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Decompose each analytics feature (GA4 integration, custom events, funnels, heatmaps, dashboards, reporting) into setup, configuration, validation, and stakeholder review subtasks. Include subtasks for data privacy compliance and documentation.",
+			"reasoning": "Integrating analytics involves multiple tools, custom event design, and stakeholder reporting. Ensuring data accuracy, privacy, and actionable insights adds to the complexity, warranting further breakdown for clarity and quality assurance.[1][3]"
+		},
+		{
+			"taskId": 17,
+			"taskTitle": "Implement Performance Optimizations",
+			"complexityScore": 8,
+			"recommendedSubtasks": 12,
+			"expansionPrompt": "Expand each optimization area (code splitting, image optimization, caching, CDN, API, DB, monitoring) into analysis, implementation, testing, and rollback subtasks. Add subtasks for baseline measurement, regression testing, and documentation.",
+			"reasoning": "Performance optimization is multifaceted, requiring deep analysis, cross-stack changes, and careful validation to avoid regressions. Each area (frontend, backend, infra) has unique challenges, making granular subtasks essential for thorough coverage.[1][3]"
+		},
+		{
+			"taskId": 18,
+			"taskTitle": "Develop Mobile Responsive Design",
+			"complexityScore": 6,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Break down by page/template and component. For each, add subtasks for layout adaptation, touch optimization, device/browser testing, and performance tuning. Include accessibility and regression testing subtasks.",
+			"reasoning": "Mobile responsiveness is a well-understood domain but requires systematic coverage across all pages and components, with device/browser testing and accessibility checks adding to the workload.[1][3]"
+		},
+		{
+			"taskId": 19,
+			"taskTitle": "Implement Security Measures",
+			"complexityScore": 9,
+			"recommendedSubtasks": 14,
+			"expansionPrompt": "Expand each security area (HTTPS, CSRF, rate limiting, input validation, session management, headers, 2FA, audits) into implementation, threat modeling, automated testing, and incident response subtasks. Add subtasks for compliance checks and documentation.",
+			"reasoning": "Security is critical and multifaceted, requiring careful implementation, validation, and ongoing monitoring. Each area must be robustly tested against evolving threats, and compliance/documentation is essential for auditability.[1][3]"
+		},
+		{
+			"taskId": 20,
+			"taskTitle": "Develop Automated Testing Suite",
+			"complexityScore": 8,
+			"recommendedSubtasks": 12,
+			"expansionPrompt": "Decompose by test type (unit, component, E2E, API, snapshot, performance). For each, add subtasks for framework setup, test writing, coverage analysis, CI integration, and maintenance. Include subtasks for test data management and flakiness mitigation.",
+			"reasoning": "Comprehensive automated testing spans multiple test types and frameworks, each with setup, maintenance, and integration challenges. Ensuring high coverage and reliability requires detailed planning and ongoing effort.[1][3]"
+		},
+		{
+			"taskId": 21,
+			"taskTitle": "Implement Internationalization and Localization",
+			"complexityScore": 7,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Expand by supported language and feature (i18n setup, translation files, UI, formatting, RTL, management, hreflang). For each, add subtasks for extraction, translation, QA, and regression testing. Include subtasks for translator workflow and locale fallback.",
+			"reasoning": "Internationalization involves technical setup, content management, and UI adaptation for multiple languages and regions. Each locale and feature (RTL, formatting) introduces additional complexity and testing requirements.[1][3]"
+		},
+		{
+			"taskId": 22,
+			"taskTitle": "Develop API Documentation",
+			"complexityScore": 6,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Break down by documentation area (spec setup, endpoint docs, auth, console, rate limits, SDKs, versioning). For each, add subtasks for drafting, review, testing, and publishing. Include subtasks for keeping docs in sync with API changes.",
+			"reasoning": "API documentation is content-heavy but technically straightforward. The main complexity lies in completeness, accuracy, and ongoing maintenance as the API evolves.[1][3]"
+		},
+		{
+			"taskId": 23,
+			"taskTitle": "Implement Feedback and Support System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Expand each feature (feedback form, ticketing, FAQ, admin, chat, automation, analytics) into UI, backend, integration, and testing subtasks. Add subtasks for user notifications, escalation workflows, and privacy compliance.",
+			"reasoning": "A feedback/support system involves multiple user-facing and admin modules, real-time features (chat), and analytics. Integration and workflow complexity, plus privacy considerations, require detailed breakdown.[1][3]"
+		},
+		{
+			"taskId": 24,
+			"taskTitle": "Develop Data Backup and Recovery System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 14,
+			"expansionPrompt": "Expand by backup type (full, incremental, off-site), platform (Linux, Windows), and process (scheduling, verification, encryption, monitoring, disaster recovery). For each, add subtasks for script development, testing, documentation, and compliance validation.",
+			"reasoning": "Backup and recovery is mission-critical, requiring robust automation, cross-platform support, verification, security, and disaster recovery planning. Each area must be validated and documented, with compliance and auditability in mind.[1][3]"
+		},
+		{
+			"taskId": 25,
+			"taskTitle": "Prepare for Production Deployment",
+			"complexityScore": 8,
+			"recommendedSubtasks": 12,
+			"expansionPrompt": "Break down by deployment area (environment setup, DB migration, domain/SSL, logging, security, load testing, checklist, monitoring, comms). For each, add subtasks for configuration, validation, rollback, and stakeholder sign-off.",
+			"reasoning": "Production deployment is a high-stakes, multi-step process involving infra, security, testing, and communication. Each area requires careful planning, validation, and contingency measures to ensure a smooth launch.[1][3]"
+		},
+		{
+			"taskId": 29,
+			"taskTitle": "Integrate Google Sign-In Authentication",
+			"complexityScore": 7,
+			"recommendedSubtasks": 11,
+			"expansionPrompt": "Expand each step (OAuth setup, SDK install, UI, frontend/backend integration, user mapping, Supabase integration, error handling, session management, account linking, GDPR) into granular implementation and testing subtasks. Include subtasks for security review and user education.",
+			"reasoning": "OAuth integration involves third-party setup, frontend/backend coordination, user data mapping, security, and compliance. Each step has unique failure modes and requires thorough testing and documentation.[1][3]"
+		},
+		{
+			"taskId": 30,
+			"taskTitle": "Deploy Testing Environment for Project Car Marketplace",
+			"complexityScore": 6,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Break down by deployment step (repo setup, cloud config, env vars, frontend deploy, DB migration, storage, monitoring, optimization, security, documentation). For each, add subtasks for validation, stakeholder review, and rollback.",
+			"reasoning": "Deploying a testing environment is a repeatable but multi-step process, involving cloud setup, configuration, migration, and validation. Each step is manageable but requires attention to detail to ensure a production-like environment.[1][3]"
+		}
+	]
+}

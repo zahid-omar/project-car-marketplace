@@ -1,0 +1,165 @@
+{
+  "project": {
+    "name": "ProjectCars Database Backup",
+    "version": "1.0.0",
+    "supabase_project_id": "chekmxqlnosxphbmxiil"
+  },
+  "schedules": {
+    "full_backup": {
+      "cron": "0 2 * * *",
+      "description": "Daily full backup at 2:00 AM UTC",
+      "enabled": true,
+      "timeout_minutes": 60
+    },
+    "incremental_backup": {
+      "cron": "0 */6 * * *",
+      "description": "Incremental backup every 6 hours",
+      "enabled": true,
+      "timeout_minutes": 30
+    },
+    "wal_archive": {
+      "mode": "continuous",
+      "description": "Continuous WAL archiving for PITR",
+      "enabled": true,
+      "archive_interval_seconds": 300
+    },
+    "verification": {
+      "run_after_backup": true,
+      "run_daily": true,
+      "daily_time": "03:00",
+      "timeout_minutes": 30
+    },
+    "cleanup": {
+      "cron": "0 4 * * 0",
+      "description": "Weekly cleanup on Sunday at 4:00 AM UTC",
+      "enabled": true
+    }
+  },
+  "retention": {
+    "full_backups": {
+      "keep_daily": 30,
+      "keep_weekly": 12,
+      "keep_monthly": 12,
+      "keep_yearly": 5
+    },
+    "incremental_backups": {
+      "keep_hours": 168,
+      "keep_daily": 7
+    },
+    "wal_files": {
+      "keep_days": 14,
+      "archive_after_days": 30
+    },
+    "logs": {
+      "keep_days": 90
+    }
+  },
+  "storage": {
+    "local": {
+      "path": "./storage/local",
+      "max_size_gb": 100,
+      "compression": "gzip",
+      "compression_level": 9
+    },
+    "offsite": {
+      "enabled": false,
+      "provider": "s3",
+      "bucket": "projectcars-backups",
+      "region": "us-east-1",
+      "sync_after_backup": true
+    },
+    "encryption": {
+      "enabled": true,
+      "algorithm": "AES-256-GCM",
+      "key_file": "./storage/encryption/backup.key",
+      "rotate_key_days": 90
+    }
+  },
+  "database": {
+    "connection": {
+      "host": "db.chekmxqlnosxphbmxiil.supabase.co",
+      "port": 5432,
+      "database": "postgres",
+      "user": "postgres",
+      "ssl_mode": "require"
+    },
+    "backup_options": {
+      "include_schema": true,
+      "include_data": true,
+      "include_triggers": true,
+      "include_functions": true,
+      "include_sequences": true,
+      "exclude_tables": [],
+      "parallel_jobs": 4
+    },
+    "critical_tables": [
+      "profiles",
+      "listings", 
+      "listing_images",
+      "messages",
+      "offers",
+      "favorites",
+      "user_reviews",
+      "in_app_notifications"
+    ]
+  },
+  "monitoring": {
+    "health_check": {
+      "interval_minutes": 60,
+      "enabled": true,
+      "checks": [
+        "backup_completion",
+        "storage_usage",
+        "file_integrity",
+        "wal_archiving",
+        "encryption_keys"
+      ]
+    },
+    "alerts": {
+      "enabled": true,
+      "email": {
+        "enabled": false,
+        "smtp_host": "",
+        "smtp_port": 587,
+        "username": "",
+        "from_address": "backup-system@projectcars.com",
+        "to_addresses": ["admin@projectcars.com"]
+      },
+      "webhook": {
+        "enabled": false,
+        "url": "",
+        "timeout_seconds": 30
+      },
+      "triggers": {
+        "backup_failure": true,
+        "storage_threshold_percent": 85,
+        "verification_failure": true,
+        "wal_archive_lag_minutes": 60,
+        "encryption_key_expiry_days": 7
+      }
+    },
+    "logging": {
+      "level": "INFO",
+      "file": "./storage/logs/backup.log",
+      "max_size_mb": 100,
+      "max_files": 10,
+      "format": "%(asctime)s - %(levelname)s - %(message)s"
+    }
+  },
+  "disaster_recovery": {
+    "rpo_minutes": 60,
+    "rto_hours": 4,
+    "test_schedule": {
+      "frequency": "monthly",
+      "day_of_month": 15,
+      "time": "06:00"
+    },
+    "procedures": {
+      "escalation_contacts": [
+        "admin@projectcars.com",
+        "ops@projectcars.com"
+      ],
+      "documentation_url": "./docs/disaster-recovery.md"
+    }
+  }
+} 

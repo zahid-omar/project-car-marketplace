@@ -1,0 +1,479 @@
+/* Material You Motion System - Animation Utilities */
+/* Built on top of material-you-tokens.css motion foundations */
+
+/* === ACCESSIBILITY FIRST === */
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === CORE ANIMATION UTILITIES === */
+
+/* Standard Material You Transitions */
+.md-transition-standard {
+  transition-timing-function: var(--md-sys-motion-easing-standard);
+  transition-duration: var(--md-sys-motion-duration-medium2);
+}
+
+.md-transition-emphasized {
+  transition-timing-function: var(--md-sys-motion-easing-emphasized);
+  transition-duration: var(--md-sys-motion-duration-medium3);
+}
+
+.md-transition-quick {
+  transition-timing-function: var(--md-sys-motion-easing-standard);
+  transition-duration: var(--md-sys-motion-duration-short2);
+}
+
+.md-transition-slow {
+  transition-timing-function: var(--md-sys-motion-easing-emphasized);
+  transition-duration: var(--md-sys-motion-duration-long2);
+}
+
+/* === COMMON INTERACTION PATTERNS === */
+
+/* Button Press Animation */
+.md-button-press {
+  transform: scale(1);
+  transition: transform var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+}
+
+.md-button-press:active {
+  transform: scale(0.96);
+}
+
+/* Hover Elevation */
+.md-hover-lift {
+  transition: box-shadow var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+              transform var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+}
+
+.md-hover-lift:hover {
+  box-shadow: var(--md-sys-elevation-level2);
+  transform: translateY(-1px);
+}
+
+/* Focus Ring Animation */
+.md-focus-ring {
+  position: relative;
+  outline: none;
+}
+
+.md-focus-ring::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--md-sys-color-primary);
+  border-radius: inherit;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: 
+    opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard),
+    transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-focus-ring:focus-visible::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* === STATE CHANGE ANIMATIONS === */
+
+/* Fade In/Out */
+.md-fade-in {
+  animation: mdFadeIn var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.md-fade-out {
+  animation: mdFadeOut var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized-accelerate);
+}
+
+@keyframes mdFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mdFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* Slide Animations */
+.md-slide-in-right {
+  animation: mdSlideInRight var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.md-slide-in-left {
+  animation: mdSlideInLeft var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.md-slide-in-up {
+  animation: mdSlideInUp var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.md-slide-in-down {
+  animation: mdSlideInDown var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+@keyframes mdSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mdSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mdSlideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mdSlideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === MICRO-INTERACTIONS === */
+
+/* Ripple Effect */
+.md-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.md-ripple::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: 
+    width var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    height var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-ripple:active::before {
+  width: 200%;
+  height: 200%;
+  opacity: var(--md-sys-state-pressed-opacity);
+}
+
+/* Icon Bounce */
+.md-icon-bounce {
+  transition: transform var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-emphasized);
+}
+
+.md-icon-bounce:hover {
+  transform: scale(1.1);
+}
+
+.md-icon-bounce:active {
+  transform: scale(0.95);
+}
+
+/* Heart Like Animation */
+.md-heart-like {
+  transition: transform var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized);
+}
+
+.md-heart-like.is-liked {
+  animation: mdHeartPulse var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
+  color: #e91e63;
+}
+
+@keyframes mdHeartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* === LOADING ANIMATIONS === */
+
+/* Skeleton Loading */
+.md-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--md-sys-color-surface-container) 25%,
+    var(--md-sys-color-surface-container-high) 50%,
+    var(--md-sys-color-surface-container) 75%
+  );
+  background-size: 200% 100%;
+  animation: mdSkeletonLoading 1.5s ease-in-out infinite;
+}
+
+@keyframes mdSkeletonLoading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Spinner */
+.md-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--md-sys-color-outline-variant);
+  border-top-color: var(--md-sys-color-primary);
+  border-radius: 50%;
+  animation: mdSpin var(--md-sys-motion-duration-long2) linear infinite;
+}
+
+@keyframes mdSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Progress Bar */
+.md-progress-bar {
+  background: var(--md-sys-color-primary);
+  height: 4px;
+  border-radius: var(--md-sys-shape-corner-full);
+  animation: mdProgressIndeterminate 2s ease-in-out infinite;
+}
+
+@keyframes mdProgressIndeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* === PAGE TRANSITIONS === */
+
+/* Page Enter/Exit */
+.md-page-enter {
+  animation: mdPageEnter var(--md-sys-motion-duration-long1) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.md-page-exit {
+  animation: mdPageExit var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized-accelerate);
+}
+
+@keyframes mdPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mdPageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+}
+
+/* === MODAL/DIALOG ANIMATIONS === */
+
+/* Modal Backdrop */
+.md-modal-backdrop {
+  animation: mdBackdropFadeIn var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+.md-modal-backdrop.closing {
+  animation: mdBackdropFadeOut var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+}
+
+@keyframes mdBackdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mdBackdropFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Modal Content */
+.md-modal-content {
+  animation: mdModalEnter var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.md-modal-content.closing {
+  animation: mdModalExit var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-accelerate);
+}
+
+@keyframes mdModalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes mdModalExit {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+}
+
+/* === TOAST NOTIFICATIONS === */
+
+.md-toast-enter {
+  animation: mdToastEnter var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.md-toast-exit {
+  animation: mdToastExit var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized-accelerate);
+}
+
+@keyframes mdToastEnter {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes mdToastExit {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+}
+
+/* === UTILITY CLASSES === */
+
+/* Animation Controls */
+.md-animation-paused {
+  animation-play-state: paused;
+}
+
+.md-animation-running {
+  animation-play-state: running;
+}
+
+/* Transition Properties */
+.md-transition-none {
+  transition: none !important;
+}
+
+.md-transition-all {
+  transition-property: all;
+}
+
+.md-transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+}
+
+.md-transition-opacity {
+  transition-property: opacity;
+}
+
+.md-transition-shadow {
+  transition-property: box-shadow;
+}
+
+.md-transition-transform {
+  transition-property: transform;
+}
+
+/* === PERFORMANCE OPTIMIZATIONS === */
+
+/* Hardware acceleration for smooth animations */
+.md-gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* Optimize for animations */
+.md-animate-optimized {
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Remove will-change after animation */
+.md-animate-complete {
+  will-change: auto;
+}
+
+/* === STAGGER ANIMATIONS === */
+
+/* For animating lists/groups of elements */
+.md-stagger-children > * {
+  animation-delay: calc(var(--stagger-delay, 50ms) * var(--stagger-index, 0));
+}
+
+/* Example usage: 
+   <div class="md-stagger-children" style="--stagger-delay: 100ms;">
+     <div style="--stagger-index: 0;">Item 1</div>
+     <div style="--stagger-index: 1;">Item 2</div>
+     <div style="--stagger-index: 2;">Item 3</div>
+   </div>
+*/ 

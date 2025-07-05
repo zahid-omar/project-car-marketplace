@@ -1,0 +1,134 @@
+# ============================================================================
+# ProjectCars Database Backup System - Environment Configuration Template
+# ============================================================================
+# Copy this file to .env and fill in your actual values
+# IMPORTANT: Never commit the .env file to version control
+# ============================================================================
+
+# Supabase Project Configuration
+SUPABASE_PROJECT_ID=chekmxqlnosxphbmxiil
+SUPABASE_DB_HOST=db.chekmxqlnosxphbmxiil.supabase.co
+
+# Database Connection (Required)
+# Get this from your Supabase project settings > Database > Connection Info
+PGPASSWORD=your_database_password_here
+PGHOST=db.chekmxqlnosxphbmxiil.supabase.co
+PGPORT=5432
+PGDATABASE=postgres
+PGUSER=postgres
+
+# Backup Storage Configuration
+BACKUP_STORAGE_PATH=/path/to/backup/storage
+BACKUP_RETENTION_DAYS=30
+
+# Encryption Configuration
+# Generate a strong key with: openssl rand -base64 32
+BACKUP_ENCRYPTION_KEY=your_base64_encryption_key_here
+
+# Off-site Storage (Optional - for cloud backup sync)
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_DEFAULT_REGION=us-east-1
+AWS_S3_BUCKET=projectcars-backups
+
+# Google Cloud Storage Configuration (Alternative to S3)
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+GCS_BUCKET=projectcars-backups
+
+# Azure Blob Storage Configuration (Alternative to S3/GCS)
+AZURE_STORAGE_ACCOUNT=your_storage_account
+AZURE_STORAGE_KEY=your_storage_key
+AZURE_CONTAINER=projectcars-backups
+
+# Notification Configuration
+# Email Notifications (SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your_email@gmail.com
+SMTP_PASSWORD=your_app_password
+NOTIFICATION_EMAIL_FROM=backup-system@projectcars.com
+NOTIFICATION_EMAIL_TO=admin@projectcars.com,ops@projectcars.com
+
+# Slack Notifications (Optional)
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+
+# Discord Notifications (Optional)
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK
+
+# Monitoring and Alerting
+# Health check interval in minutes
+HEALTH_CHECK_INTERVAL=60
+
+# Alert thresholds
+STORAGE_USAGE_THRESHOLD=85
+BACKUP_FAILURE_ALERT=true
+WAL_ARCHIVE_LAG_THRESHOLD=60
+
+# Logging Configuration
+LOG_LEVEL=INFO  # DEBUG, INFO, WARN, ERROR
+LOG_RETENTION_DAYS=90
+
+# Performance Tuning
+# Number of parallel jobs for pg_dump
+PARALLEL_BACKUP_JOBS=4
+
+# Compression level (1-9, where 9 is maximum compression)
+COMPRESSION_LEVEL=9
+
+# Security Configuration
+# File permissions for backup files (recommended: 600)
+BACKUP_FILE_PERMISSIONS=600
+
+# Directory permissions for backup storage (recommended: 700)
+BACKUP_DIR_PERMISSIONS=700
+
+# Test Configuration
+# Database name for backup verification tests
+TEST_DATABASE_NAME=backup_verification_test
+
+# Cleanup test database after verification (true/false)
+CLEANUP_TEST_DB=true
+
+# Development/Debug Settings
+# Enable debug logging
+DEBUG_MODE=false
+
+# Skip encryption for testing (NOT recommended for production)
+SKIP_ENCRYPTION=false
+
+# Dry run mode (show what would be done without executing)
+DRY_RUN=false
+
+# ============================================================================
+# Configuration Validation
+# ============================================================================
+# Required variables that must be set:
+# - PGPASSWORD
+# - BACKUP_ENCRYPTION_KEY (if encryption is enabled)
+# - NOTIFICATION_EMAIL_TO (if email alerts are enabled)
+
+# Optional but recommended:
+# - AWS credentials (for off-site backup)
+# - SMTP settings (for email notifications)
+# - Slack/Discord webhooks (for instant alerts)
+
+# ============================================================================
+# Security Notes
+# ============================================================================
+# 1. Store this file securely with restricted permissions (chmod 600 .env)
+# 2. Never commit this file to version control
+# 3. Use strong, unique passwords and encryption keys
+# 4. Rotate encryption keys regularly (every 90 days recommended)
+# 5. Monitor access to backup files and logs
+# 6. Consider using a secrets management service for production
+
+# ============================================================================
+# Quick Setup Instructions
+# ============================================================================
+# 1. Copy this file: cp environment.template ../.env
+# 2. Edit the .env file with your actual values
+# 3. Set secure permissions: chmod 600 ../.env
+# 4. Test configuration: ./scripts/full-backup.sh --test
+# 5. Install cron jobs: ./cron/backup-cron.sh install
+# ============================================================================ 

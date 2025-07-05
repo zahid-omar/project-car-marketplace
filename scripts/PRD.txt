@@ -1,0 +1,743 @@
+<context>
+# Overview  
+The Project Car Marketplace is a US-based web application designed specifically for buying and selling project and modified cars. Unlike traditional automotive marketplaces that cater to standard vehicles, this platform serves automotive enthusiasts who work with custom builds, engine swaps, suspension upgrades, and other modifications. The platform addresses the unique needs of this community by providing detailed modification tracking, specialized search filters, and features tailored to the project car ecosystem.
+
+The marketplace solves several key problems in the modified car community: difficulty finding specialized vehicles, lack of detailed modification information in traditional platforms, and the need for secure communication between buyers and sellers without exposing personal contact information. It serves car enthusiasts, builders, mechanics, and anyone interested in purchasing or selling project vehicles, modified cars, or unique automotive builds.
+
+The platform provides value by creating a dedicated space where sellers can showcase their builds with comprehensive details about modifications, maintenance history, and project status, while buyers can discover unique vehicles with filtering options specifically designed for modified cars. The internal messaging system, favorites functionality, and detailed listings create a trustworthy environment for high-value automotive transactions.
+
+# Core Features  
+## User Authentication & Account Management
+- **Email/password registration and login system** - Provides secure access to member-only features while maintaining simplicity for initial launch
+- **Basic profile management** - Allows users to update essential account information and maintain their seller reputation
+- **Password reset functionality** - Ensures users can regain access to their accounts securely
+- **Access control for authenticated features** - Protects sensitive actions like posting listings and messaging while allowing public browsing
+
+## Car Listing Management
+- **Comprehensive listing creation** - Enables sellers to post detailed car information including standard specs (make, model, year, engine, transmission, mileage) and custom modifications
+- **Photo upload with gallery support** - Allows multiple images per listing to showcase vehicles from different angles and highlight modifications
+- **Modification tracking system** - Supports both tag-based and structured modification entries to capture custom work and upgrades
+- **Listing lifecycle management** - Provides edit, delete, and mark-as-sold functionality for sellers to maintain current information
+- **Seller dashboard** - Central location for managing all listings with status indicators and quick actions
+
+## Search & Discovery
+- **Advanced filtering system** - Supports filtering by make, model, year range, price range, location, and modification tags
+- **Keyword search** - Searches across titles, descriptions, and modification tags to find relevant vehicles
+- **Browse catalog with pagination** - Displays active listings in an organized, navigable format
+- **Detailed listing pages** - Comprehensive view of individual vehicles with all specifications, photos, and seller information
+
+## Communication & Offers
+- **Internal messaging system** - Secure communication between buyers and sellers without exposing personal contact information
+- **Formal offer system** - Structured price negotiation with offer tracking and status management
+- **Conversation threading** - Organized message history tied to specific listings for context
+- **Notification system** - Alerts for new messages, offers, and important updates
+
+## User Engagement
+- **Favorites/saved listings** - Allows users to bookmark interesting vehicles for later review
+- **Personalized dashboards** - Customized views for managing listings, messages, and saved items
+
+## Administrative Tools
+- **Admin dashboard** - Comprehensive platform oversight with user and listing management
+- **Content moderation** - Tools for removing inappropriate content and managing user accounts
+- **User management** - Account status control, ban/unban functionality, and user support tools
+
+# User Experience  
+## User Personas
+
+### Primary Persona: Project Car Enthusiast (Buyer/Seller)
+- **Demographics**: Ages 25-45, automotive hobbyists, disposable income for car projects
+- **Goals**: Find unique project cars, sell completed builds, connect with like-minded enthusiasts
+- **Pain Points**: Difficulty finding detailed modification information, lack of specialized search options on general platforms
+- **Behavior**: Frequently browses automotive forums, values detailed technical information, prefers visual documentation
+
+### Secondary Persona: Professional Builder/Mechanic
+- **Demographics**: Ages 30-55, professional automotive experience, business-focused
+- **Goals**: Sell completed custom builds, source project vehicles for clients, establish reputation
+- **Pain Points**: Need to showcase professional quality work, require detailed communication with potential buyers
+- **Behavior**: Professional presentation important, values efficiency and professional communication tools
+
+### Tertiary Persona: Casual Car Buyer
+- **Demographics**: Ages 20-60, interested in unique vehicles, varying technical knowledge
+- **Goals**: Find interesting cars, learn about modifications, make informed purchases
+- **Pain Points**: May lack technical knowledge to evaluate modifications, need educational resources
+- **Behavior**: Requires clear information presentation, values seller responsiveness and transparency
+
+## Key User Flows
+
+### New User Registration & First Listing
+1. Visit homepage → Browse listings (guest access)
+2. Decide to create account → Registration form
+3. Email verification (optional) → Account creation
+4. Account dashboard → "Create First Listing" guidance
+5. Listing form with step-by-step assistance → Photo upload
+6. Modification entry → Preview and publish
+7. Listing live → Share and promote
+
+### Car Discovery & Purchase Journey
+1. Homepage → Search/browse listings
+2. Apply filters (make, model, mods, price, location)
+3. View search results → Select interesting listing
+4. Detailed listing page → Review specs and photos
+5. Save to favorites or contact seller
+6. Message exchange → Offer negotiation
+7. Agreement reached → Exchange contact info
+8. Transaction completion → Listing marked sold
+
+### Seller Management Flow
+1. Dashboard → "My Listings" overview
+2. Performance metrics (views, messages, offers)
+3. Edit listing → Update price/description/photos
+4. Manage messages → Respond to inquiries
+5. Review offers → Accept/reject/counter
+6. Sale completion → Mark as sold → Sales history
+
+## UI/UX Considerations
+
+### Design Principles
+- **Visual-first approach**: High-quality photos prominently displayed with easy gallery navigation
+- **Information hierarchy**: Technical specifications clearly organized and scannable
+- **Mobile-responsive design**: Optimized for both desktop browsing and mobile usage
+- **Trust indicators**: Seller information, listing age, and platform verification badges
+- **Performance optimization**: Fast loading times essential for image-heavy content
+
+### Accessibility & Usability
+- **Progressive disclosure**: Advanced features accessible but not overwhelming for casual users
+- **Error prevention**: Clear validation and helpful error messages
+- **Search efficiency**: Predictive search, saved searches, and quick filters
+- **Communication clarity**: Message threading and offer status clearly indicated
+- **Responsive feedback**: Immediate confirmation of actions (save, send, edit)
+</context>
+<PRD>
+# Technical Architecture  
+
+## System Components
+
+### Frontend Architecture
+- **Framework**: Next.js 14+ with React 18+ for server-side rendering and optimal performance
+- **Styling**: Tailwind CSS for responsive, maintainable styling with custom automotive theme
+- **State Management**: React Context API for authentication state, React Query for server state
+- **Image Handling**: Next.js Image component with Supabase Storage for optimized delivery
+- **Form Management**: React Hook Form with Zod validation for type-safe form handling
+- **UI Components**: Headless UI components with custom automotive-focused design system
+
+### Backend Architecture  
+- **Database**: Supabase PostgreSQL with Row Level Security (RLS) policies
+- **Authentication**: Supabase Auth with email/password and session management
+- **File Storage**: Supabase Storage for listing images with CDN delivery
+- **API Layer**: Supabase client-side SDK with TypeScript integration
+- **Real-time Features**: Supabase realtime subscriptions for messaging notifications
+- **Edge Functions**: Supabase Edge Functions for advanced operations (email notifications, data processing)
+
+### Infrastructure & Deployment
+- **Frontend Hosting**: Vercel with automatic deployments and edge optimization
+- **Backend**: Supabase cloud platform with managed PostgreSQL and global CDN
+- **Domain & SSL**: Custom domain with automated SSL certificate management
+- **Monitoring**: Vercel Analytics and Supabase monitoring dashboards
+- **Backups**: Automated database backups with point-in-time recovery
+
+## Data Models
+
+### Core Entities
+
+#### Users Table
+```sql
+- id: UUID (primary key)
+- email: VARCHAR (unique, not null)
+- display_name: VARCHAR
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
+- is_admin: BOOLEAN (default false)
+- is_active: BOOLEAN (default true)
+- profile_image_url: VARCHAR
+```
+
+#### Listings Table
+```sql
+- id: UUID (primary key)
+- user_id: UUID (foreign key to users)
+- title: VARCHAR (not null)
+- make: VARCHAR (not null)
+- model: VARCHAR (not null)
+- year: INTEGER (not null)
+- engine: VARCHAR
+- transmission: VARCHAR
+- mileage: INTEGER
+- condition: VARCHAR
+- price: DECIMAL (not null)
+- location: VARCHAR (not null)
+- description: TEXT
+- status: ENUM ('active', 'sold', 'deleted')
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
+- sold_at: TIMESTAMP
+- sold_price: DECIMAL
+```
+
+#### Listing_Images Table
+```sql
+- id: UUID (primary key)
+- listing_id: UUID (foreign key to listings)
+- image_url: VARCHAR (not null)
+- image_order: INTEGER
+- is_primary: BOOLEAN (default false)
+- created_at: TIMESTAMP
+```
+
+#### Modifications Table
+```sql
+- id: UUID (primary key)
+- listing_id: UUID (foreign key to listings)
+- category: VARCHAR (e.g., 'Engine', 'Suspension', 'Body')
+- name: VARCHAR (not null)
+- description: TEXT
+- created_at: TIMESTAMP
+```
+
+#### Messages Table
+```sql
+- id: UUID (primary key)
+- listing_id: UUID (foreign key to listings)
+- sender_id: UUID (foreign key to users)
+- recipient_id: UUID (foreign key to users)
+- message_text: TEXT (not null)
+- is_read: BOOLEAN (default false)
+- created_at: TIMESTAMP
+```
+
+#### Offers Table
+```sql  
+- id: UUID (primary key)
+- listing_id: UUID (foreign key to listings)
+- buyer_id: UUID (foreign key to users)
+- offer_amount: DECIMAL (not null)
+- status: ENUM ('pending', 'accepted', 'rejected', 'expired')
+- expires_at: TIMESTAMP
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
+```
+
+#### Favorites Table
+```sql
+- id: UUID (primary key)
+- user_id: UUID (foreign key to users)
+- listing_id: UUID (foreign key to listings)
+- created_at: TIMESTAMP
+- UNIQUE(user_id, listing_id)
+```
+
+### Database Relationships
+- Users → Listings (One-to-Many)
+- Listings → Images (One-to-Many)
+- Listings → Modifications (One-to-Many)
+- Listings → Messages (One-to-Many)
+- Users → Messages (One-to-Many as sender/recipient)
+- Listings → Offers (One-to-Many)
+- Users → Favorites (One-to-Many)
+
+## APIs and Integrations
+
+### Internal APIs (Supabase)
+- **Authentication API**: User registration, login, password reset
+- **Database API**: CRUD operations with automatic REST API generation
+- **Storage API**: Image upload, retrieval, and management
+- **Realtime API**: Live updates for messaging and notifications
+
+### Future External Integrations (V2/V3)
+- **VIN Decoding Service**: NHTSA API or commercial VIN decoder for auto-population
+- **AI Image Analysis**: Google Vision API or AWS Rekognition for photo analysis
+- **Geolocation Services**: Google Maps API for location-based search
+- **Email Service**: SendGrid or similar for transactional emails
+- **Analytics**: Google Analytics 4 for user behavior tracking
+
+## Infrastructure Requirements
+
+### Performance Requirements
+- **Page Load Time**: < 2 seconds for listing pages, < 1 second for navigation
+- **Image Loading**: Progressive loading with placeholder images
+- **Search Response**: < 500ms for filtered search results
+- **Concurrent Users**: Support for 1000+ simultaneous users initially
+
+### Security Requirements
+- **Authentication**: Secure session management with httpOnly cookies
+- **Data Protection**: Row Level Security (RLS) policies for all database access
+- **File Upload**: Secure image upload with size/type validation
+- **Input Validation**: Server-side validation for all user inputs
+- **HTTPS**: End-to-end encryption for all communications
+
+### Scalability Considerations
+- **Database**: PostgreSQL with proper indexing for search performance
+- **CDN**: Global content delivery for images and static assets
+- **Caching**: Browser caching and CDN edge caching strategies
+- **Monitoring**: Application performance monitoring and error tracking
+
+# Development Roadmap  
+
+## Phase 1: MVP Core Platform (Version 1)
+**Goal**: Launch functional marketplace with essential features for buying and selling modified cars
+
+### Sprint 1: Foundation & Authentication (2-3 weeks)
+- Set up Next.js project with TypeScript and Tailwind CSS
+- Configure Supabase project with database schema
+- Implement user registration, login, logout, and password reset
+- Create basic responsive layout with navigation
+- Set up development, staging, and production environments
+
+### Sprint 2: Listing Creation & Management (3-4 weeks)
+- Build comprehensive listing creation form with validation
+- Implement image upload functionality with Supabase Storage
+- Create modification entry system (tags and structured data)
+- Build seller dashboard with listing management
+- Implement edit, delete, and mark-as-sold functionality
+
+### Sprint 3: Browse & Search System (3-4 weeks)
+- Develop listing catalog with pagination
+- Build advanced search and filtering system
+- Create detailed listing view pages
+- Implement responsive design for mobile devices
+- Add SEO optimization for listing pages
+
+### Sprint 4: Communication & Offers (2-3 weeks)
+- Build internal messaging system with threading
+- Implement formal offer system with tracking
+- Create inbox/outbox interfaces for users
+- Add notification system for messages and offers
+- Integrate real-time updates using Supabase subscriptions
+
+### Sprint 5: User Features & Polish (2 weeks)
+- Implement favorites/saved listings functionality
+- Build user profiles and account management
+- Add comprehensive error handling and loading states
+- Implement basic analytics tracking
+- Conduct thorough testing and bug fixes
+
+### Sprint 6: Admin Tools & Launch Prep (2 weeks)
+- Build admin dashboard with user and listing management
+- Implement content moderation tools
+- Add user account management (ban/unban functionality)
+- Set up monitoring and logging systems
+- Prepare for production deployment and launch
+
+## Phase 2: Analytics & Market Insights (Version 2)
+**Goal**: Add data-driven features to provide market intelligence and pricing insights
+
+### Sprint 7: Sales Tracking Infrastructure (2 weeks)
+- Implement sold listing archival system
+- Build sales history tracking for sellers
+- Create data aggregation pipeline for pricing analytics
+- Set up automated data processing workflows
+
+### Sprint 8: Market Analytics Dashboard (3 weeks)
+- Build price trends visualization system
+- Create market insights dashboard for users
+- Implement historical price data displays
+- Add comparative pricing information to listings
+- Create admin analytics tools for platform insights
+
+## Phase 3: AI-Powered Features & Advanced Tools (Version 3)
+**Goal**: Integrate AI capabilities and advanced seller tools for enhanced user experience
+
+### Sprint 9: VIN Integration & Auto-Population (2-3 weeks)
+- Integrate VIN decoding API service
+- Build auto-population system for listing forms
+- Implement VIN validation and error handling
+- Add privacy controls for VIN information
+
+### Sprint 10: AI Photo Analysis (3-4 weeks)
+- Integrate AI image recognition service
+- Build automated description generation system
+- Implement modification detection from photos
+- Create AI-assisted tagging system
+- Add user review and approval workflow for AI suggestions
+
+### Sprint 11: Natural Language Search (3 weeks)
+- Implement NLP query processing system
+- Build semantic search capabilities
+- Create query interpretation and result ranking
+- Add search query suggestions and autocomplete
+- Integrate with existing filtering system
+
+### Sprint 12: Advanced Offer Management (2 weeks)
+- Build auto-reject system for low offers
+- Implement customizable offer thresholds
+- Create offer analytics and tracking
+- Add offer expiration and management tools
+- Enhance notification system for offer activities
+
+# Logical Dependency Chain
+
+## Foundation Layer (Must be completed first)
+1. **Project Setup & Infrastructure**
+   - Next.js application with TypeScript
+   - Supabase backend configuration
+   - Development environment setup
+   - Basic UI framework with Tailwind CSS
+
+2. **Authentication System**
+   - User registration and login flows
+   - Session management and security
+   - Password reset functionality
+   - Access control implementation
+
+3. **Database Schema & Core Models**
+   - User, Listing, Images, Modifications tables
+   - Proper indexing for search performance
+   - Row Level Security (RLS) policies
+   - Data validation and constraints
+
+## Core Functionality Layer (Sequential development)
+4. **Listing Management (Priority 1)**
+   - Create comprehensive listing forms
+   - Image upload and management system
+   - Listing CRUD operations
+   - Seller dashboard development
+   - *Rationale: Core value proposition - users must be able to post listings*
+
+5. **Browse & Search (Priority 2)**
+   - Public listing catalog
+   - Search and filtering system
+   - Detailed listing view pages
+   - Mobile-responsive design
+   - *Rationale: Essential for discovery - users must be able to find listings*
+
+6. **Communication System (Priority 3)**
+   - Internal messaging between users
+   - Message threading and organization
+   - Basic notification system
+   - *Rationale: Enables transaction discussions and builds trust*
+
+## Enhanced Features Layer (Can be developed in parallel)
+7. **User Engagement Features**
+   - Favorites/saved listings functionality
+   - User profiles and account management
+   - Enhanced notification system
+
+8. **Offer Management System**
+   - Formal offer submission and tracking
+   - Offer acceptance/rejection workflow
+   - Offer history and analytics
+
+9. **Administrative Tools**
+   - Admin dashboard and oversight tools
+   - Content moderation capabilities
+   - User management and support tools
+
+## Getting to Usable Frontend Quickly
+**Week 1-2**: Focus on basic listing creation and display
+- Simple form to create listings with essential fields
+- Basic image upload functionality
+- Public page to view individual listings
+- Minimal styling but functional interface
+
+**Week 3-4**: Add search and browse capabilities
+- Listing catalog with basic filtering
+- Search by make/model/year
+- Responsive mobile layout
+- *Result: Users can post and find cars - core functionality achieved*
+
+**Week 5+**: Enhance with communication and user features
+- Add messaging, favorites, and advanced search
+- Polish UI/UX and add comprehensive features
+- Implement admin tools and prepare for launch
+
+## Atomic Feature Scoping Strategy
+
+### Self-Contained Modules
+- **Authentication Module**: Complete login/logout/registration system
+- **Listing Module**: Full CRUD operations for car listings
+- **Search Module**: Complete search and filtering functionality
+- **Messaging Module**: End-to-end communication system
+- **Admin Module**: Complete administrative interface
+
+### Progressive Enhancement Approach
+1. **Core Features First**: Essential functionality that provides immediate value
+2. **Enhancement Layers**: Additional features that improve user experience
+3. **Advanced Features**: AI and analytics that differentiate the platform
+4. **Future Expansion**: Features that can be added post-launch
+
+This approach ensures each phase delivers tangible value while building a foundation for future enhancements. Features are designed to be independently deployable and testable, allowing for iterative improvement and rapid response to user feedback.
+
+# Risks and Mitigations  
+
+## Technical Challenges
+
+### Risk: Image Upload Performance and Storage Costs
+**Challenge**: High-resolution car photos can be large files, leading to slow uploads and high storage costs
+**Mitigation**: 
+- Implement client-side image compression before upload
+- Use progressive image loading with optimized formats (WebP, AVIF)
+- Set reasonable file size limits (5MB per image, 10 images per listing)
+- Leverage Supabase Storage CDN for optimized delivery
+- Consider image optimization pipeline for different display sizes
+
+### Risk: Search Performance with Complex Filtering
+**Challenge**: Advanced search with multiple filters and keyword matching may become slow as listing count grows
+**Mitigation**:
+- Design proper database indexes for common search patterns
+- Implement full-text search using PostgreSQL's built-in capabilities
+- Use pagination and result limiting to manage large result sets
+- Consider search result caching for popular queries
+- Plan for eventual search engine integration (Elasticsearch) if needed
+
+### Risk: Real-time Messaging Scalability
+**Challenge**: Real-time messaging features may not scale well with increased user activity
+**Mitigation**:
+- Leverage Supabase's built-in realtime subscriptions initially
+- Implement message throttling to prevent spam
+- Use connection pooling and efficient database queries
+- Plan migration path to dedicated messaging service if needed
+- Monitor connection counts and optimize subscription management
+
+## MVP Development Strategy
+
+### Risk: Feature Scope Creep
+**Challenge**: Attempting to build too many features in MVP, delaying launch
+**Mitigation**:
+- Strictly prioritize core user journey: post car → find car → communicate → transact  
+- Defer nice-to-have features like advanced admin tools, detailed analytics
+- Use feature flags to enable/disable non-essential features
+- Set hard timeline limits for MVP phase (12-16 weeks maximum)
+- Regular stakeholder reviews to maintain scope discipline
+
+### Risk: Over-Engineering Early Architecture
+**Challenge**: Building complex systems before understanding actual usage patterns
+**Mitigation**:
+- Start with simple, proven solutions (Supabase, Next.js, Vercel)
+- Use managed services to reduce infrastructure complexity
+- Build for current needs, not hypothetical future scale
+- Implement monitoring early to understand actual usage patterns
+- Plan refactoring milestones based on growth metrics
+
+### Risk: Insufficient User Validation
+**Challenge**: Building features users don't actually want or need
+**Mitigation**:
+- Conduct user interviews with modified car enthusiasts before development
+- Create landing page to gauge interest and collect email signups
+- Build core features first and validate with beta users
+- Implement basic analytics to track feature usage from day one
+- Plan regular user feedback sessions throughout development
+
+## Resource and Timeline Constraints
+
+### Risk: Development Team Bandwidth
+**Challenge**: Limited development resources may lead to rushed implementation or missed deadlines
+**Mitigation**:
+- Use proven tech stack to minimize learning curve
+- Leverage existing UI component libraries and templates
+- Prioritize features that provide maximum user value
+- Plan for parallel development where possible (frontend/backend)
+- Build in buffer time for testing and bug fixes (20% of development time)
+
+### Risk: Third-Party Service Dependencies
+**Challenge**: Relying on external services that may fail, change pricing, or deprecate features
+**Mitigation**:
+- Choose established services with good track records (Supabase, Vercel)
+- Implement proper error handling for all external API calls
+- Have fallback plans for critical dependencies
+- Monitor service status and have alternative providers identified
+- Design abstractions to make service switching easier
+
+### Risk: Regulatory and Legal Compliance
+**Challenge**: Automotive marketplaces may have specific legal requirements or regulations
+**Mitigation**:
+- Research relevant regulations for online vehicle sales platforms
+- Implement clear terms of service and privacy policy
+- Ensure proper data protection practices (GDPR compliance)
+- Consult with legal counsel before launch
+- Plan for state-specific requirements in vehicle sales
+
+## Market and Business Risks
+
+### Risk: Insufficient Initial User Base
+**Challenge**: Marketplace platforms require critical mass of both buyers and sellers
+**Mitigation**:
+- Start with focused geographic regions (specific states or metropolitan areas)
+- Target specific car communities (e.g., specific makes/models initially)
+- Implement referral programs and community engagement strategies
+- Partner with existing car clubs and enthusiast groups
+- Create valuable content (guides, market insights) to attract users
+
+### Risk: Competition from Established Platforms
+**Challenge**: Competing with Craigslist, Facebook Marketplace, and specialized car sites
+**Mitigation**:
+- Focus on superior user experience for modified car segment
+- Provide features specifically designed for enthusiasts (modification tracking, detailed specs)
+- Build strong community features and engagement
+- Emphasize security and safety features
+- Develop unique value propositions (AI features, market insights)
+
+## Post-MVP Growth Planning
+
+### Technical Debt Management
+- Allocate 20% of development time to refactoring and optimization
+- Conduct regular code reviews and architecture assessments
+- Plan major refactoring milestones based on user growth
+- Implement comprehensive testing strategy before scaling
+
+### Scaling Preparation
+- Monitor key performance metrics from launch
+- Plan infrastructure scaling milestones (10K, 50K, 100K users)
+- Design feature rollout strategy for version 2 and 3 capabilities
+- Build team expansion plans for different growth scenarios
+
+# Appendix  
+
+## Research Findings
+
+### Market Analysis
+**Target Market Size**: The modified car market represents approximately 15-20% of the broader automotive enthusiast market, with an estimated 5-7 million active participants in the United States. This includes weekend builders, professional shops, and serious hobbyists who regularly buy, sell, and modify vehicles.
+
+**Competitive Landscape Analysis**:
+- **General Platforms (Craigslist, Facebook Marketplace)**: High volume but poor automotive-specific features, limited modification documentation, security concerns
+- **Traditional Auto Sites (AutoTrader, Cars.com)**: Focus on dealerships and standard vehicles, poor support for modifications and project cars  
+- **Enthusiast Forums (brand-specific communities)**: Strong community but limited commerce features, fragmented across multiple platforms
+- **Specialized Sites (BringATrailer for classics)**: High-end focus, not suitable for project cars and daily drivers
+
+**Key Differentiation Opportunities**:
+- Detailed modification tracking and documentation
+- Search filters specific to modified cars (engine swaps, performance mods, etc.)
+- Community features that build trust among enthusiasts
+- Eventually, AI-powered features for vehicle analysis and pricing
+
+### User Research Insights
+**Primary User Pain Points**:
+1. **Information Gap**: Difficulty conveying the extent and quality of modifications in standard listing formats
+2. **Trust Issues**: Concerns about vehicle condition and modification quality when buying sight unseen
+3. **Discovery Problems**: Hard to find specific types of modified vehicles using generic automotive search tools
+4. **Communication Barriers**: Need for detailed technical discussions that don't fit standard messaging
+
+**User Behavior Patterns**:
+- Heavy reliance on photos and detailed descriptions
+- Preference for direct communication with sellers
+- Willingness to travel significant distances for the right vehicle
+- Strong community connections and referral networks
+- Price sensitivity balanced with quality expectations
+
+### Technical Research
+
+**Performance Benchmarks**:
+- **Image Loading**: Users expect image galleries to load within 2-3 seconds
+- **Search Results**: Tolerance for search delays decreases significantly after 1 second
+- **Mobile Usage**: 60-70% of initial browsing occurs on mobile devices
+- **Session Duration**: Average session length for automotive marketplace browsing is 8-12 minutes
+
+**Technology Stack Justification**:
+- **Next.js**: Chosen for excellent SEO capabilities, server-side rendering for fast initial page loads, and strong ecosystem
+- **Supabase**: Provides PostgreSQL database with real-time capabilities, authentication, and file storage in a single platform
+- **Tailwind CSS**: Enables rapid UI development with consistent design system and responsive layouts
+- **Vercel**: Seamless deployment integration with Next.js and global CDN capabilities
+
+## Technical Specifications
+
+### Database Schema Details
+```sql
+-- Indexes for performance optimization
+CREATE INDEX idx_listings_make_model ON listings(make, model);
+CREATE INDEX idx_listings_year ON listings(year);
+CREATE INDEX idx_listings_price ON listings(price);
+CREATE INDEX idx_listings_location ON listings(location);
+CREATE INDEX idx_listings_status ON listings(status);
+CREATE INDEX idx_listings_created_at ON listings(created_at);
+CREATE INDEX idx_modifications_listing_id ON modifications(listing_id);
+CREATE INDEX idx_messages_listing_sender ON messages(listing_id, sender_id);
+CREATE INDEX idx_favorites_user_listing ON favorites(user_id, listing_id);
+
+-- Full-text search setup
+ALTER TABLE listings ADD COLUMN search_vector tsvector;
+CREATE INDEX idx_listings_search ON listings USING gin(search_vector);
+
+-- Trigger for updating search vector
+CREATE OR REPLACE FUNCTION update_listing_search_vector()
+RETURNS trigger AS $$
+BEGIN
+  NEW.search_vector := to_tsvector('english', 
+    coalesce(NEW.title, '') || ' ' ||
+    coalesce(NEW.make, '') || ' ' ||
+    coalesce(NEW.model, '') || ' ' ||
+    coalesce(NEW.description, '')
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_listings_search_vector
+  BEFORE INSERT OR UPDATE ON listings
+  FOR EACH ROW EXECUTE FUNCTION update_listing_search_vector();
+```
+
+### API Endpoints Specification
+```typescript
+// Core API routes structure
+/api/auth/*              // Authentication endpoints (handled by Supabase)
+/api/listings            // GET: List listings with filters, POST: Create listing
+/api/listings/[id]       // GET: Get listing details, PUT: Update, DELETE: Delete
+/api/listings/[id]/images // POST: Upload images, DELETE: Remove images
+/api/messages            // GET: List conversations, POST: Send message
+/api/messages/[id]       // GET: Get conversation thread
+/api/offers              // GET: List offers, POST: Create offer
+/api/offers/[id]         // PUT: Accept/reject offer
+/api/favorites           // GET: List favorites, POST: Add favorite, DELETE: Remove
+/api/admin/users         // Admin user management endpoints
+/api/admin/listings      // Admin listing management endpoints
+```
+
+### Security Implementation Details
+```typescript
+// Row Level Security (RLS) policies examples
+-- Users can only see their own profile data
+CREATE POLICY "Users can view own profile" ON profiles
+  FOR SELECT USING (auth.uid() = id);
+
+-- Users can only edit their own listings
+CREATE POLICY "Users can edit own listings" ON listings
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Users can only see messages they're involved in
+CREATE POLICY "Users can view own messages" ON messages
+  FOR SELECT USING (
+    auth.uid() = sender_id OR 
+    auth.uid() = recipient_id
+  );
+
+-- Public can view active listings
+CREATE POLICY "Public can view active listings" ON listings
+  FOR SELECT USING (status = 'active');
+```
+
+### Image Handling Specifications
+- **Supported Formats**: JPEG, PNG, WebP
+- **Maximum File Size**: 5MB per image
+- **Maximum Images per Listing**: 10 images
+- **Image Processing**: Automatic compression and resizing on upload
+- **Thumbnail Generation**: Multiple sizes (thumbnail, medium, large, original)
+- **Storage Structure**: `/listings/{listing_id}/{image_id}.{extension}`
+- **CDN Integration**: Automatic CDN distribution through Supabase Storage
+
+### Monitoring and Analytics Setup
+```typescript
+// Key metrics to track
+interface PlatformMetrics {
+  // User engagement
+  daily_active_users: number;
+  weekly_active_users: number;
+  user_retention_rate: number;
+  
+  // Listing metrics
+  new_listings_per_day: number;
+  listing_view_count: number;
+  listing_to_inquiry_conversion: number;
+  
+  // Transaction metrics
+  listings_marked_sold: number;
+  average_time_to_sale: number;
+  message_response_rate: number;
+  
+  // Technical metrics
+  page_load_times: number[];
+  search_response_times: number[];
+  error_rates: number;
+  uptime_percentage: number;
+}
+```
+
+This comprehensive PRD provides a complete blueprint for developing the Project Car Marketplace, with clear technical specifications, development phases, and risk mitigation strategies. The document balances detailed technical requirements with practical development considerations, ensuring the project can be successfully executed while maintaining focus on user value and market needs.
+</PRD>
