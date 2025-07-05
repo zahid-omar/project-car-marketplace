@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     console.error('Auth test error:', error);
     return NextResponse.json({ 
       error: 'Test failed', 
-      details: error.message,
+      details: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }
