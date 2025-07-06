@@ -1,56 +1,81 @@
+import { NextRequest, NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  console.log('=== Auth Test Endpoint ===');
+  
   try {
-    console.log('=== Auth Test Endpoint ===');
-    
     const supabase = createRouteHandlerClient({ cookies });
     
-    // Get session
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    console.log('Session check:', {
-      hasSession: !!session,
-      sessionError: sessionError?.message,
-      userId: session?.user?.id,
-      userEmail: session?.user?.email,
-      accessToken: session?.access_token ? 'present' : 'missing'
-    });
+    // Try to get the current session
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-    // Get user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
-    console.log('User check:', {
-      hasUser: !!user,
-      userError: userError?.message,
-      userId: user?.id,
-      userEmail: user?.email
-    });
+    if (sessionError) {
+      console.log('Session error:', sessionError);
+      return NextResponse.json({ 
+        error: 'Failed to get session', 
+        details: sessionError.message 
+      }, { status: 500 });
+    }
+
+    // Try to get the current user
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.log('User error:', userError);
+      return NextResponse.json({ 
+        error: 'Failed to get user', 
+        details: userError.message 
+      }, { status: 500 });
+    }
+
+    // Test database connection by getting user profile
+    let profile = null;
+    if (user) {
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.log('Profile error:', profileError);
+      } else {
+        profile = profileData;
+      }
+    }
 
     return NextResponse.json({
-      session: {
-        exists: !!session,
-        userId: session?.user?.id,
-        email: session?.user?.email,
-        error: sessionError?.message
-      },
-      user: {
-        exists: !!user,
-        userId: user?.id,
-        email: user?.email,
-        error: userError?.message
-      },
-      timestamp: new Date().toISOString()
+      success: true,
+      authenticated: !!session,
+      user: user ? {
+        id: user.id,
+        email: user.email,
+        created_at: user.created_at,
+      } : null,
+      profile,
+      session: session ? {
+        expires_at: session.expires_at,
+        expires_in: session.expires_in,
+      } : null,
+      timestamp: new Date().toISOString(),
     });
 
-  } catch (error) {
-    console.error('Auth test error:', error);
-    return NextResponse.json({ 
-      error: 'Test failed', 
-      details: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString()
+  } catch (error: any) {
+    console.log('Auth test error:', error);
+    return NextResponse.json({
+      error: 'Authentication test failed',
+      details: error.message,
+      timestamp: new Date().toISOString(),
     }, { status: 500 });
   }
 } 
