@@ -177,6 +177,8 @@ export default function ListingPage({ params }: ListingPageProps) {
 
   // Social sharing functions
   const handleShareFacebook = () => {
+    if (!listing) return;
+    
     const url = encodeURIComponent(window.location.href);
     const title = encodeURIComponent(`${listing.year} ${listing.make} ${listing.model} - ${formatPrice(listing.price)}`);
     const description = encodeURIComponent(`Check out this ${listing.year} ${listing.make} ${listing.model} for sale!`);
@@ -186,6 +188,8 @@ export default function ListingPage({ params }: ListingPageProps) {
   };
 
   const handleShareWhatsApp = () => {
+    if (!listing) return;
+    
     const url = window.location.href;
     const message = encodeURIComponent(
       `Check out this ${listing.year} ${listing.make} ${listing.model} for sale! 🚗\n` +
