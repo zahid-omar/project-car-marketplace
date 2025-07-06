@@ -98,7 +98,7 @@ export default function SearchInput({
         .limit(3);
 
       if (makes) {
-        const uniqueMakes = [...new Set(makes.map(m => m.make))];
+        const uniqueMakes = Array.from(new Set(makes.map(m => m.make)));
         uniqueMakes.forEach(make => {
           suggestions.push({
             type: 'make',
@@ -117,7 +117,7 @@ export default function SearchInput({
         .limit(3);
 
       if (models) {
-        const uniqueModels = [...new Set(models.map(m => `${m.make} ${m.model}`))];
+        const uniqueModels = Array.from(new Set(models.map(m => `${m.make} ${m.model}`)));
         uniqueModels.forEach(model => {
           suggestions.push({
             type: 'model',
@@ -135,7 +135,7 @@ export default function SearchInput({
         .limit(3);
 
       if (modifications) {
-        const uniqueMods = [...new Set(modifications.map(m => m.name))];
+        const uniqueMods = Array.from(new Set(modifications.map(m => m.name)));
         uniqueMods.forEach(mod => {
           suggestions.push({
             type: 'modification',

@@ -607,7 +607,7 @@ export class QueryOptimizer {
     // Suggest indexes for conditions
     if (query.conditions) {
       const fields = query.conditions.map(c => c.field);
-      const uniqueFields = [...new Set(fields)];
+      const uniqueFields = Array.from(new Set(fields));
       
       if (uniqueFields.length > 1) {
         suggestions.push(`Composite index on (${uniqueFields.join(', ')}) for filter combinations`);
@@ -635,7 +635,7 @@ export class QueryOptimizer {
       }
     }
 
-    return [...new Set(suggestions)]; // Remove duplicates
+    return Array.from(new Set(suggestions)); // Remove duplicates
   }
 
   /**

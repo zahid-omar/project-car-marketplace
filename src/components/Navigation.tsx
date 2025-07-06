@@ -110,7 +110,7 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
 
       if (themeMenuOpen && themeMenuRef.current) {
         const menuItems = themeMenuRef.current.querySelectorAll('button');
-        const currentIndex = Array.from(menuItems).indexOf(document.activeElement as Element);
+        const currentIndex = Array.from(menuItems).indexOf(document.activeElement as HTMLButtonElement);
         
         if (event.key === 'ArrowDown') {
           event.preventDefault();
@@ -233,7 +233,7 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
                 <>
                   {/* Notifications */}
                   <div className="hidden sm:block">
-                    <NotificationDropdown userId={user.id} className="text-md-sys-on-surface" />
+                    <NotificationDropdown className="text-md-sys-on-surface" />
                   </div>
 
                   {/* Theme Toggle */}
@@ -502,7 +502,7 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
 
                   {/* Mobile Notifications */}
                   <div className="px-4 py-3">
-                    <NotificationDropdown userId={user.id} />
+                    <NotificationDropdown />
                   </div>
                 </>
               )}

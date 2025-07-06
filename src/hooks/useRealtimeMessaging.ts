@@ -534,7 +534,7 @@ export function useRealtimeMessaging({
       // Update local state immediately
       setState(prev => {
         const updatedConversations = prev.conversations.map(conversation => {
-          const conversationKey = `${conversation.listing_id}-${conversation.other_participant_id}`;
+          const conversationKey = `${conversation.listing_id}-${conversation.other_participant?.id}`;
           if (conversationIds.includes(conversationKey)) {
             return { ...conversation, is_archived: archive };
           }
@@ -568,7 +568,7 @@ export function useRealtimeMessaging({
       // Update local state immediately by removing deleted conversations
       setState(prev => {
         const updatedConversations = prev.conversations.filter(conversation => {
-          const conversationKey = `${conversation.listing_id}-${conversation.other_participant_id}`;
+          const conversationKey = `${conversation.listing_id}-${conversation.other_participant?.id}`;
           return !conversationIds.includes(conversationKey);
         });
 

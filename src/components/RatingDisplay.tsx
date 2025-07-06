@@ -97,7 +97,7 @@ export default function RatingDisplay({
       >
         <div 
           className="animate-pulse bg-surface-container rounded w-16 h-4"
-          aria-hidden="true"
+          aria-hidden={true}
         />
         <span className="sr-only">Loading rating data...</span>
       </div>
@@ -109,15 +109,15 @@ export default function RatingDisplay({
       <div 
         className={`flex items-center space-x-1 text-on-surface-variant ${className}`}
         role="img"
-        aria-label="No reviews available"
+                aria-label="No reviews available"
       >
-        <MaterialYouIcon 
-          name="star-outline" 
+        <MaterialYouIcon
+          name="star-outline"
           size={getMaterialYouIconSize()}
           className="text-on-surface-variant/60"
-          aria-hidden="true"
-        />
-        <span className={`${getTextSize(size)}`} aria-hidden="true">
+          aria-hidden={true}
+                  />
+          <span className={`${getTextSize(size)}`} aria-hidden={true}>
           No reviews
         </span>
       </div>
@@ -140,7 +140,7 @@ export default function RatingDisplay({
               name={isFilled ? "star" : "star-outline"}
               size={getMaterialYouIconSize()}
               className={isFilled ? 'text-yellow-500' : 'text-on-surface-variant/40'}
-              aria-hidden="true"
+              aria-hidden={true}
               aria-label={isFilled ? `Star ${star}: Filled` : `Star ${star}: Empty`}
             />
           )

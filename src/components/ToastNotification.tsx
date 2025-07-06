@@ -89,13 +89,13 @@ export default function ToastNotification({ toast, onDismiss }: ToastNotificatio
       case 'success':
         return <MaterialYouIcon name="check-circle" className="text-green-500" size="md" />;
       case 'error':
-        return <MaterialYouIcon name="error" className="text-[var(--md-sys-color-error)]" size="md" />;
+        return <MaterialYouIcon name="exclamation-triangle" className="text-[var(--md-sys-color-error)]" size="md" />;
       case 'warning':
-        return <MaterialYouIcon name="warning" className="text-orange-500" size="md" />;
+        return <MaterialYouIcon name="exclamation-triangle" className="text-orange-500" size="md" />;
       case 'info':
-        return <MaterialYouIcon name="info" className="text-[var(--md-sys-color-primary)]" size="md" />;
+        return <MaterialYouIcon name="information-circle" className="text-[var(--md-sys-color-primary)]" size="md" />;
       default:
-        return <MaterialYouIcon name="info" className="text-[var(--md-sys-color-on-surface-variant)]" size="md" />;
+        return <MaterialYouIcon name="information-circle" className="text-[var(--md-sys-color-on-surface-variant)]" size="md" />;
     }
   };
 

@@ -45,7 +45,7 @@ export default function ConversationList({
         const query = searchQuery.toLowerCase();
         const matchesParticipant = conv.other_participant?.display_name?.toLowerCase().includes(query);
         const matchesListing = `${conv.listing?.year} ${conv.listing?.make} ${conv.listing?.model}`.toLowerCase().includes(query);
-        const matchesLastMessage = conv.last_message_text?.toLowerCase().includes(query);
+        const matchesLastMessage = conv.last_message?.message_text?.toLowerCase().includes(query);
         
         if (!matchesParticipant && !matchesListing && !matchesLastMessage) {
           return false;
@@ -67,19 +67,19 @@ export default function ConversationList({
 
     // Sort conversations
     filtered.sort((a, b) => {
-      switch (sort) {
+            switch (sort) {
         case 'oldest':
-          return new Date(a.last_message_created_at || a.created_at).getTime() - 
-                 new Date(b.last_message_created_at || b.created_at).getTime();
+          return new Date(a.last_message?.created_at || a.created_at).getTime() -
+                 new Date(b.last_message?.created_at || b.created_at).getTime();
         case 'unread':
           if (a.unread_count !== b.unread_count) {
             return b.unread_count - a.unread_count;
           }
           // Fall through to recent for secondary sort
-        case 'recent':
+                case 'recent':
         default:
-          return new Date(b.last_message_created_at || b.created_at).getTime() - 
-                 new Date(a.last_message_created_at || a.created_at).getTime();
+          return new Date(b.last_message?.created_at || b.created_at).getTime() -
+                 new Date(a.last_message?.created_at || a.created_at).getTime();
         case 'name':
           return (a.other_participant?.display_name || '').localeCompare(
             b.other_participant?.display_name || ''
@@ -145,7 +145,7 @@ export default function ConversationList({
   };
 
   function getConversationKey(conversation: ConversationWithDetails): string {
-    return `${conversation.listing_id}-${conversation.other_participant_id}`;
+    return `${conversation.listing_id}-${conversation.other_participant.id}`;
   }
 
   if (loading) {
@@ -274,9 +274,9 @@ export default function ConversationList({
                   "focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20"
                 )}
                 title={selectedConversations.size === filteredAndSortedConversations.length ? 'Deselect all' : 'Select all'}
-              >
-                <MaterialYouIcon 
-                  name={selectedConversations.size === filteredAndSortedConversations.length ? "check_box" : "check_box_outline_blank"} 
+                            >
+                <MaterialYouIcon
+                  name={selectedConversations.size === filteredAndSortedConversations.length ? "checkbox" : "checkbox-outline"} 
                   size="sm" 
                   className="mr-2" 
                 />
@@ -314,9 +314,9 @@ export default function ConversationList({
                 <ConversationItem
                   key={conversationKey}
                   conversation={conversation}
-                  conversationKey={conversationKey}
-                  isActive={activeConversation?.listing_id === conversation.listing_id && 
-                            activeConversation?.other_participant_id === conversation.other_participant_id}
+                                    conversationKey={conversationKey}
+                  isActive={activeConversation?.listing_id === conversation.listing_id &&
+                            activeConversation?.other_participant.id === conversation.other_participant.id}
                   isSelected={selectedConversations.has(conversationKey)}
                   onSelect={() => handleSelectConversation(conversationKey)}
                   onClick={() => onConversationSelect(conversation)}
@@ -401,9 +401,9 @@ function ConversationItem({
               "p-1 rounded-3xl transition-all duration-200",
               showActions || isSelected ? 'opacity-100' : 'opacity-0'
             )}
-          >
-            <MaterialYouIcon 
-              name={isSelected ? "check_box" : "check_box_outline_blank"} 
+                    >
+            <MaterialYouIcon
+              name={isSelected ? "checkbox" : "checkbox-outline"} 
               size="sm" 
               className={isSelected ? "text-md-sys-primary" : "text-md-sys-on-surface-variant"} 
             />
@@ -434,13 +434,13 @@ function ConversationItem({
                 {conversation.other_participant?.display_name || 'Unknown User'}
               </p>
               {isFromCurrentUser && (
-                <MaterialYouIcon name="arrow-up" size="xs" className="text-md-sys-primary" title="You sent the last message" />
+                <MaterialYouIcon name="arrow-up" size="xs" className="text-md-sys-primary" aria-label="You sent the last message" />
               )}
               {!isFromCurrentUser && conversation.unread_count > 0 && (
-                <MaterialYouIcon name="arrow-down" size="xs" className="text-md-sys-secondary" title="New message received" />
+                <MaterialYouIcon name="arrow-down" size="xs" className="text-md-sys-secondary" aria-label="New message received" />
               )}
               {isArchived && (
-                <MaterialYouIcon name="archive" size="xs" className="text-md-sys-tertiary" title="Archived" />
+                <MaterialYouIcon name="archive" size="xs" className="text-md-sys-tertiary" aria-label="Archived" />
               )}
             </div>
             
@@ -486,15 +486,15 @@ function ConversationItem({
           {/* Last Message */}
           <p className="text-md-body-medium text-md-sys-on-surface mb-2">
             {isFromCurrentUser && <span className="text-md-sys-on-surface-variant">You: </span>}
-            {conversation.last_message_text ? truncateText(conversation.last_message_text, 60) : 'No messages yet'}
+            {conversation.last_message?.message_text ? truncateText(conversation.last_message.message_text, 60) : 'No messages yet'}
           </p>
 
           {/* Timestamp */}
           <div className="flex items-center text-md-label-medium text-md-sys-on-surface-variant">
-            <MaterialYouIcon name="schedule" size="xs" className="mr-2" />
+                        <MaterialYouIcon name="schedule" size="xs" className="mr-2" />
             <span>
-              {conversation.last_message_created_at ? formatDistanceToNow(new Date(conversation.last_message_created_at), { 
-                addSuffix: true 
+              {conversation.last_message?.created_at ? formatDistanceToNow(new Date(conversation.last_message.created_at), {
+                addSuffix: true
               }) : 'Just now'}
             </span>
           </div>

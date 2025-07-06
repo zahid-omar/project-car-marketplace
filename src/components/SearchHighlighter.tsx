@@ -169,14 +169,61 @@ export default function SearchHighlighter({
     const truncatedText = text.slice(startPos, startPos + maxLength);
     
     // Re-run highlighting on truncated text
-    const truncatedHighlighter = new SearchHighlighter({
-      text: truncatedText,
-      searchQuery,
-      caseSensitive,
-      wholeWord
-    });
-    
-    return truncatedHighlighter.highlightedSegments;
+    if (!searchQuery?.trim() || !truncatedText) {
+      return [{ text: truncatedText, highlighted: false }] as HighlightSegment[];
+    }
+
+    // Re-create highlighting logic for truncated text
+    const searchTerms = searchQuery
+      .trim()
+      .split(/\s+/)
+      .filter(term => term.length > 0)
+      .map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+    if (searchTerms.length === 0) {
+      return [{ text: truncatedText, highlighted: false }] as HighlightSegment[];
+    }
+
+    const flags = caseSensitive ? 'g' : 'gi';
+    const wordBoundary = wholeWord ? '\\b' : '';
+    const pattern = `${wordBoundary}(${searchTerms.join('|')})${wordBoundary}`;
+    const regex = new RegExp(pattern, flags);
+
+    const segments: HighlightSegment[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(truncatedText)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({
+          text: truncatedText.slice(lastIndex, match.index),
+          highlighted: false
+        });
+      }
+
+      const matchedTerm = match[1];
+      const relevance = calculateRelevance(matchedTerm, searchTerms);
+      segments.push({
+        text: matchedTerm,
+        highlighted: true,
+        relevance
+      });
+
+      lastIndex = regex.lastIndex;
+
+      if (match.index === regex.lastIndex) {
+        regex.lastIndex++;
+      }
+    }
+
+    if (lastIndex < truncatedText.length) {
+      segments.push({
+        text: truncatedText.slice(lastIndex),
+        highlighted: false
+      });
+    }
+
+    return segments;
   }, [highlightedSegments, maxLength, text, searchQuery, caseSensitive, wholeWord]);
 
   const getHighlightClass = (relevance?: number): string => {
@@ -296,11 +343,11 @@ export function MultiFieldHighlighter({
               caseSensitive={caseSensitive}
               wholeWord={wholeWord}
               maxLength={maxFieldLength}
-              className={field.matches > 0 ? 'text-gray-900' : 'text-gray-600'}
+              className={field.relevance > 0 ? 'text-gray-900' : 'text-gray-600'}
             />
             {field.relevance > 0 && (
               <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {field.matches} match{field.matches !== 1 ? 'es' : ''}
+                {Math.round(field.relevance)} match{Math.round(field.relevance) !== 1 ? 'es' : ''}
               </span>
             )}
           </div>

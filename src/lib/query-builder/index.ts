@@ -28,17 +28,33 @@ export {
 } from './tests/QueryBuilderTests';
 
 // Utility functions for common operations
-export const createQueryBuilder = () => QueryBuilderHelpers.create();
+export const createQueryBuilder = () => {
+  const { QueryBuilderHelpers } = require('./QueryBuilderHelpers');
+  return QueryBuilderHelpers.create();
+};
 
-export const createCarSearchQuery = (params: any) => CommonQueryPatterns.carSearch(params);
+export const createCarSearchQuery = (params: any) => {
+  const { CommonQueryPatterns } = require('./QueryBuilderHelpers');
+  return CommonQueryPatterns.carSearch(params);
+};
 
-export const createAdvancedSearchQuery = (params: any) => CommonQueryPatterns.advancedSearch(params);
+export const createAdvancedSearchQuery = (params: any) => {
+  const { CommonQueryPatterns } = require('./QueryBuilderHelpers');
+  return CommonQueryPatterns.advancedSearch(params);
+};
 
-export const optimizeQuery = (query: ComplexQuery) => QueryOptimizer.optimizeQuery(query);
+export const optimizeQuery = (query: any) => {
+  const { QueryOptimizer } = require('./QueryBuilderHelpers');
+  return QueryOptimizer.optimizeQuery(query);
+};
 
-export const analyzeQueryComplexity = (query: ComplexQuery) => QueryOptimizer.analyzeComplexity(query);
+export const analyzeQueryComplexity = (query: any) => {
+  const { QueryOptimizer } = require('./QueryBuilderHelpers');
+  return QueryOptimizer.analyzeComplexity(query);
+};
 
-export const validateQuerySyntax = (query: ComplexQuery, supabaseClient: any) => {
+export const validateQuerySyntax = (query: any, supabaseClient: any) => {
+  const { SearchQueryBuilder } = require('./SearchQueryBuilder');
   const builder = new SearchQueryBuilder(supabaseClient);
   return builder.validateQuery(query);
 };
@@ -191,21 +207,28 @@ export const PERFORMANCE_TIPS = {
 export const VERSION = '1.0.0';
 
 // Default export for convenience
-export default {
-  SearchQueryBuilder,
-  QueryBuilderHelpers,
-  CommonQueryPatterns,
-  QueryOptimizer,
-  createQueryBuilder,
-  createCarSearchQuery,
-  createAdvancedSearchQuery,
-  optimizeQuery,
-  analyzeQueryComplexity,
-  QUERY_LIMITS,
-  SUPPORTED_OPERATORS,
-  TEXT_SEARCH_TYPES,
-  TEXT_SEARCH_CONFIGS,
-  QUICK_START_GUIDE,
-  PERFORMANCE_TIPS,
-  VERSION
-}; 
+const createDefault = () => {
+  const { SearchQueryBuilder } = require('./SearchQueryBuilder');
+  const { QueryBuilderHelpers, CommonQueryPatterns, QueryOptimizer } = require('./QueryBuilderHelpers');
+  
+  return {
+    SearchQueryBuilder,
+    QueryBuilderHelpers,
+    CommonQueryPatterns,
+    QueryOptimizer,
+    createQueryBuilder,
+    createCarSearchQuery,
+    createAdvancedSearchQuery,
+    optimizeQuery,
+    analyzeQueryComplexity,
+    QUERY_LIMITS,
+    SUPPORTED_OPERATORS,
+    TEXT_SEARCH_TYPES,
+    TEXT_SEARCH_CONFIGS,
+    QUICK_START_GUIDE,
+    PERFORMANCE_TIPS,
+    VERSION
+  };
+};
+
+export default createDefault(); 

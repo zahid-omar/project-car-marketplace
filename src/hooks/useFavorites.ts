@@ -317,12 +317,27 @@ export function useFavorites(): UseFavoritesReturn {
         .eq('id', favoriteId)
         .single();
 
-      if (error || !data || !data.listing) {
+      if (error || !data) {
         console.error('[FAVORITES] Error fetching favorite details:', error);
         return null;
       }
 
-      return data as FavoriteWithListing;
+      // Handle the case where listing might be an array or null
+      let listingData: any = data.listing;
+      if (Array.isArray(listingData)) {
+        listingData = listingData[0] || null;
+      }
+
+      if (!listingData) {
+        console.error('[FAVORITES] No listing data found');
+        return null;
+      }
+
+      return {
+        id: data.id,
+        created_at: data.created_at,
+        listing: listingData
+      } as FavoriteWithListing;
     } catch (err) {
       console.error('[FAVORITES] Error in fetchFavoriteDetails:', err);
       return null;

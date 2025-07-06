@@ -341,11 +341,11 @@ export default function MessageThread({
           <div className="relative mb-4">
             <label htmlFor="message-search" className="sr-only">
               Search messages by text content
-            </label>
-            <MaterialYouIcon 
-              name="Search" 
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-md-sys-on-surface-variant" 
-              aria-hidden="true"
+                        </label>
+                        <MaterialYouIcon
+              name="search"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-md-sys-on-surface-variant"
+              aria-hidden={true}
             />
             <input
               id="message-search"
@@ -440,7 +440,7 @@ export default function MessageThread({
                   aria-label={`Go to previous search result (${currentSearchIndex} of ${searchResults.length})`}
                   className="p-1 rounded-full text-md-sys-on-surface-variant hover:text-md-sys-on-surface hover:bg-md-sys-surface-container-high disabled:text-md-sys-on-surface-variant/50 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-sys-primary/20"
                 >
-                  <MaterialYouIcon name="chevron-up" className="h-4 w-4" aria-hidden="true" />
+                  <MaterialYouIcon name="chevron-up" className="h-4 w-4" aria-hidden={true} />
                 </button>
                 <button
                   onClick={() => navigateSearchResults('next')}
@@ -448,7 +448,7 @@ export default function MessageThread({
                   aria-label={`Go to next search result (${currentSearchIndex + 2} of ${searchResults.length})`}
                   className="p-1 rounded-full text-md-sys-on-surface-variant hover:text-md-sys-on-surface hover:bg-md-sys-surface-container-high disabled:text-md-sys-on-surface-variant/50 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-sys-primary/20"
                 >
-                  <MaterialYouIcon name="chevron-down" className="h-4 w-4" aria-hidden="true" />
+                  <MaterialYouIcon name="chevron-down" className="h-4 w-4" aria-hidden={true} />
                 </button>
               </div>
             </div>
@@ -456,7 +456,7 @@ export default function MessageThread({
 
           {searchFilters.query.trim() && searchResults.length === 0 && !searching && (
             <div className="text-center py-4 text-md-sys-on-surface-variant" role="status">
-              <MaterialYouIcon name="chat-bubble-outline" className="h-8 w-8 mx-auto mb-2 text-md-sys-on-surface-variant" aria-hidden="true" />
+              <MaterialYouIcon name="chat-bubble-outline" className="h-8 w-8 mx-auto mb-2 text-md-sys-on-surface-variant" aria-hidden={true} />
               <p className="text-md-body-medium">No messages found matching your search</p>
             </div>
           )}
@@ -506,7 +506,7 @@ export default function MessageThread({
                     />
                   ) : (
                     <div className="h-6 w-6 rounded-full bg-md-sys-surface-container-high flex items-center justify-center">
-                      <MaterialYouIcon name="user" className="h-3 w-3 text-md-sys-on-surface-variant" aria-hidden="true" />
+                      <MaterialYouIcon name="user" className="h-3 w-3 text-md-sys-on-surface-variant" aria-hidden={true} />
                     </div>
                   )}
                   <span className="ml-2 text-md-label-medium font-medium text-md-sys-on-surface">
@@ -533,7 +533,7 @@ export default function MessageThread({
                     aria-label={`Message actions for ${message.sender.display_name}'s message`}
                     className="p-1 text-md-sys-on-surface-variant hover:text-md-sys-on-surface hover:bg-md-sys-surface-container-high transition-colors rounded-full opacity-0 group-hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-sys-primary/20"
                   >
-                    <MaterialYouIcon name="ellipsis-vertical" className="h-3 w-3" aria-hidden="true" />
+                    <MaterialYouIcon name="ellipsis-vertical" className="h-3 w-3" aria-hidden={true} />
                   </button>
                   
                   {showDropdown && (
@@ -561,7 +561,7 @@ export default function MessageThread({
                           role="menuitem"
                           className="flex items-center w-full px-3 py-2 text-md-body-medium text-md-sys-on-surface hover:bg-md-sys-surface-container-high rounded-t-3xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-sys-primary/20"
                         >
-                          <MaterialYouIcon name="reply" className="h-3 w-3 mr-2" aria-hidden="true" />
+                          <MaterialYouIcon name="reply" className="h-3 w-3 mr-2" aria-hidden={true} />
                           Reply
                         </button>
                         <button
@@ -573,7 +573,7 @@ export default function MessageThread({
                           role="menuitem"
                           className="flex items-center w-full px-3 py-2 text-md-body-medium text-md-sys-error hover:bg-md-sys-error-container/20 rounded-b-3xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-sys-error/20"
                         >
-                          <MaterialYouIcon name="flag" className="h-3 w-3 mr-2" aria-hidden="true" />
+                          <MaterialYouIcon name="flag" className="h-3 w-3 mr-2" aria-hidden={true} />
                           Report
                         </button>
                       </div>
@@ -623,7 +623,7 @@ export default function MessageThread({
                   role="status"
                   aria-label="This message is under review by moderators"
                 >
-                  <MaterialYouIcon name="flag" className="h-3 w-3 inline mr-1" aria-hidden="true" />
+                  <MaterialYouIcon name="flag" className="h-3 w-3 inline mr-1" aria-hidden={true} />
                   Under review
                 </div>
               )}
@@ -637,12 +637,12 @@ export default function MessageThread({
                 <>
                   {message.is_read ? (
                     <div className="flex items-center" role="status" aria-label={`Message read ${message.read_at ? formatDistanceToNow(new Date(message.read_at), { addSuffix: true }) : ''}`}>
-                      <MaterialYouIcon name="eye" className="h-3 w-3 mr-1" aria-hidden="true" />
+                      <MaterialYouIcon name="eye" className="h-3 w-3 mr-1" aria-hidden={true} />
                       <span>Read {message.read_at ? formatDistanceToNow(new Date(message.read_at), { addSuffix: true }) : ''}</span>
                     </div>
                   ) : (
                     <div className="flex items-center" role="status" aria-label="Message sent but not yet read">
-                      <MaterialYouIcon name="paper-airplane" className="h-3 w-3 mr-1" aria-hidden="true" />
+                      <MaterialYouIcon name="paper-airplane" className="h-3 w-3 mr-1" aria-hidden={true} />
                       <span>Sent</span>
                     </div>
                   )}
@@ -659,7 +659,7 @@ export default function MessageThread({
                   className="ml-2 p-1 text-md-sys-on-surface-variant hover:text-md-sys-on-surface hover:bg-md-sys-surface-container-high transition-colors rounded-full opacity-0 group-hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-sys-primary/20"
                   aria-label={`Reply to message from ${message.sender?.display_name || 'user'}`}
                 >
-                  <MaterialYouIcon name="reply" className="h-3 w-3" aria-hidden="true" />
+                  <MaterialYouIcon name="reply" className="h-3 w-3" aria-hidden={true} />
                 </button>
               )}
             </footer>
@@ -722,7 +722,7 @@ export default function MessageThread({
               />
             ) : (
               <div className="h-10 w-10 rounded-full bg-md-sys-surface-container-high flex items-center justify-center">
-                <MaterialYouIcon name="user" className="h-5 w-5 text-md-sys-on-surface-variant" aria-hidden="true" />
+                <MaterialYouIcon name="user" className="h-5 w-5 text-md-sys-on-surface-variant" aria-hidden={true} />
               </div>
             )}
             
@@ -731,9 +731,9 @@ export default function MessageThread({
                 Conversation with {otherParticipant?.display_name || 'Unknown User'}
               </h1>
               <div className="flex items-center text-md-body-medium text-md-sys-on-surface-variant">
-                <MaterialYouIcon name="car" className="h-4 w-4 mr-1" aria-hidden="true" />
+                <MaterialYouIcon name="car" className="h-4 w-4 mr-1" aria-hidden={true} />
                 <span>{listing?.year} {listing?.make} {listing?.model}</span>
-                <span className="mx-2" aria-hidden="true">•</span>
+                <span className="mx-2" aria-hidden={true}>•</span>
                 <span className="font-medium">
                   {listing?.price ? new Intl.NumberFormat('en-US', {
                     style: 'currency',
@@ -765,7 +765,7 @@ export default function MessageThread({
               aria-label={showSearch ? 'Close message search' : 'Open message search'}
               aria-pressed={showSearch}
             >
-              <MaterialYouIcon name="search" className="h-5 w-5" aria-hidden="true" />
+              <MaterialYouIcon name="search" className="h-5 w-5" aria-hidden={true} />
             </button>
 
             {/* View Toggle */}
@@ -805,7 +805,7 @@ export default function MessageThread({
         {safeMessages.length === 0 ? (
           <div className="h-full flex items-center justify-center" role="status">
             <div className="text-center">
-              <MaterialYouIcon name="chat-bubble-outline" className="mx-auto h-12 w-12 text-md-sys-on-surface-variant mb-4" aria-hidden="true" />
+              <MaterialYouIcon name="chat-bubble-outline" className="mx-auto h-12 w-12 text-md-sys-on-surface-variant mb-4" aria-hidden={true} />
               <h3 className="text-md-title-large font-medium text-md-sys-on-surface mb-2">Start the conversation</h3>
               <p className="text-md-body-medium text-md-sys-on-surface-variant">
                 Send a message to {otherParticipant?.display_name || 'this user'} about this {listing?.year} {listing?.make} {listing?.model}
@@ -823,9 +823,9 @@ export default function MessageThread({
                     {message.replies.map((reply) => (
                       <div key={reply.id} role="listitem">
                         <MessageItem 
-                          message={reply} 
-                          isInThread={true} 
-                          depth={(reply.depth_level || 0) + 1} 
+                                                    message={reply}
+                          isInThread={true}
+                          depth={1} 
                         />
                       </div>
                     ))}
@@ -877,7 +877,7 @@ export default function MessageThread({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center text-md-body-medium text-md-sys-on-secondary-container">
-              <MaterialYouIcon name="reply" className="h-4 w-4 mr-2" aria-hidden="true" />
+              <MaterialYouIcon name="reply" className="h-4 w-4 mr-2" aria-hidden={true} />
               <span id="reply-context">
                 Replying to {replyingTo?.sender?.display_name || 'user'}:
               </span>
@@ -893,7 +893,7 @@ export default function MessageThread({
               className="text-md-sys-on-secondary-container hover:text-md-sys-on-secondary-container/80 hover:bg-md-sys-secondary-container/50 rounded-full p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-sys-secondary/20"
               aria-label="Cancel reply"
             >
-              <MaterialYouIcon name="close" className="h-4 w-4" aria-hidden="true" />
+              <MaterialYouIcon name="close" className="h-4 w-4" aria-hidden={true} />
             </button>
           </div>
         </aside>
@@ -951,7 +951,7 @@ export default function MessageThread({
                 <span className="sr-only">Sending...</span>
               </>
             ) : (
-              <MaterialYouIcon name="paper-airplane" className="h-4 w-4" aria-hidden="true" />
+              <MaterialYouIcon name="paper-airplane" className="h-4 w-4" aria-hidden={true} />
             )}
           </button>
         </form>

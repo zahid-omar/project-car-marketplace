@@ -247,7 +247,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
                 )}
                 {listing.transmission && (
                   <div className="flex items-center space-x-2">
-                    <MaterialYouIcon name="settings" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden="true" />
+                    <MaterialYouIcon name="settings" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden={true} />
                     <span className="text-md-body-medium text-md-sys-on-surface">
                       <span className="sr-only">Transmission: </span>
                       {listing.transmission}
@@ -298,7 +298,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
                       "w-4 h-4",
                       isListingFavorited ? "text-red-600" : "text-md-sys-on-surface"
                     )}
-                    aria-hidden="true"
+                    aria-hidden={true}
                   />
                 )}
               </button>
@@ -338,7 +338,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
               role="img"
               aria-label={`No image available for ${getCarDescription()}`}
             >
-              <MaterialYouIcon name="car" className="w-16 h-16 text-md-sys-on-surface-variant/30" aria-hidden="true" />
+              <MaterialYouIcon name="car" className="w-16 h-16 text-md-sys-on-surface-variant/30" aria-hidden={true} />
             </div>
           )}
           
@@ -368,7 +368,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
                     "w-5 h-5 transition-colors duration-md-short2 ease-md-standard",
                     isListingFavorited ? "text-red-500" : "text-gray-600 hover:text-red-500"
                   )}
-                  aria-hidden="true"
+                  aria-hidden={true}
                 />
               )}
             </button>
@@ -433,7 +433,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <MaterialYouIcon name="speedometer" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden="true" />
+                  <MaterialYouIcon name="speedometer" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden={true} />
                   <span className="text-md-label-small font-medium text-md-sys-on-surface-variant uppercase tracking-wide">
                     MILEAGE
                   </span>
@@ -453,7 +453,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <MaterialYouIcon name="settings" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden="true" />
+                    <MaterialYouIcon name="settings" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden={true} />
                     <span className="text-md-label-small font-medium text-md-sys-on-surface-variant uppercase tracking-wide">
                       GEARBOX
                     </span>
@@ -473,7 +473,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <MaterialYouIcon name="location" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden="true" />
+                  <MaterialYouIcon name="map-pin" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden={true} />
                   <span className="text-md-label-small font-medium text-md-sys-on-surface-variant uppercase tracking-wide">
                     LOCATION
                   </span>
@@ -495,7 +495,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
                 aria-label={`This vehicle has ${listing.modifications.length} modification${listing.modifications.length !== 1 ? 's' : ''}`}
               >
                 <div className="flex items-center space-x-2">
-                  <MaterialYouIcon name="wrench" className="w-4 h-4 text-md-sys-on-tertiary-container" aria-hidden="true" />
+                  <MaterialYouIcon name="engine" className="w-4 h-4 text-md-sys-on-tertiary-container" aria-hidden={true} />
                   <span className="text-md-label-medium font-medium text-md-sys-on-tertiary-container">
                     {listing.modifications.length} Modification{listing.modifications.length !== 1 ? 's' : ''}
                   </span>
@@ -516,7 +516,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
             aria-label={`View full details for ${listing.title} - ${getCarDescription()}`}
           >
             <span>View Details</span>
-            <MaterialYouIcon name="arrow-right" className="w-4 h-4" aria-hidden="true" />
+            <MaterialYouIcon name="arrow-right" className="w-4 h-4" aria-hidden={true} />
           </Link>
         </div>
       </article>

@@ -280,8 +280,10 @@ export function useIntersectionAnimation(config: AnimationConfig & {
 
   // Merge refs
   const mergedRef = useCallback((node: HTMLElement | null) => {
-    ref.current = node;
-    if (animationHook.ref) {
+    if (ref && 'current' in ref) {
+      (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+    }
+    if (animationHook.ref && 'current' in animationHook.ref) {
       (animationHook.ref as React.MutableRefObject<HTMLElement | null>).current = node;
     }
   }, [animationHook.ref]);

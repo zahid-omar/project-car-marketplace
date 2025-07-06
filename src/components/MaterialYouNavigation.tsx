@@ -79,7 +79,7 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
                 aria-label="Open navigation menu"
                 aria-expanded={mobileDrawerOpen}
               >
-                <MaterialYouIcon name="menu" size="lg" aria-hidden="true" />
+                <MaterialYouIcon name="menu" size="lg" aria-hidden={true} />
               </button>
 
               {/* Logo/Brand */}
@@ -107,7 +107,7 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
                   href={link.href}
                   className="inline-flex items-center space-x-2 px-4 py-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-on-surface/[0.08] focus:bg-on-surface/[0.12] active:bg-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard text-label-large state-layer"
                 >
-                  <MaterialYouIcon name={link.icon} size="md" aria-hidden="true" />
+                  <MaterialYouIcon name={link.icon} size="md" aria-hidden={true} />
                   <span>{link.label}</span>
                 </Link>
               ))}
@@ -121,7 +121,7 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
                 <>
                   {/* Notifications */}
                   <div className="hidden sm:block">
-                    <NotificationDropdown userId={user.id} className="text-on-surface" />
+                    <NotificationDropdown className="text-on-surface" />
                   </div>
 
                   {/* Theme Toggle */}
@@ -131,12 +131,12 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
                       className="inline-flex items-center justify-center w-10 h-10 rounded-full state-layer text-on-surface-variant hover:text-on-surface hover:bg-on-surface/[0.08] focus:bg-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard"
                       onClick={() => setThemeMenuOpen(!themeMenuOpen)}
                       aria-label="Theme options"
-                      aria-expanded={themeMenuOpen}
+                                            aria-expanded={themeMenuOpen}
                     >
-                      <MaterialYouIcon 
-                        name={isDarkMode ? "moon" : "sun"} 
-                        size="md" 
-                        aria-hidden="true" 
+                      <MaterialYouIcon
+                        name={isDarkMode ? "moon" : "sun"}
+                        size="md"
+                        aria-hidden={true} 
                       />
                     </button>
 
@@ -332,7 +332,7 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
                   className="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface hover:bg-on-surface/[0.08] active:bg-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard text-label-large state-layer"
                   onClick={() => setMobileDrawerOpen(false)}
                 >
-                  <MaterialYouIcon name={link.icon} size="lg" aria-hidden="true" />
+                  <MaterialYouIcon name={link.icon} size="lg" aria-hidden={true} />
                   <span>{link.label}</span>
                 </Link>
               ))}
@@ -351,7 +351,7 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
 
                   {/* Mobile Notifications */}
                   <div className="px-4 py-3">
-                    <NotificationDropdown userId={user.id} />
+                    <NotificationDropdown />
                   </div>
                 </>
               )}

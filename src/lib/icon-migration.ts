@@ -280,7 +280,7 @@ export const lucideToMaterialYou: Record<string, MaterialYouIconName> = {
   // Radio & Checkbox
   'Circle': 'radio-unchecked',
   'CheckSquare': 'checkbox',
-  'Square': 'checkbox-outline',
+  'SquareOutline': 'checkbox-outline',
 };
 
 // Migration helpers
