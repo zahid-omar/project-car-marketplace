@@ -109,7 +109,7 @@ export default function NoResults({
           onClick={() => window.location.href = '/browse'}
           className="inline-flex items-center px-4 py-3 bg-md-sys-primary text-md-sys-on-primary rounded-xl text-md-label-large font-medium hover:bg-md-sys-primary/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 shadow-md-elevation-2 hover:shadow-md-elevation-3"
         >
-          <MaterialYouIcon name="sparkles" className="w-4 h-4 mr-2" />
+          <MaterialYouIcon name="star" className="w-4 h-4 mr-2" />
           Browse All Cars
         </button>
       </div>
@@ -166,7 +166,7 @@ export default function NoResults({
                 onClick={() => window.location.href = '/browse?sortBy=popular'}
                 className="inline-flex items-center px-4 py-3 bg-md-sys-primary text-md-sys-on-primary rounded-xl text-md-label-large font-medium hover:bg-md-sys-primary/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 shadow-md-elevation-2 hover:shadow-md-elevation-3"
               >
-                <MaterialYouIcon name="sparkles" className="w-4 h-4 mr-2" />
+                <MaterialYouIcon name="trending-up" className="w-4 h-4 mr-2" />
                 Most Popular
               </button>
               <button
