@@ -64,7 +64,7 @@ export default function ContactSellerModal({
     
     if (!formData.email.trim()) {
       errors.email = 'Email address is required';
-    } else if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = 'Please enter a valid email address';
     }
     
@@ -558,8 +558,7 @@ export default function ContactSellerModal({
                 >
                   <h4 id="privacy-heading" className="sr-only">Privacy Notice</h4>
                   <p className="text-xs text-md-sys-on-tertiary-container">
-                    <strong>Privacy:</strong> Your contact information will only be shared with {sellerName} 
-                    for this inquiry. We do not store or share your information with third parties.
+                    <strong>Privacy:</strong> Your contact information will only be shared with {sellerName} for this inquiry. We do not store or share your information with third parties.
                   </p>
                 </div>
 
