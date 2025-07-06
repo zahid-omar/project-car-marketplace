@@ -5,6 +5,7 @@ import { ConversationWithDetails } from '@/types/messages';
 import { formatDistanceToNow } from 'date-fns';
 import { MaterialYouIcon } from '@/components/ui/MaterialYouIcon';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import Avatar from '@/components/ui/Avatar';
 import { cn } from '@/lib/utils';
 
 export type ConversationFilter = 'all' | 'inbox' | 'outbox' | 'archived';
@@ -410,19 +411,20 @@ function ConversationItem({
           </button>
         </div>
 
-        {/* Avatar */}
+                {/* Avatar */}
         <div className="flex-shrink-0">
-          {conversation.other_participant?.profile_image_url ? (
-            <img
-              className="h-12 w-12 rounded-3xl object-cover shadow-md-elevation-1"
-              src={conversation.other_participant.profile_image_url}
-              alt={conversation.other_participant?.display_name || 'User'}
-            />
-          ) : (
-            <div className="h-12 w-12 rounded-3xl bg-md-sys-surface-container-high flex items-center justify-center shadow-md-elevation-1">
-                              <MaterialYouIcon name="user" size="md" className="text-md-sys-on-surface-variant" />
-            </div>
-          )}
+          <Avatar
+            user={{
+              user_metadata: {
+                display_name: conversation.other_participant?.display_name || conversation.other_participant?.email
+              },
+              email: conversation.other_participant?.email || ''
+            } as any}
+            profileImageUrl={conversation.other_participant?.profile_image_url}
+            size="xl"
+            className="shadow-md-elevation-1"
+            showLetterFallback={true}
+          />
         </div>
 
         {/* Content */}

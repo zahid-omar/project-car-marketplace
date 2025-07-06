@@ -378,63 +378,66 @@ export default function BrowsePageContent() {
 
   return (
     <AppLayout showNavigation={true} className="bg-md-sys-surface">
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-md-display-small font-bold text-md-sys-on-surface mb-4">
+          <h1 className="text-md-headline-large font-bold text-md-sys-on-surface mb-3">
             {filters.query ? `Search Results for "${filters.query}"` : 'Browse Cars'}
           </h1>
           <p className="text-md-body-large text-md-sys-on-surface-variant mb-6">
             {filters.query ? 'Find cars matching your search criteria' : 'Discover amazing modified cars from enthusiasts worldwide'}
           </p>
-          
-          {/* Search Input */}
-          <div className="max-w-2xl">
-            <SearchInput
-              onSearch={handleSearch}
-              value={filters.query}
-              placeholder="Search for cars, makes, models, modifications..."
-            />
-          </div>
         </div>
 
-        {/* Filter Toggle (Mobile) */}
-        <div className="lg:hidden mb-6">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-3 px-6 py-4 bg-md-sys-primary-container text-md-sys-on-primary-container rounded-xl hover:bg-md-sys-primary-container/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus-visible:ring-2 focus-visible:ring-md-sys-primary shadow-md hover:shadow-lg border border-md-sys-outline-variant"
-          >
-            <div className="p-1 bg-md-sys-primary/10 rounded-lg">
+        {/* Full Width Search Bar and Filter Toggle */}
+        <div className="mb-8">
+          <div className="flex gap-4 items-start">
+            {/* Search Input - Full Width */}
+            <div className="flex-1">
+              <SearchInput
+                onSearch={handleSearch}
+                value={filters.query}
+                placeholder="Search for cars, makes, models, modifications..."
+              />
+            </div>
+            
+            {/* Filter Toggle Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 shadow-md hover:shadow-lg border min-w-fit ${
+                showFilters 
+                  ? 'bg-md-sys-primary text-md-sys-on-primary border-md-sys-primary/30' 
+                  : 'bg-md-sys-primary-container text-md-sys-on-primary-container border-md-sys-outline-variant hover:bg-md-sys-primary-container/90'
+              }`}
+            >
               <MaterialYouIcon name="adjustments-horizontal" className="w-5 h-5" />
-            </div>
-            <div className="flex flex-col items-start">
-              <span className="text-md-label-large font-medium">Filters</span>
-              <span className="text-md-label-small opacity-80">
-                {getActiveFilterCount() > 0 ? `${getActiveFilterCount()} active` : 'Tap to filter'}
-              </span>
-            </div>
-            {getActiveFilterCount() > 0 && (
-              <div className="ml-auto">
-                <span className="bg-md-sys-primary text-md-sys-on-primary rounded-full px-3 py-1.5 text-md-label-small font-bold min-w-[28px] text-center shadow-sm">
+              <span className="text-md-label-large font-medium hidden sm:block">Filters</span>
+              {getActiveFilterCount() > 0 && (
+                <div className="bg-md-sys-error text-md-sys-on-error rounded-full px-2 py-0.5 text-xs font-bold min-w-[20px] text-center">
                   {getActiveFilterCount()}
-                </span>
-              </div>
-            )}
-          </button>
+                </div>
+              )}
+            </button>
+          </div>
         </div>
 
-        <div className="flex gap-8">
-          {/* Filter Sidebar */}
-          <div className={`lg:block ${showFilters ? 'block' : 'hidden'} lg:w-64`}>
-            <FilterSidebar 
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              totalItems={totalItems}
-            />
-          </div>
+        {/* Main Layout - Consistent Width */}
+        <div className="grid grid-cols-12 gap-6">
+          {/* Filter Sidebar - Only shows when showFilters is true */}
+          {showFilters && (
+            <div className="col-span-12 lg:col-span-3">
+              <div className="transition-all duration-300 opacity-100">
+                <FilterSidebar 
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  totalItems={totalItems}
+                />
+              </div>
+            </div>
+          )}
 
-          {/* Main Content */}
-          <div className="flex-1">
+          {/* Main Content - Adjusts width based on filter visibility */}
+          <div className={`col-span-12 ${showFilters ? 'lg:col-span-9' : 'lg:col-span-12'}`}>
             {/* Enhanced Results Header */}
             <SearchResultsHeader
               searchQuery={filters.query}
@@ -497,7 +500,7 @@ export default function BrowsePageContent() {
                   <>
                     <div className={`mb-8 ${
                       viewMode === 'grid' 
-                        ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6'
+                        ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'
                         : 'space-y-4'
                     }`}>
                       {listings.map((listing) => (

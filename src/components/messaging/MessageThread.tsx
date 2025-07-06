@@ -5,6 +5,7 @@ import { MessageWithProfiles, ThreadedMessage, SendMessageRequest, ReplyToMessag
 import { formatDistanceToNow, format, isToday, isYesterday } from 'date-fns';
 import MaterialYouIcon from '@/components/ui/MaterialYouIcon';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import Avatar from '@/components/ui/Avatar';
 import ReportMessageModal from './ReportMessageModal';
 import { cn } from '@/lib/utils';
 
@@ -498,17 +499,17 @@ export default function MessageThread({
             }`}>
               {!isCurrentUser && (
                 <div className="flex items-center mr-2">
-                  {message.sender.profile_image_url ? (
-                    <img
-                      className="h-6 w-6 rounded-full object-cover"
-                      src={message.sender.profile_image_url}
-                      alt={`${message.sender.display_name}'s profile picture`}
-                    />
-                  ) : (
-                    <div className="h-6 w-6 rounded-full bg-md-sys-surface-container-high flex items-center justify-center">
-                      <MaterialYouIcon name="user" className="h-3 w-3 text-md-sys-on-surface-variant" aria-hidden={true} />
-                    </div>
-                  )}
+                  <Avatar
+                    user={{
+                      user_metadata: {
+                        display_name: message.sender.display_name
+                      },
+                      email: message.sender.email || ''
+                    } as any}
+                    profileImageUrl={message.sender.profile_image_url}
+                    size="sm"
+                    showLetterFallback={true}
+                  />
                   <span className="ml-2 text-md-label-medium font-medium text-md-sys-on-surface">
                     {message.sender.display_name}
                   </span>
@@ -714,17 +715,17 @@ export default function MessageThread({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             {/* Participant Avatar */}
-            {otherParticipant?.profile_image_url ? (
-              <img
-                className="h-10 w-10 rounded-full object-cover"
-                src={otherParticipant.profile_image_url}
-                alt={`${otherParticipant.display_name}'s profile picture`}
-              />
-            ) : (
-              <div className="h-10 w-10 rounded-full bg-md-sys-surface-container-high flex items-center justify-center">
-                <MaterialYouIcon name="user" className="h-5 w-5 text-md-sys-on-surface-variant" aria-hidden={true} />
-              </div>
-            )}
+            <Avatar
+              user={{
+                user_metadata: {
+                  display_name: otherParticipant?.display_name
+                },
+                email: otherParticipant?.email || ''
+              } as any}
+              profileImageUrl={otherParticipant?.profile_image_url}
+              size="lg"
+              showLetterFallback={true}
+            />
             
             <div>
               <h1 id={threadHeaderId} className="text-md-title-large font-semibold text-md-sys-on-surface">

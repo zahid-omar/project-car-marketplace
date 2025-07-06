@@ -111,36 +111,50 @@ export default function HomePage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 lg:py-20 bg-md-sys-surface-container">
-          <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <div className="bg-md-sys-primary-container rounded-3xl p-8 lg:p-12 shadow-md-elevation-2">
-              <h2 className="text-md-headline-medium font-black text-md-sys-on-primary-container mb-4" style={{fontWeight: 900}}>
+        <section className="py-20 lg:py-24 bg-md-sys-surface-container-low">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-md-headline-large font-black text-md-sys-on-surface mb-4" style={{fontWeight: 900}}>
                 Ready to Get Started?
               </h2>
-              <p className="text-md-body-large text-md-sys-on-primary-container mb-8">
+              <p className="text-md-title-medium text-md-sys-on-surface max-w-2xl mx-auto">
                 Join thousands of automotive enthusiasts buying and selling modified cars.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  variant="filled"
-                  size="lg"
-                  onClick={() => router.push('/signup')}
-                  className="w-full sm:w-56 shadow-md-elevation-2 hover:shadow-md-elevation-3"
-                  icon={<MaterialYouIcon name="arrow-right" className="w-5 h-5" />}
-                  iconPosition="right"
-                >
-                  Get Started
-                </Button>
-                <Button 
-                  variant="outlined"
-                  size="lg"
-                  onClick={() => router.push('/browse')}
-                  className="w-full sm:w-56 shadow-md-elevation-1 hover:shadow-md-elevation-2 bg-md-sys-surface/50 hover:bg-md-sys-surface/70"
-                  icon={<MaterialYouIcon name="eye" className="w-5 h-5" />}
-                  iconPosition="right"
-                >
-                  Browse First
-                </Button>
+            </div>
+            
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-md-sys-surface-container rounded-3xl p-8 lg:p-12 hover:bg-md-sys-surface-container-high transition-all duration-300 shadow-md-elevation-1 hover:shadow-md-elevation-2 hover:scale-105 group text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-md-sys-primary-container to-md-sys-primary-container/70 rounded-3xl flex items-center justify-center mx-auto mb-6 text-md-sys-on-primary-container shadow-md-elevation-1 group-hover:shadow-md-elevation-2 transition-all duration-300">
+                  <MaterialYouIcon name="trending-up" className="w-8 h-8" />
+                </div>
+                <h3 className="text-md-title-large font-semibold text-md-sys-on-surface mb-3">
+                  Start Your Journey
+                </h3>
+                <p className="text-md-body-medium text-md-sys-on-surface mb-8 leading-relaxed">
+                  Whether you're looking to buy your dream build or sell your current project, we've got you covered with the most dedicated community of car enthusiasts.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button 
+                    variant="filled"
+                    size="lg"
+                    onClick={() => router.push('/signup')}
+                    className="w-full sm:w-56 shadow-md-elevation-2 hover:shadow-md-elevation-3"
+                    icon={<MaterialYouIcon name="arrow-right" className="w-5 h-5" />}
+                    iconPosition="right"
+                  >
+                    Get Started
+                  </Button>
+                  <Button 
+                    variant="outlined"
+                    size="lg"
+                    onClick={() => router.push('/browse')}
+                    className="w-full sm:w-56 shadow-md-elevation-1 hover:shadow-md-elevation-2"
+                    icon={<MaterialYouIcon name="eye" className="w-5 h-5" />}
+                    iconPosition="right"
+                  >
+                    Browse First
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

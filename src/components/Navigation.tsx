@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
+import { useProfile } from '@/hooks/useProfile';
 import { useMaterialYouTheme } from '@/lib/material-you-theme';
 import NotificationDropdown from '@/components/NotificationDropdown';
+import Avatar from '@/components/ui/Avatar';
 import { useState, useRef, useEffect } from 'react';
 import { Menu, X, Home, MessageCircle, Car, DollarSign, User, LogOut, Sun, Moon, Palette } from 'lucide-react';
 
@@ -14,6 +16,7 @@ interface NavigationProps {
 
 export default function Navigation({ className = '', variant = 'default' }: NavigationProps) {
   const { user, signOut, loading } = useAuth();
+  const { profile, loading: profileLoading } = useProfile();
   const { theme, setThemeMode, isDarkMode } = useMaterialYouTheme();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -128,9 +131,9 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [mobileDrawerOpen, userMenuOpen, themeMenuOpen]);
 
+  // Updated navigation links - Browse Cars always visible, Dashboard moved to user menu
   const navigationLinks = [
     { href: '/browse', label: 'Browse Cars', icon: Car },
-    { href: '/dashboard', label: 'Dashboard', icon: Home, authRequired: true },
     { href: '/messages', label: 'Messages', icon: MessageCircle, authRequired: true },
     { href: '/sell', label: 'Sell Car', icon: DollarSign, authRequired: true },
   ];
@@ -203,9 +206,9 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
               </Link>
             </div>
 
-            {/* Center Navigation (Desktop) - Only show Browse Cars for unauthenticated users */}
+            {/* Center Navigation (Desktop) - Always show Browse Cars, Messages & Sell Car when authenticated */}
             <nav className="hidden lg:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
-              {user && visibleLinks.filter(link => link.href !== '/browse').map((link) => {
+              {visibleLinks.map((link) => {
                 const Icon = link.icon;
                 return (
                   <Link
@@ -229,14 +232,9 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
                   role="status"
                   aria-label="Loading user authentication status"
                 />
-              ) : user ? (
+              ) : (
                 <>
-                  {/* Notifications */}
-                  <div className="hidden sm:block">
-                    <NotificationDropdown className="text-md-sys-on-surface" />
-                  </div>
-
-                  {/* Theme Toggle */}
+                  {/* Always show Theme Toggle */}
                   <div className="relative" ref={themeMenuRef}>
                     <button
                       type="button"
@@ -302,108 +300,120 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
                     )}
                   </div>
 
-                  {/* User Menu */}
-                  <div className="relative" ref={userMenuRef}>
-                    <button
-                      type="button"
-                      className="flex items-center space-x-2 p-1 rounded-full state-layer text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 transition-all duration-md-short2 ease-md-standard"
-                      onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      aria-label={`User menu for ${user.user_metadata?.display_name || user.email}`}
-                      aria-expanded={userMenuOpen}
-                      aria-haspopup="menu"
-                    >
-                      <div className="w-8 h-8 bg-md-sys-primary rounded-full flex items-center justify-center text-md-sys-on-primary text-sm font-medium">
-                        {(user.user_metadata?.display_name || user.email)?.charAt(0).toUpperCase()}
+                  {user ? (
+                    <>
+                      {/* Notifications */}
+                      <div className="hidden sm:block">
+                        <NotificationDropdown className="text-md-sys-on-surface" />
                       </div>
-                      <span className="hidden lg:block text-md-body-medium">
-                        {user.user_metadata?.display_name || user.email?.split('@')[0]}
-                      </span>
-                    </button>
 
-                    {/* User Dropdown Menu */}
-                    {userMenuOpen && (
-                      <div 
-                        className="absolute right-0 mt-2 w-56 surface-container-high elevation-3 rounded-xl border border-md-sys-outline-variant z-50"
-                        role="menu"
-                        aria-label="User account menu"
-                      >
-                        <div className="py-2">
-                          <div className="px-4 py-3 border-b border-md-sys-outline-variant">
-                            <p className="text-md-body-medium text-md-sys-on-surface">
-                              {user.user_metadata?.display_name || 'User'}
-                            </p>
-                            <p className="text-sm text-md-sys-on-surface-variant">
-                              {user.email}
-                            </p>
+                      {/* User Menu - No name shown in navigation bar */}
+                      <div className="relative" ref={userMenuRef}>
+                        <button
+                          type="button"
+                          className="flex items-center p-1 rounded-full state-layer text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 transition-all duration-md-short2 ease-md-standard"
+                          onClick={() => setUserMenuOpen(!userMenuOpen)}
+                          aria-label={`User menu for ${user.user_metadata?.display_name || user.email}`}
+                          aria-expanded={userMenuOpen}
+                          aria-haspopup="menu"
+                        >
+                          <Avatar 
+                            user={user}
+                            profileImageUrl={profile?.profile_image_url}
+                            size="md"
+                            showLetterFallback={true}
+                          />
+                        </button>
+
+                        {/* User Dropdown Menu with improved styling */}
+                        {userMenuOpen && (
+                          <div 
+                            className="absolute right-0 mt-2 w-64 surface-container-high elevation-3 rounded-xl border border-md-sys-outline-variant z-50"
+                            role="menu"
+                            aria-label="User account menu"
+                          >
+                            <div className="py-2">
+                              {/* User Info Section with improved styling */}
+                              <div className="px-4 py-4 border-b border-md-sys-outline-variant">
+                                <div className="flex flex-col space-y-2">
+                                  <div className="flex-1">
+                                    <p className="text-md-title-medium font-semibold text-md-sys-on-surface leading-tight">
+                                      {profile?.display_name || user.user_metadata?.display_name || user.email?.split('@')[0] || 'User'}
+                                    </p>
+                                    <div className="inline-block bg-md-sys-secondary-container rounded-full px-3 py-1 mt-2">
+                                      <p className="text-sm font-medium text-md-sys-on-secondary-container">
+                                        {user.email}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Dashboard - moved from main navigation */}
+                              <Link
+                                href="/dashboard"
+                                role="menuitem"
+                                className="flex items-center px-4 py-3 text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none text-md-body-large font-medium transition-all duration-md-short2 ease-md-standard"
+                                onClick={() => setUserMenuOpen(false)}
+                                aria-label="Go to dashboard"
+                              >
+                                <Home className="h-5 w-5 mr-3" aria-hidden="true" />
+                                Dashboard
+                              </Link>
+                              
+                              <hr className="my-1 border-md-sys-outline-variant" />
+                              
+                              {/* Profile - shows public profile */}
+                              <Link
+                                href="/profile"
+                                role="menuitem"
+                                className="flex items-center px-4 py-3 text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none text-md-body-large font-medium transition-all duration-md-short2 ease-md-standard"
+                                onClick={() => setUserMenuOpen(false)}
+                                aria-label="View and edit your profile"
+                              >
+                                <User className="h-5 w-5 mr-3" aria-hidden="true" />
+                                View Profile
+                              </Link>
+                              
+                              <hr className="my-1 border-md-sys-outline-variant" />
+                              
+                              <button
+                                role="menuitem"
+                                onClick={() => {
+                                  signOut();
+                                  setUserMenuOpen(false);
+                                }}
+                                className="flex items-center w-full px-4 py-3 text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none text-md-body-large font-medium transition-all duration-md-short2 ease-md-standard"
+                                aria-label="Sign out of your account"
+                              >
+                                <LogOut className="h-5 w-5 mr-3" aria-hidden="true" />
+                                Sign Out
+                              </button>
+                            </div>
                           </div>
-                          
-                          <Link
-                            href="/profile"
-                            role="menuitem"
-                            className="flex items-center px-4 py-2 text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none text-md-body-medium transition-all duration-md-short2 ease-md-standard"
-                            onClick={() => setUserMenuOpen(false)}
-                            aria-label="View your profile"
-                          >
-                            <User className="h-4 w-4 mr-3" aria-hidden="true" />
-                            View Profile
-                          </Link>
-                          
-                          <Link
-                            href="/profile"
-                            role="menuitem"
-                            className="flex items-center px-4 py-2 text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none text-md-body-medium transition-all duration-md-short2 ease-md-standard"
-                            onClick={() => setUserMenuOpen(false)}
-                            aria-label="Access account settings"
-                          >
-                            <User className="h-4 w-4 mr-3" aria-hidden="true" />
-                            Account Settings
-                          </Link>
-                          
-                          <hr className="my-1 border-md-sys-outline-variant" />
-                          
-                          <button
-                            role="menuitem"
-                            onClick={() => {
-                              signOut();
-                              setUserMenuOpen(false);
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none text-md-body-medium transition-all duration-md-short2 ease-md-standard"
-                            aria-label="Sign out of your account"
-                          >
-                            <LogOut className="h-4 w-4 mr-3" aria-hidden="true" />
-                            Sign Out
-                          </button>
-                        </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </>
+                  ) : (
+                    /* Unauthenticated Actions */
+                    <div className="flex items-center space-x-3">
+                      <Link
+                        href="/login"
+                        className="inline-flex items-center justify-center px-6 py-2 rounded-full border border-md-sys-outline text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 transition-all duration-md-short2 ease-md-standard text-md-label-large font-medium"
+                        aria-label="Sign in to your account"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/signup"
+                        className="btn-primary focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2"
+                        aria-label="Create a new account"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  )}
                 </>
-              ) : (
-                /* Unauthenticated Actions */
-                <div className="flex items-center space-x-3">
-                  <Link
-                    href="/browse"
-                    className="inline-flex items-center space-x-2 px-4 py-2 rounded-full text-md-sys-on-surface-variant hover:text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:text-md-sys-on-surface focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 active:bg-md-sys-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard text-md-label-large state-layer"
-                    aria-label="Browse available cars"
-                  >
-                    <Car className="h-5 w-5" aria-hidden="true" />
-                    <span>Browse Cars</span>
-                  </Link>
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center justify-center px-6 py-2 rounded-full border border-md-sys-outline text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 transition-all duration-md-short2 ease-md-standard text-md-label-large font-medium"
-                    aria-label="Sign in to your account"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="btn-primary focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2"
-                    aria-label="Create a new account"
-                  >
-                    Sign Up
-                  </Link>
-                </div>
               )}
             </div>
           </div>
@@ -450,20 +460,25 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
               </button>
             </div>
 
-            {/* User Section (if authenticated) */}
+            {/* User Section (if authenticated) with improved styling */}
             {user && (
               <div className="p-4 border-b border-md-sys-outline-variant">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-md-sys-primary rounded-full flex items-center justify-center text-md-sys-on-primary text-lg font-medium">
-                    {(user.user_metadata?.display_name || user.email)?.charAt(0).toUpperCase()}
-                  </div>
+                  <Avatar 
+                    user={user}
+                    profileImageUrl={profile?.profile_image_url}
+                    size="xl"
+                    showLetterFallback={true}
+                  />
                   <div>
-                    <p className="text-md-body-medium text-md-sys-on-surface font-medium">
-                      {user.user_metadata?.display_name || 'User'}
+                    <p className="text-md-title-medium font-semibold text-md-sys-on-surface leading-tight">
+                      {profile?.display_name || user.user_metadata?.display_name || user.email?.split('@')[0] || 'User'}
                     </p>
-                    <p className="text-sm text-md-sys-on-surface-variant">
-                      {user.email}
-                    </p>
+                    <div className="inline-block bg-md-sys-secondary-container rounded-full px-3 py-1 mt-2">
+                      <p className="text-sm font-medium text-md-sys-on-secondary-container">
+                        {user.email}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -491,6 +506,16 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
               {user && (
                 <>
                   <Link
+                    href="/dashboard"
+                    className="flex items-center space-x-3 px-4 py-3 rounded-xl text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 active:bg-md-sys-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard text-md-label-large state-layer"
+                    onClick={() => setMobileDrawerOpen(false)}
+                    aria-label="Go to dashboard"
+                  >
+                    <Home className="h-6 w-6" aria-hidden="true" />
+                    <span>Dashboard</span>
+                  </Link>
+                  
+                  <Link
                     href="/profile"
                     className="flex items-center space-x-3 px-4 py-3 rounded-xl text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 active:bg-md-sys-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard text-md-label-large state-layer"
                     onClick={() => setMobileDrawerOpen(false)}
@@ -499,6 +524,8 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
                     <User className="h-6 w-6" aria-hidden="true" />
                     <span>Profile</span>
                   </Link>
+
+
 
                   {/* Mobile Notifications */}
                   <div className="px-4 py-3">
@@ -525,17 +552,8 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
               ) : (
                 <div className="space-y-2">
                   <Link
-                    href="/browse"
-                    className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 transition-all duration-md-short2 ease-md-standard text-md-label-large state-layer"
-                    onClick={() => setMobileDrawerOpen(false)}
-                    aria-label="Browse available cars"
-                  >
-                    <Car className="h-6 w-6" aria-hidden="true" />
-                    <span>Browse Cars</span>
-                  </Link>
-                  <Link
                     href="/login"
-                    className="flex items-center justify-center w-full px-4 py-3 rounded-xl border border-md-sys-outline text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 transition-all duration-md-short2 ease-md-standard text-md-label-large font-medium"
+                    className="flex items-center justify-center w-full px-4 py-3 rounded-xl text-md-sys-on-surface hover:bg-md-sys-on-surface/[0.08] focus:bg-md-sys-on-surface/[0.12] focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2 active:bg-md-sys-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard text-md-label-large state-layer"
                     onClick={() => setMobileDrawerOpen(false)}
                     aria-label="Sign in to your account"
                   >
@@ -543,7 +561,7 @@ export default function Navigation({ className = '', variant = 'default' }: Navi
                   </Link>
                   <Link
                     href="/signup"
-                    className="btn-primary w-full text-center focus:outline-none focus:ring-2 focus:ring-md-sys-primary focus:ring-offset-2"
+                    className="btn-primary w-full text-center"
                     onClick={() => setMobileDrawerOpen(false)}
                     aria-label="Create a new account"
                   >

@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth, supabase } from '@/lib/auth'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { MaterialYouIcon } from '@/components/ui/MaterialYouIcon'
+import AppLayout from '@/components/AppLayout'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -99,136 +101,150 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-automotive-primary to-automotive-secondary flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            Join the Community
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-300">
-            Create your Project Car Marketplace account
-          </p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-                {error}
-              </div>
-            )}
-            
-            {message && (
-              <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-sm">
-                {message}
-              </div>
-            )}
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address *
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-automotive-accent focus:border-automotive-accent sm:text-sm"
-                  placeholder="Enter your email"
-                />
-              </div>
+    <AppLayout showNavigation={true} className="bg-md-sys-surface">
+      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          {/* Header */}
+          <div className="text-center">
+            <div className="w-20 h-20 bg-md-sys-primary-container rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-md-elevation-2">
+              <MaterialYouIcon name="user-plus" className="w-10 h-10 text-md-sys-on-primary-container" />
             </div>
+            <h1 className="text-md-display-small font-bold text-md-sys-on-surface mb-3">
+              Join the Community
+            </h1>
+            <p className="text-md-body-large text-md-sys-on-surface-variant">
+              Create your Project Car Marketplace account
+            </p>
+          </div>
 
-            <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
-                Display Name
-              </label>
-              <div className="mt-1">
-                <input
-                  id="displayName"
-                  name="displayName"
-                  type="text"
-                  autoComplete="name"
-                  value={formData.displayName}
-                  onChange={handleInputChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-automotive-accent focus:border-automotive-accent sm:text-sm"
-                  placeholder="How should we call you? (optional)"
-                />
+          {/* Signup Form Card */}
+          <div className="bg-md-sys-surface-container rounded-3xl shadow-md-elevation-3 border border-md-sys-outline-variant/50 p-8">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {/* Error Alert */}
+              {error && (
+                <div className="bg-md-sys-error-container border border-md-sys-error/20 rounded-2xl p-4 shadow-md-elevation-1">
+                  <div className="flex items-start">
+                    <MaterialYouIcon name="exclamation-triangle" className="w-5 h-5 text-md-sys-error mr-3 mt-0.5 flex-shrink-0" />
+                    <p className="text-md-body-medium text-md-sys-on-error-container">{error}</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Success Message */}
+              {message && (
+                <div className="bg-md-sys-secondary-container border border-md-sys-secondary/20 rounded-2xl p-4 shadow-md-elevation-1">
+                  <div className="flex items-start">
+                    <MaterialYouIcon name="check-circle" className="w-5 h-5 text-md-sys-secondary mr-3 mt-0.5 flex-shrink-0" />
+                    <p className="text-md-body-medium text-md-sys-on-secondary-container">{message}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Email Field */}
+              <div>
+                <label htmlFor="email" className="block text-md-body-large font-medium text-md-sys-on-surface mb-2">
+                  Email Address *
+                </label>
+                <div className="relative">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 pl-12 border border-md-sys-outline rounded-2xl bg-md-sys-surface text-md-sys-on-surface placeholder-md-sys-on-surface-variant focus:outline-none focus:border-md-sys-primary focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200 text-md-body-large shadow-md-elevation-1"
+                    placeholder="Enter your email"
+                  />
+                  <MaterialYouIcon name="mail" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
+                </div>
               </div>
-              <p className="mt-1 text-xs text-gray-500">
-                If not provided, we&apos;ll use the part before @ in your email
-              </p>
-            </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password *
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-automotive-accent focus:border-automotive-accent sm:text-sm"
-                  placeholder="Create a password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-400" />
-                  )}
-                </button>
+              {/* Display Name Field */}
+              <div>
+                <label htmlFor="displayName" className="block text-md-body-large font-medium text-md-sys-on-surface mb-2">
+                  Display Name
+                </label>
+                <div className="relative">
+                  <input
+                    id="displayName"
+                    name="displayName"
+                    type="text"
+                    autoComplete="name"
+                    value={formData.displayName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 pl-12 border border-md-sys-outline rounded-2xl bg-md-sys-surface text-md-sys-on-surface placeholder-md-sys-on-surface-variant focus:outline-none focus:border-md-sys-primary focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200 text-md-body-large shadow-md-elevation-1"
+                    placeholder="How should we call you? (optional)"
+                  />
+                  <MaterialYouIcon name="identification" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
+                </div>
+                <p className="mt-2 text-md-body-small text-md-sys-on-surface-variant">
+                  If not provided, we&apos;ll use the part before @ in your email
+                </p>
               </div>
-              <p className="mt-1 text-xs text-gray-500">
-                Must be at least 6 characters long
-              </p>
-            </div>
 
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password *
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-automotive-accent focus:border-automotive-accent sm:text-sm"
-                  placeholder="Confirm your password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-400" />
-                  )}
-                </button>
+              {/* Password Field */}
+              <div>
+                <label htmlFor="password" className="block text-md-body-large font-medium text-md-sys-on-surface mb-2">
+                  Password *
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    required
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 pl-12 pr-12 border border-md-sys-outline rounded-2xl bg-md-sys-surface text-md-sys-on-surface placeholder-md-sys-on-surface-variant focus:outline-none focus:border-md-sys-primary focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200 text-md-body-large shadow-md-elevation-1"
+                    placeholder="Create a password"
+                  />
+                  <MaterialYouIcon name="lock-closed" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
+                  <button
+                    type="button"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-md-sys-on-surface-variant hover:text-md-sys-on-surface transition-colors duration-200"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    <MaterialYouIcon name={showPassword ? 'eye-slash' : 'eye'} className="w-5 h-5" />
+                  </button>
+                </div>
+                <p className="mt-2 text-md-body-small text-md-sys-on-surface-variant">
+                  Must be at least 6 characters long
+                </p>
               </div>
-            </div>
 
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
+              {/* Confirm Password Field */}
+              <div>
+                <label htmlFor="confirmPassword" className="block text-md-body-large font-medium text-md-sys-on-surface mb-2">
+                  Confirm Password *
+                </label>
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 pl-12 pr-12 border border-md-sys-outline rounded-2xl bg-md-sys-surface text-md-sys-on-surface placeholder-md-sys-on-surface-variant focus:outline-none focus:border-md-sys-primary focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200 text-md-body-large shadow-md-elevation-1"
+                    placeholder="Confirm your password"
+                  />
+                  <MaterialYouIcon name="shield-check" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
+                  <button
+                    type="button"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-md-sys-on-surface-variant hover:text-md-sys-on-surface transition-colors duration-200"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    <MaterialYouIcon name={showConfirmPassword ? 'eye-slash' : 'eye'} className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Terms and Privacy Checkbox */}
+              <div className="flex items-start space-x-3">
                 <input
                   id="acceptTerms"
                   name="acceptTerms"
@@ -236,86 +252,66 @@ export default function SignupPage() {
                   required
                   checked={formData.acceptTerms}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-automotive-accent focus:ring-automotive-accent border-gray-300 rounded"
+                  className="mt-1 h-4 w-4 text-md-sys-primary focus:ring-md-sys-primary border-md-sys-outline rounded"
                 />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="acceptTerms" className="text-gray-700">
+                <label htmlFor="acceptTerms" className="text-md-body-medium text-md-sys-on-surface">
                   I agree to the{' '}
-                  <Link href="/terms" className="text-automotive-accent hover:text-blue-500 underline">
+                  <Link href="/terms" className="text-md-sys-primary hover:text-md-sys-primary/80 underline font-medium">
                     Terms of Service
                   </Link>{' '}
                   and{' '}
-                  <Link href="/privacy" className="text-automotive-accent hover:text-blue-500 underline">
+                  <Link href="/privacy" className="text-md-sys-primary hover:text-md-sys-primary/80 underline font-medium">
                     Privacy Policy
                   </Link>
                 </label>
               </div>
-            </div>
 
-            <div>
+              {/* Create Account Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                  isLoading
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-automotive-accent hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-automotive-accent'
-                } transition duration-150 ease-in-out`}
+                className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-md-sys-primary text-md-sys-on-primary rounded-2xl hover:bg-md-sys-primary/90 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200 hover:scale-105 text-md-label-large font-semibold shadow-md-elevation-2 hover:shadow-md-elevation-3 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 {isLoading ? (
                   <>
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Creating Account...
+                    <LoadingSpinner />
+                    <span>Creating Account...</span>
                   </>
                 ) : (
-                  'Create Account'
+                  <>
+                    <MaterialYouIcon name="user-plus" className="w-5 h-5" />
+                    <span>Create Account</span>
+                  </>
                 )}
               </button>
-            </div>
 
-            <div className="text-center">
-              <span className="text-sm text-gray-600">
-                Already have an account?{' '}
-                <Link
-                  href="/login"
-                  className="font-medium text-automotive-accent hover:text-blue-500"
-                >
-                  Sign in
-                </Link>
-              </span>
-            </div>
-          </form>
-        </div>
+              {/* Sign In Link */}
+              <div className="text-center pt-2">
+                <p className="text-md-body-medium text-md-sys-on-surface-variant">
+                  Already have an account?{' '}
+                  <Link
+                    href="/login"
+                    className="font-semibold text-md-sys-primary hover:text-md-sys-primary/80 transition-colors duration-200"
+                  >
+                    Sign in
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </div>
 
-        <div className="text-center">
-          <Link
-            href="/"
-            className="text-sm text-gray-300 hover:text-white"
-          >
-            ← Back to Home
-          </Link>
+          {/* Back to Home Link */}
+          <div className="text-center">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-md-body-medium text-md-sys-on-surface-variant hover:text-md-sys-on-surface transition-colors duration-200"
+            >
+              <MaterialYouIcon name="arrow-left" className="w-4 h-4" />
+              <span>Back to Home</span>
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 } 

@@ -179,43 +179,43 @@ export default function ProfilePictureUpload({
       <div className="flex flex-col items-center space-y-3">
         {previewUrl && selectedFile ? (
           // Preview mode buttons
-          <div className="flex space-x-3">
+          <div className="flex space-x-2">
             <button
               onClick={handleUpload}
               disabled={isUploading}
-              className="flex items-center gap-2 px-4 py-2.5 bg-md-sys-primary text-md-sys-on-primary rounded-xl hover:bg-md-sys-primary/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus-visible:ring-2 focus-visible:ring-md-sys-primary text-md-label-large font-medium shadow-md-elevation-1 hover:shadow-md-elevation-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-md-sys-primary text-md-sys-on-primary rounded-lg hover:bg-md-sys-primary/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus-visible:ring-2 focus-visible:ring-md-sys-primary text-md-label-medium font-medium shadow-md-elevation-1 hover:shadow-md-elevation-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              <CheckIcon className="w-4 h-4" />
+              <CheckIcon className="w-3.5 h-3.5" />
               <span>{isUploading ? 'Uploading...' : 'Upload'}</span>
             </button>
             <button
               onClick={handleCancel}
               disabled={isUploading}
-              className="flex items-center gap-2 px-4 py-2.5 bg-md-sys-surface-container text-md-sys-on-surface rounded-xl border border-md-sys-outline-variant hover:bg-md-sys-surface-container-high transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 text-md-label-large font-medium shadow-md-elevation-1 hover:shadow-md-elevation-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-md-sys-surface-container text-md-sys-on-surface rounded-lg border border-md-sys-outline-variant hover:bg-md-sys-surface-container-high transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 text-md-label-medium font-medium shadow-md-elevation-1 hover:shadow-md-elevation-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              <XMarkIcon className="w-4 h-4" />
+              <XMarkIcon className="w-3.5 h-3.5" />
               <span>Cancel</span>
             </button>
           </div>
         ) : (
           // Normal mode buttons
-          <div className="flex space-x-3">
+          <div className="flex space-x-2">
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="flex items-center gap-2 px-4 py-2.5 bg-md-sys-primary text-md-sys-on-primary rounded-xl hover:bg-md-sys-primary/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus-visible:ring-2 focus-visible:ring-md-sys-primary text-md-label-large font-medium shadow-md-elevation-1 hover:shadow-md-elevation-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-md-sys-primary text-md-sys-on-primary rounded-lg hover:bg-md-sys-primary/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus-visible:ring-2 focus-visible:ring-md-sys-primary text-md-label-medium font-medium shadow-md-elevation-1 hover:shadow-md-elevation-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              <CameraIcon className="w-4 h-4" />
-              <span>Change Photo</span>
+              <CameraIcon className="w-3.5 h-3.5" />
+              <span>Change</span>
             </button>
             
             {currentImageUrl && (
               <button
                 onClick={handleRemoveImage}
                 disabled={isUploading}
-                className="flex items-center gap-2 px-4 py-2.5 bg-md-sys-error text-md-sys-on-error rounded-xl hover:bg-md-sys-error/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-error/20 focus-visible:ring-2 focus-visible:ring-md-sys-error text-md-label-large font-medium shadow-md-elevation-1 hover:shadow-md-elevation-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-md-sys-error text-md-sys-on-error rounded-lg hover:bg-md-sys-error/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-error/20 focus-visible:ring-2 focus-visible:ring-md-sys-error text-md-label-medium font-medium shadow-md-elevation-1 hover:shadow-md-elevation-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
-                <TrashIcon className="w-4 h-4" />
+                <TrashIcon className="w-3.5 h-3.5" />
                 <span>Remove</span>
               </button>
             )}

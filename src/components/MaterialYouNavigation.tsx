@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
+import { useProfile } from '@/hooks/useProfile';
 import { useMaterialYouTheme } from '@/lib/material-you-theme';
 import NotificationDropdown from '@/components/NotificationDropdown';
+import Avatar from '@/components/ui/Avatar';
 import { useState, useRef, useEffect } from 'react';
 import { MaterialYouIcon } from './ui/MaterialYouIcon';
 
@@ -13,6 +15,7 @@ interface MaterialYouNavigationProps {
 
 export default function MaterialYouNavigation({ className = '' }: MaterialYouNavigationProps) {
   const { user, signOut, loading } = useAuth();
+  const { profile, loading: profileLoading } = useProfile();
   const { theme, setThemeMode, isDarkMode } = useMaterialYouTheme();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -50,9 +53,9 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
+  // Updated navigation links - Browse Cars always visible, Dashboard moved to user menu
   const navigationLinks = [
     { href: '/browse', label: 'Browse Cars', icon: 'car' as const },
-    { href: '/dashboard', label: 'Dashboard', icon: 'home' as const, authRequired: true },
     { href: '/messages', label: 'Messages', icon: 'message' as const, authRequired: true },
     { href: '/sell', label: 'Sell Car', icon: 'currency-dollar' as const, authRequired: true },
   ];
@@ -99,7 +102,7 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
               </Link>
             </div>
 
-            {/* Center Navigation (Desktop) */}
+            {/* Center Navigation (Desktop) - Always show Browse Cars, Messages & Sell Car when authenticated */}
             <nav className="hidden lg:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
               {visibleLinks.map((link) => (
                 <Link
@@ -117,21 +120,16 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
             <div className="flex items-center space-x-2">
               {loading ? (
                 <div className="w-6 h-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-              ) : user ? (
+              ) : (
                 <>
-                  {/* Notifications */}
-                  <div className="hidden sm:block">
-                    <NotificationDropdown className="text-on-surface" />
-                  </div>
-
-                  {/* Theme Toggle */}
+                  {/* Always show Theme Toggle */}
                   <div className="relative" ref={themeMenuRef}>
                     <button
                       type="button"
                       className="inline-flex items-center justify-center w-10 h-10 rounded-full state-layer text-on-surface-variant hover:text-on-surface hover:bg-on-surface/[0.08] focus:bg-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard"
                       onClick={() => setThemeMenuOpen(!themeMenuOpen)}
                       aria-label="Theme options"
-                                            aria-expanded={themeMenuOpen}
+                      aria-expanded={themeMenuOpen}
                     >
                       <MaterialYouIcon
                         name={isDarkMode ? "moon" : "sun"}
@@ -179,87 +177,107 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
                     )}
                   </div>
 
-                  {/* User Menu */}
-                  <div className="relative" ref={userMenuRef}>
-                    <button
-                      type="button"
-                      className="flex items-center space-x-2 p-1 rounded-full state-layer text-on-surface hover:bg-on-surface/[0.08] focus:bg-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard"
-                      onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      aria-label="User menu"
-                      aria-expanded={userMenuOpen}
-                    >
-                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-on-primary text-sm font-medium">
-                        {(user.user_metadata?.display_name || user.email)?.charAt(0).toUpperCase()}
+                  {user ? (
+                    <>
+                      {/* Notifications */}
+                      <div className="hidden sm:block">
+                        <NotificationDropdown className="text-on-surface" />
                       </div>
-                      <span className="hidden lg:block text-body-medium">
-                        {user.user_metadata?.display_name || user.email?.split('@')[0]}
-                      </span>
-                    </button>
 
-                    {/* User Dropdown Menu */}
-                    {userMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-56 surface-container-high elevation-3 rounded-xl border border-outline-variant z-50">
-                        <div className="py-2">
-                          <div className="px-4 py-3 border-b border-outline-variant">
-                            <p className="text-body-medium text-on-surface">
-                              {user.user_metadata?.display_name || 'User'}
-                            </p>
-                            <p className="text-sm text-on-surface-variant">
-                              {user.email}
-                            </p>
+                      {/* User Menu - No name shown in navigation bar */}
+                      <div className="relative" ref={userMenuRef}>
+                        <button
+                          type="button"
+                          className="flex items-center p-1 rounded-full state-layer text-on-surface hover:bg-on-surface/[0.08] focus:bg-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard"
+                          onClick={() => setUserMenuOpen(!userMenuOpen)}
+                          aria-label="User menu"
+                          aria-expanded={userMenuOpen}
+                        >
+                          <Avatar 
+                            user={user}
+                            profileImageUrl={profile?.profile_image_url}
+                            size="md"
+                            showLetterFallback={true}
+                          />
+                        </button>
+
+                        {/* User Dropdown Menu with improved styling */}
+                        {userMenuOpen && (
+                          <div className="absolute right-0 mt-2 w-64 surface-container-high elevation-3 rounded-xl border border-outline-variant z-50">
+                            <div className="py-2">
+                              {/* User Info Section with improved styling */}
+                              <div className="px-4 py-4 border-b border-outline-variant">
+                                <div className="flex flex-col space-y-2">
+                                  <div className="flex-1">
+                                    <p className="text-title-medium font-semibold text-on-surface leading-tight">
+                                      {profile?.display_name || user.user_metadata?.display_name || user.email?.split('@')[0] || 'User'}
+                                    </p>
+                                    <div className="inline-block bg-secondary-container rounded-full px-3 py-1 mt-2">
+                                      <p className="text-sm font-medium text-on-secondary-container">
+                                        {user.email}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Dashboard - moved from main navigation */}
+                              <Link
+                                href="/dashboard"
+                                className="flex items-center px-4 py-3 text-on-surface hover:bg-on-surface/[0.08] text-body-large font-medium"
+                                onClick={() => setUserMenuOpen(false)}
+                              >
+                                <MaterialYouIcon name="home" size="md" className="mr-3" />
+                                Dashboard
+                              </Link>
+                              
+                              <hr className="my-1 border-outline-variant" />
+                              
+                              {/* Profile - shows public profile */}
+                              <Link
+                                href="/profile"
+                                className="flex items-center px-4 py-3 text-on-surface hover:bg-on-surface/[0.08] text-body-large font-medium"
+                                onClick={() => setUserMenuOpen(false)}
+                              >
+                                <MaterialYouIcon name="user" size="md" className="mr-3" />
+                                View Profile
+                              </Link>
+                              
+                                                             <hr className="my-1 border-outline-variant" />
+                              
+                              <button
+                                onClick={() => {
+                                  signOut();
+                                  setUserMenuOpen(false);
+                                }}
+                                className="flex items-center w-full px-4 py-3 text-on-surface hover:bg-on-surface/[0.08] text-body-large font-medium"
+                              >
+                                <MaterialYouIcon name="arrow-right" size="md" className="mr-3" />
+                                Sign Out
+                              </button>
+                            </div>
                           </div>
-                          
-                          <Link
-                            href="/profile"
-                            className="flex items-center px-4 py-2 text-on-surface hover:bg-on-surface/[0.08] text-body-medium"
-                            onClick={() => setUserMenuOpen(false)}
-                          >
-                            <MaterialYouIcon name="user" size="sm" className="mr-3" />
-                            View Profile
-                          </Link>
-                          
-                          <Link
-                            href="/profile"
-                            className="flex items-center px-4 py-2 text-on-surface hover:bg-on-surface/[0.08] text-body-medium"
-                            onClick={() => setUserMenuOpen(false)}
-                          >
-                            <MaterialYouIcon name="user" size="sm" className="mr-3" />
-                            Account Settings
-                          </Link>
-                          
-                          <hr className="my-1 border-outline-variant" />
-                          
-                          <button
-                            onClick={() => {
-                              signOut();
-                              setUserMenuOpen(false);
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-on-surface hover:bg-on-surface/[0.08] text-body-medium"
-                          >
-                            <MaterialYouIcon name="arrow-right" size="sm" className="mr-3" />
-                            Sign Out
-                          </button>
-                        </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </>
+                  ) : (
+                    /* Unauthenticated Actions */
+                    <div className="flex items-center space-x-3">
+                      <Link
+                        href="/login"
+                        className="text-on-surface-variant hover:text-on-surface transition-colors duration-md-short2 ease-md-standard text-label-large"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/signup"
+                        className="btn-primary"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  )}
                 </>
-              ) : (
-                /* Unauthenticated Actions */
-                <div className="flex items-center space-x-3">
-                  <Link
-                    href="/login"
-                    className="text-on-surface-variant hover:text-on-surface transition-colors duration-md-short2 ease-md-standard text-label-large"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="btn-primary"
-                  >
-                    Sign Up
-                  </Link>
-                </div>
               )}
             </div>
           </div>
@@ -304,20 +322,25 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
               </button>
             </div>
 
-            {/* User Section (if authenticated) */}
+            {/* User Section (if authenticated) with improved styling */}
             {user && (
               <div className="p-4 border-b border-outline-variant">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary text-lg font-medium">
-                    {(user.user_metadata?.display_name || user.email)?.charAt(0).toUpperCase()}
-                  </div>
+                  <Avatar 
+                    user={user}
+                    profileImageUrl={profile?.profile_image_url}
+                    size="xl"
+                    showLetterFallback={true}
+                  />
                   <div>
-                    <p className="text-body-medium text-on-surface font-medium">
-                      {user.user_metadata?.display_name || 'User'}
+                    <p className="text-title-medium font-semibold text-on-surface leading-tight">
+                      {profile?.display_name || user.user_metadata?.display_name || user.email?.split('@')[0] || 'User'}
                     </p>
-                    <p className="text-sm text-on-surface-variant">
-                      {user.email}
-                    </p>
+                    <div className="inline-block bg-secondary-container rounded-full px-3 py-1 mt-2">
+                      <p className="text-sm font-medium text-on-secondary-container">
+                        {user.email}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -341,6 +364,15 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
               {user && (
                 <>
                   <Link
+                    href="/dashboard"
+                    className="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface hover:bg-on-surface/[0.08] active:bg-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard text-label-large state-layer"
+                    onClick={() => setMobileDrawerOpen(false)}
+                  >
+                    <MaterialYouIcon name="home" size="lg" />
+                    <span>Dashboard</span>
+                  </Link>
+                  
+                  <Link
                     href="/profile"
                     className="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface hover:bg-on-surface/[0.08] active:bg-on-surface/[0.12] transition-all duration-md-short2 ease-md-standard text-label-large state-layer"
                     onClick={() => setMobileDrawerOpen(false)}
@@ -348,6 +380,8 @@ export default function MaterialYouNavigation({ className = '' }: MaterialYouNav
                     <MaterialYouIcon name="user" size="lg" />
                     <span>Profile</span>
                   </Link>
+
+
 
                   {/* Mobile Notifications */}
                   <div className="px-4 py-3">
