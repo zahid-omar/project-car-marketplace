@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
       authError: authError?.message || null,
       storage: {
         bucketsAccessible: false,
-        buckets: [],
-        policyTest: null
+        buckets: [] as string[],
+        policyTest: null as { canListUserFolder: boolean; error: string | null } | null
       }
     }
 
