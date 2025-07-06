@@ -44,6 +44,199 @@ interface UseFavoritesReturn {
   syncStatus: 'idle' | 'syncing' | 'synced' | 'error';
 }
 
+// Global subscription manager
+class FavoritesSubscriptionManager {
+  private static instance: FavoritesSubscriptionManager | null = null;
+  private channel: RealtimeChannel | null = null;
+  private supabase = createClientComponentClient();
+  private subscribers = new Set<(favorites: FavoriteWithListing[]) => void>();
+  private currentUserId: string | null = null;
+  private isConnected = false;
+  private connectionError: string | null = null;
+  private syncStatus: 'idle' | 'syncing' | 'synced' | 'error' = 'idle';
+  private statusSubscribers = new Set<(status: { isConnected: boolean; connectionError: string | null; syncStatus: 'idle' | 'syncing' | 'synced' | 'error' }) => void>();
+
+  static getInstance(): FavoritesSubscriptionManager {
+    if (!FavoritesSubscriptionManager.instance) {
+      FavoritesSubscriptionManager.instance = new FavoritesSubscriptionManager();
+    }
+    return FavoritesSubscriptionManager.instance;
+  }
+
+  subscribe(callback: (favorites: FavoriteWithListing[]) => void): () => void {
+    console.log('[FAVORITES MANAGER] Adding subscriber, total:', this.subscribers.size + 1);
+    this.subscribers.add(callback);
+    
+    return () => {
+      console.log('[FAVORITES MANAGER] Removing subscriber, total:', this.subscribers.size - 1);
+      this.subscribers.delete(callback);
+      
+      // Clean up subscription if no more subscribers
+      if (this.subscribers.size === 0) {
+        this.cleanup();
+      }
+    };
+  }
+
+  subscribeToStatus(callback: (status: { isConnected: boolean; connectionError: string | null; syncStatus: 'idle' | 'syncing' | 'synced' | 'error' }) => void): () => void {
+    this.statusSubscribers.add(callback);
+    
+    // Send current status immediately
+    callback({
+      isConnected: this.isConnected,
+      connectionError: this.connectionError,
+      syncStatus: this.syncStatus
+    });
+    
+    return () => {
+      this.statusSubscribers.delete(callback);
+    };
+  }
+
+  private notifyStatusSubscribers() {
+    const status = {
+      isConnected: this.isConnected,
+      connectionError: this.connectionError,
+      syncStatus: this.syncStatus
+    };
+    
+    this.statusSubscribers.forEach(callback => {
+      try {
+        callback(status);
+      } catch (err) {
+        console.error('[FAVORITES MANAGER] Error in status callback:', err);
+      }
+    });
+  }
+
+  private async notifySubscribers() {
+    if (this.subscribers.size === 0) return;
+    
+    try {
+      // Fetch fresh favorites data
+      const response = await fetch('/api/favorites');
+      if (response.ok) {
+        const data = await response.json();
+        const favoritesList = Array.isArray(data.favorites) ? data.favorites : [];
+        
+        this.subscribers.forEach(callback => {
+          try {
+            callback(favoritesList);
+          } catch (err) {
+            console.error('[FAVORITES MANAGER] Error in subscriber callback:', err);
+          }
+        });
+      }
+    } catch (err) {
+      console.error('[FAVORITES MANAGER] Error fetching favorites for subscribers:', err);
+    }
+  }
+
+  async setupSubscription(userId: string): Promise<void> {
+    if (this.currentUserId === userId && this.channel) {
+      console.log('[FAVORITES MANAGER] Subscription already exists for user:', userId);
+      return;
+    }
+
+    // Clean up existing subscription
+    await this.cleanup();
+
+    try {
+      console.log('[FAVORITES MANAGER] Setting up realtime subscription for user:', userId);
+      this.currentUserId = userId;
+      
+      this.channel = this.supabase.channel(`favorites_global_${userId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'favorites',
+            filter: `user_id=eq.${userId}`,
+          },
+          this.handleRealtimeChange.bind(this)
+        )
+        .on('presence', { event: 'sync' }, () => {
+          console.log('[FAVORITES MANAGER] Realtime presence synced');
+        });
+
+      // Subscribe with connection state handling
+      const subscriptionPromise = new Promise<void>((resolve, reject) => {
+        if (!this.channel) {
+          reject(new Error('Channel not initialized'));
+          return;
+        }
+
+        this.channel.subscribe((status, error) => {
+          console.log(`[FAVORITES MANAGER] Subscription status: ${status}`, error);
+          
+          this.isConnected = status === 'SUBSCRIBED';
+          this.connectionError = error?.message || null;
+          
+          if (status === 'SUBSCRIBED') {
+            this.syncStatus = 'synced';
+            resolve();
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            this.syncStatus = 'error';
+            this.connectionError = 'Real-time connection failed';
+            reject(error || new Error('Subscription failed'));
+          }
+          
+          this.notifyStatusSubscribers();
+        });
+      });
+
+      await subscriptionPromise;
+      console.log('[FAVORITES MANAGER] Realtime subscription established successfully');
+
+    } catch (err) {
+      console.error('[FAVORITES MANAGER] Error setting up realtime subscription:', err);
+      this.connectionError = err instanceof Error ? err.message : 'Subscription setup failed';
+      this.syncStatus = 'error';
+      this.notifyStatusSubscribers();
+      throw err;
+    }
+  }
+
+  private handleRealtimeChange(payload: RealtimePostgresChangesPayload<any>) {
+    console.log('[FAVORITES MANAGER] Realtime change received:', payload);
+    this.syncStatus = 'syncing';
+    this.notifyStatusSubscribers();
+
+    // Notify all subscribers with fresh data
+    this.notifySubscribers().then(() => {
+      this.syncStatus = 'synced';
+      this.notifyStatusSubscribers();
+    }).catch(err => {
+      console.error('[FAVORITES MANAGER] Error handling realtime change:', err);
+      this.syncStatus = 'error';
+      this.notifyStatusSubscribers();
+    });
+  }
+
+  private async cleanup() {
+    if (this.channel) {
+      console.log('[FAVORITES MANAGER] Cleaning up subscription');
+      await this.supabase.removeChannel(this.channel);
+      this.channel = null;
+    }
+    
+    this.currentUserId = null;
+    this.isConnected = false;
+    this.connectionError = null;
+    this.syncStatus = 'idle';
+    this.notifyStatusSubscribers();
+  }
+
+  getStatus() {
+    return {
+      isConnected: this.isConnected,
+      connectionError: this.connectionError,
+      syncStatus: this.syncStatus
+    };
+  }
+}
+
 export function useFavorites(): UseFavoritesReturn {
   const [favorites, setFavorites] = useState<FavoriteWithListing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,10 +246,8 @@ export function useFavorites(): UseFavoritesReturn {
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
   
   const supabase = createClientComponentClient();
-  const channelRef = useRef<RealtimeChannel | null>(null);
-  const userIdRef = useRef<string | null>(null);
   const mountedRef = useRef(true);
-  const subscriptionInitializedRef = useRef(false);
+  const subscriptionManager = FavoritesSubscriptionManager.getInstance();
 
   // Optimistic updates tracking
   const optimisticUpdatesRef = useRef<Set<string>>(new Set());
@@ -94,13 +285,13 @@ export function useFavorites(): UseFavoritesReturn {
       }
 
       const currentUserId = session.user.id;
-      userIdRef.current = currentUserId;
       console.log('[FAVORITES HOOK] Fetching from API...');
 
-      // Set up realtime subscription after getting user ID
-      if (!subscriptionInitializedRef.current && currentUserId) {
-        setupRealtimeSubscription(currentUserId);
-        subscriptionInitializedRef.current = true;
+      // Set up global realtime subscription
+      try {
+        await subscriptionManager.setupSubscription(currentUserId);
+      } catch (subscriptionError) {
+        console.warn('[FAVORITES HOOK] Subscription setup failed, continuing without realtime:', subscriptionError);
       }
 
       const response = await fetch('/api/favorites', {
@@ -155,152 +346,7 @@ export function useFavorites(): UseFavoritesReturn {
         console.log('[FAVORITES HOOK] Component unmounted, skipping loading state update');
       }
     }
-  }, [supabase]);
-
-  // Real-time subscription setup
-  const setupRealtimeSubscription = useCallback(async (userId: string) => {
-    if (!userId || channelRef.current) {
-      console.log('[FAVORITES] Subscription already exists or no user ID');
-      return;
-    }
-
-    try {
-      console.log('[FAVORITES] Setting up realtime subscription for user:', userId);
-
-      const channel = supabase.channel(`favorites_${userId}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'favorites',
-            filter: `user_id=eq.${userId}`,
-          },
-          handleRealtimeChange
-        )
-        .on('presence', { event: 'sync' }, () => {
-          console.log('[FAVORITES] Realtime presence synced');
-        })
-        .on('broadcast', { event: 'favorites_update' }, handleBroadcastUpdate);
-
-      // Subscribe with connection state handling
-      const subscriptionPromise = new Promise<void>((resolve, reject) => {
-        channel.subscribe((status, error) => {
-          if (!mountedRef.current) {
-            console.log('[FAVORITES] Component unmounted during subscription');
-            return;
-          }
-
-          console.log(`[FAVORITES] Realtime subscription status: ${status}`, error);
-          
-          setIsConnected(status === 'SUBSCRIBED');
-          setConnectionError(error?.message || null);
-          
-          if (status === 'SUBSCRIBED') {
-            setSyncStatus('synced');
-            resolve();
-          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            setSyncStatus('error');
-            setConnectionError('Real-time connection failed');
-            reject(error || new Error('Subscription failed'));
-          }
-        });
-      });
-
-      channelRef.current = channel;
-      
-      // Wait for subscription to complete
-      await subscriptionPromise;
-      console.log('[FAVORITES] Realtime subscription established successfully');
-
-    } catch (err) {
-      console.error('[FAVORITES] Error setting up realtime subscription:', err);
-      if (mountedRef.current) {
-        setConnectionError(err instanceof Error ? err.message : 'Subscription setup failed');
-        setSyncStatus('error');
-      }
-    }
-  }, [supabase]);
-
-  // Handle real-time database changes
-  const handleRealtimeChange = useCallback((payload: RealtimePostgresChangesPayload<any>) => {
-    if (!mountedRef.current) return;
-
-    console.log('[FAVORITES] Realtime change received:', payload);
-    setSyncStatus('syncing');
-
-    try {
-      const { eventType, new: newRecord, old: oldRecord } = payload;
-
-      setFavorites(currentFavorites => {
-        let updatedFavorites = [...currentFavorites];
-
-        switch (eventType) {
-          case 'INSERT':
-            // Check if this is an optimistic update we already have
-            if (newRecord && !optimisticUpdatesRef.current.has(newRecord.listing_id)) {
-              // Fetch the full favorite with listing details
-              fetchFavoriteDetails(newRecord.id).then(favoriteWithListing => {
-                if (favoriteWithListing && mountedRef.current) {
-                  setFavorites(prev => {
-                    const exists = prev.some(fav => fav.id === favoriteWithListing.id);
-                    if (!exists) {
-                      return [...prev, favoriteWithListing];
-                    }
-                    return prev;
-                  });
-                }
-              });
-            } else if (newRecord) {
-              // Remove from optimistic updates tracking
-              optimisticUpdatesRef.current.delete(newRecord.listing_id);
-            }
-            break;
-
-          case 'DELETE':
-            if (oldRecord) {
-              updatedFavorites = updatedFavorites.filter(fav => fav.id !== oldRecord.id);
-              // Remove from optimistic updates tracking
-              optimisticUpdatesRef.current.delete(oldRecord.listing_id);
-            }
-            break;
-
-          case 'UPDATE':
-            if (newRecord) {
-              const index = updatedFavorites.findIndex(fav => fav.id === newRecord.id);
-              if (index >= 0) {
-                // Fetch updated details
-                fetchFavoriteDetails(newRecord.id).then(favoriteWithListing => {
-                  if (favoriteWithListing && mountedRef.current) {
-                    setFavorites(prev => prev.map(fav => 
-                      fav.id === favoriteWithListing.id ? favoriteWithListing : fav
-                    ));
-                  }
-                });
-              }
-            }
-            break;
-        }
-
-        return updatedFavorites;
-      });
-
-      setSyncStatus('synced');
-    } catch (err) {
-      console.error('[FAVORITES] Error handling realtime change:', err);
-      setSyncStatus('error');
-    }
-  }, []);
-
-  // Handle broadcast updates (for cross-tab communication)
-  const handleBroadcastUpdate = useCallback((payload: any) => {
-    console.log('[FAVORITES] Broadcast update received:', payload);
-    
-    if (payload.type === 'favorites_refresh' && payload.user_id === userIdRef.current) {
-      // Refresh favorites from another tab/window
-      fetchFavorites();
-    }
-  }, [fetchFavorites]);
+  }, [supabase, subscriptionManager]);
 
   // Fetch favorite details with listing info
   const fetchFavoriteDetails = async (favoriteId: string): Promise<FavoriteWithListing | null> => {
@@ -365,10 +411,6 @@ export function useFavorites(): UseFavoritesReturn {
   // Enhanced add to favorites with optimistic updates
   const addToFavorites = useCallback(async (listingId: string): Promise<boolean> => {
     try {
-      if (!userIdRef.current) {
-        throw new Error('User not authenticated');
-      }
-
       // Optimistic update - add to tracking
       optimisticUpdatesRef.current.add(listingId);
       setSyncStatus('syncing');
@@ -432,20 +474,6 @@ export function useFavorites(): UseFavoritesReturn {
           return prev;
         });
       }
-      
-      // Broadcast update to other tabs
-      if (channelRef.current) {
-        channelRef.current.send({
-          type: 'broadcast',
-          event: 'favorites_update',
-          payload: {
-            type: 'favorites_refresh',
-            user_id: userIdRef.current,
-            action: 'add',
-            listing_id: listingId
-          }
-        });
-      }
 
       optimisticUpdatesRef.current.delete(listingId);
       setSyncStatus('synced');
@@ -457,15 +485,11 @@ export function useFavorites(): UseFavoritesReturn {
       setError(err instanceof Error ? err.message : 'Failed to add to favorites');
       return false;
     }
-  }, []);
+  }, [subscriptionManager]);
 
   // Enhanced remove from favorites with optimistic updates
   const removeFromFavorites = useCallback(async (listingId: string): Promise<boolean> => {
     try {
-      if (!userIdRef.current) {
-        throw new Error('User not authenticated');
-      }
-
       // Optimistic update - track removal
       optimisticUpdatesRef.current.add(listingId);
       setSyncStatus('syncing');
@@ -481,20 +505,6 @@ export function useFavorites(): UseFavoritesReturn {
         // Revert optimistic update on error
         fetchFavorites();
         throw new Error(`Failed to remove favorite: ${response.status}`);
-      }
-
-      // Broadcast update to other tabs
-      if (channelRef.current) {
-        channelRef.current.send({
-          type: 'broadcast',
-          event: 'favorites_update',
-          payload: {
-            type: 'favorites_refresh',
-            user_id: userIdRef.current,
-            action: 'remove',
-            listing_id: listingId
-          }
-        });
       }
 
       optimisticUpdatesRef.current.delete(listingId);
@@ -543,6 +553,28 @@ export function useFavorites(): UseFavoritesReturn {
     await fetchFavorites();
   }, [fetchFavorites]);
 
+  // Subscribe to global favorites updates
+  useEffect(() => {
+    const unsubscribeFromUpdates = subscriptionManager.subscribe((newFavorites) => {
+      if (mountedRef.current) {
+        setFavorites(newFavorites);
+      }
+    });
+
+    const unsubscribeFromStatus = subscriptionManager.subscribeToStatus((status) => {
+      if (mountedRef.current) {
+        setIsConnected(status.isConnected);
+        setConnectionError(status.connectionError);
+        setSyncStatus(status.syncStatus);
+      }
+    });
+
+    return () => {
+      unsubscribeFromUpdates();
+      unsubscribeFromStatus();
+    };
+  }, [subscriptionManager]);
+
   // Initial setup and cleanup
   useEffect(() => {
     console.log('[FAVORITES HOOK] Initial useEffect triggered');
@@ -553,16 +585,8 @@ export function useFavorites(): UseFavoritesReturn {
     return () => {
       console.log('[FAVORITES HOOK] Cleanup - setting mounted to false');
       mountedRef.current = false;
-      subscriptionInitializedRef.current = false;
-      
-      // Clean up realtime subscription
-      if (channelRef.current) {
-        console.log('[FAVORITES HOOK] Cleaning up realtime subscription');
-        supabase.removeChannel(channelRef.current);
-        channelRef.current = null;
-      }
     };
-  }, [fetchFavorites, supabase]);
+  }, [fetchFavorites, subscriptionManager]);
 
   return {
     favorites,
