@@ -175,6 +175,63 @@ export default function ListingPage({ params }: ListingPageProps) {
     }
   };
 
+  // Social sharing functions
+  const handleShareFacebook = () => {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(`${listing.year} ${listing.make} ${listing.model} - ${formatPrice(listing.price)}`);
+    const description = encodeURIComponent(`Check out this ${listing.year} ${listing.make} ${listing.model} for sale!`);
+    
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${title} - ${description}`;
+    window.open(facebookUrl, '_blank', 'width=600,height=400');
+  };
+
+  const handleShareWhatsApp = () => {
+    const url = window.location.href;
+    const message = encodeURIComponent(
+      `Check out this ${listing.year} ${listing.make} ${listing.model} for sale! 🚗\n` +
+      `Price: ${formatPrice(listing.price)}\n` +
+      `Location: ${listing.location}\n` +
+      `${url}`
+    );
+    
+    const whatsappUrl = `https://wa.me/?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      
+      // Show a temporary success message (you could replace this with a toast notification)
+      const button = document.querySelector('[data-copy-button]');
+      if (button) {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      }
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+      
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = window.location.href;
+      document.body.appendChild(textArea);
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        alert('Link copied to clipboard!');
+      } catch (fallbackErr) {
+        console.error('Fallback copy failed:', fallbackErr);
+        alert('Unable to copy link. Please copy the URL manually.');
+      } finally {
+        document.body.removeChild(textArea);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <AppLayout showNavigation={true}>
@@ -496,12 +553,14 @@ export default function ListingPage({ params }: ListingPageProps) {
                     >
                       Contact Seller
                     </button>
-                    <button 
-                      onClick={() => setShowOfferModal(true)}
-                      className="w-full border border-md-sys-outline text-md-sys-on-surface py-3 px-6 rounded-xl font-medium hover:bg-md-sys-surface-container-high transition-colors text-md-label-large focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20"
-                    >
-                      Make an Offer
-                    </button>
+                    {user && (
+                      <button 
+                        onClick={() => setShowOfferModal(true)}
+                        className="w-full border border-md-sys-outline text-md-sys-on-surface py-3 px-6 rounded-xl font-medium hover:bg-md-sys-surface-container-high transition-colors text-md-label-large focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20"
+                      >
+                        Make an Offer
+                      </button>
+                    )}
                     <button 
                       onClick={handleFavoriteToggle}
                       disabled={isToggling}
@@ -569,13 +628,26 @@ export default function ListingPage({ params }: ListingPageProps) {
                 <div className="bg-md-sys-surface-container-low rounded-3xl shadow-md-elevation-1 p-6">
                   <h3 className="text-md-title-medium font-semibold text-md-sys-on-surface mb-3">Share this listing</h3>
                   <div className="flex gap-2">
-                    <button className="flex-1 bg-md-sys-primary text-md-sys-on-primary py-2 px-3 rounded-xl text-md-label-medium hover:bg-md-sys-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20">
+                    <button 
+                      onClick={handleShareFacebook}
+                      className="flex-1 bg-md-sys-primary text-md-sys-on-primary py-2 px-3 rounded-xl text-md-label-medium hover:bg-md-sys-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20"
+                      aria-label="Share on Facebook"
+                    >
                       Facebook
                     </button>
-                    <button className="flex-1 bg-md-sys-secondary text-md-sys-on-secondary py-2 px-3 rounded-xl text-md-label-medium hover:bg-md-sys-secondary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-md-sys-secondary/20">
-                      Twitter
+                    <button 
+                      onClick={handleShareWhatsApp}
+                      className="flex-1 bg-md-sys-secondary text-md-sys-on-secondary py-2 px-3 rounded-xl text-md-label-medium hover:bg-md-sys-secondary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-md-sys-secondary/20"
+                      aria-label="Share on WhatsApp"
+                    >
+                      WhatsApp
                     </button>
-                    <button className="flex-1 bg-md-sys-tertiary text-md-sys-on-tertiary py-2 px-3 rounded-xl text-md-label-medium hover:bg-md-sys-tertiary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-md-sys-tertiary/20">
+                    <button 
+                      onClick={handleCopyLink}
+                      data-copy-button
+                      className="flex-1 bg-md-sys-tertiary text-md-sys-on-tertiary py-2 px-3 rounded-xl text-md-label-medium hover:bg-md-sys-tertiary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-md-sys-tertiary/20"
+                      aria-label="Copy link to clipboard"
+                    >
                       Copy Link
                     </button>
                   </div>
