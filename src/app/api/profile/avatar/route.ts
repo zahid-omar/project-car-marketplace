@@ -94,7 +94,6 @@ export async function POST(request: NextRequest) {
     if (uploadError) {
       console.error('Upload error details:', {
         message: uploadError.message,
-        statusCode: uploadError.statusCode,
         error: uploadError
       })
       return NextResponse.json({ 
