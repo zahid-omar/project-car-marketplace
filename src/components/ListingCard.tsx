@@ -158,7 +158,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
                 role="img"
                 aria-label={`No image available for ${getCarDescription()}`}
               >
-                <MaterialYouIcon name="car" className="w-8 h-8 text-md-sys-on-surface-variant/30" aria-hidden="true" />
+                <MaterialYouIcon name="car" className="w-8 h-8 text-md-sys-on-surface-variant/30" aria-hidden={true} />
               </div>
             )}
           </div>
@@ -238,7 +238,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
               >
                 {listing.engine && (
                   <div className="flex items-center space-x-2">
-                    <MaterialYouIcon name="engine" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden="true" />
+                    <MaterialYouIcon name="engine" className="w-4 h-4 text-md-sys-on-surface-variant" aria-hidden={true} />
                     <span className="text-md-body-medium text-md-sys-on-surface">
                       <span className="sr-only">Engine: </span>
                       {listing.engine}

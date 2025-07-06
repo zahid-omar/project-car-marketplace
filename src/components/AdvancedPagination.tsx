@@ -265,8 +265,8 @@ export default function AdvancedPagination({
                 aria-label="Go to first page"
                 title="First page (Home)"
               >
-                <MaterialYouIcon name="chevron-left" size="sm" aria-hidden="true" />
-                <MaterialYouIcon name="chevron-left" size="sm" aria-hidden="true" className="-ml-1" />
+                <MaterialYouIcon name="chevron-left" size="sm" aria-hidden={true} />
+                <MaterialYouIcon name="chevron-left" size="sm" aria-hidden={true} className="-ml-1" />
               </button>
 
               {/* Previous Page */}
@@ -277,7 +277,7 @@ export default function AdvancedPagination({
                 aria-label="Go to previous page"
                 title="Previous page (←)"
               >
-                <MaterialYouIcon name="chevron-left" size="sm" aria-hidden="true" />
+                <MaterialYouIcon name="chevron-left" size="sm" aria-hidden={true} />
               </button>
 
               {/* Page Numbers */}
@@ -329,7 +329,7 @@ export default function AdvancedPagination({
                 aria-label="Go to next page"
                 title="Next page (→)"
               >
-                <MaterialYouIcon name="chevron-right" size="sm" aria-hidden="true" />
+                <MaterialYouIcon name="chevron-right" size="sm" aria-hidden={true} />
               </button>
 
               {/* Last Page */}
@@ -340,8 +340,8 @@ export default function AdvancedPagination({
                 aria-label="Go to last page"
                 title="Last page (End)"
               >
-                <MaterialYouIcon name="chevron-right" size="sm" aria-hidden="true" />
-                <MaterialYouIcon name="chevron-right" size="sm" aria-hidden="true" className="-ml-1" />
+                <MaterialYouIcon name="chevron-right" size="sm" aria-hidden={true} />
+                <MaterialYouIcon name="chevron-right" size="sm" aria-hidden={true} className="-ml-1" />
               </button>
             </div>
           </nav>

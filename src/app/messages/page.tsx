@@ -23,7 +23,6 @@ export default function MessagesPage() {
   // Handle new message notifications
   const handleNewMessage = (message: MessageWithProfiles) => {
     addToast({
-      id: `message_${message.id}`,
       type: 'info',
       title: `New message from ${message.sender.display_name}`,
       message: `About ${message.listing?.title}`,
@@ -87,6 +86,9 @@ export default function MessagesPage() {
       if (msg.parent_message_id) {
         const parent = messageMap.get(msg.parent_message_id);
         if (parent) {
+          if (!parent.replies) {
+            parent.replies = [];
+          }
           parent.replies.push(threadedMsg);
         } else {
           rootMessages.push(threadedMsg);
@@ -139,8 +141,8 @@ export default function MessagesPage() {
     if (updatedConversation) {
       // Only update if the conversation actually changed in meaningful ways
       // Avoid updating based on unread_count as it can cause loops
-      const hasSignificantChanges = 
-        updatedConversation.last_message_created_at !== activeConversation.last_message_created_at ||
+            const hasSignificantChanges =
+        (updatedConversation as any).last_message_created_at !== (activeConversation as any).last_message_created_at ||
         (updatedConversation.messages?.length || 0) !== (activeConversation.messages?.length || 0);
       
       if (hasSignificantChanges) {

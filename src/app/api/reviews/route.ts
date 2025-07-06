@@ -44,8 +44,8 @@ export async function GET(request: NextRequest) {
     const reviews = []
     if (reviewsData && reviewsData.length > 0) {
       // Get unique reviewer IDs and listing IDs
-      const reviewerIds = [...new Set(reviewsData.map(r => r.reviewer_id))]
-      const listingIds = [...new Set(reviewsData.filter(r => r.listing_id).map(r => r.listing_id))]
+      const reviewerIds = Array.from(new Set(reviewsData.map(r => r.reviewer_id)))
+      const listingIds = Array.from(new Set(reviewsData.filter(r => r.listing_id).map(r => r.listing_id)))
 
       // Fetch reviewer profiles
       const { data: profiles } = await supabase
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
         .in('id', reviewerIds)
 
       // Fetch listing data if there are any
-      let listings = []
+      let listings: any[] = []
       if (listingIds.length > 0) {
         const { data: listingData } = await supabase
           .from('listings')

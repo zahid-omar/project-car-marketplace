@@ -104,16 +104,7 @@ export default function SearchResultsPage() {
   const [favoriteListings, setFavoriteListings] = useState<Set<string>>(new Set());
 
   // Search hook integration
-  const {
-    results,
-    loading,
-    error,
-    analytics,
-    executeSearch,
-    clearResults
-  } = useDynamicSearch({
-    enableAnalytics: true,
-    enableValidation: true,
+  const searchHook = useDynamicSearch({
     debounceMs: 300
   });
 
@@ -159,8 +150,10 @@ export default function SearchResultsPage() {
 
   // Execute search when query changes
   useEffect(() => {
-    executeSearch(searchQuery);
-  }, [searchQuery, executeSearch]);
+    if (searchHook.search) {
+      searchHook.search(searchQuery as any);
+    }
+  }, [searchQuery, searchHook.search]);
 
   // URL synchronization
   const updateURL = useCallback((newFilters: SearchFilters, newPage: number, newItemsPerPage: number, newViewMode: 'grid' | 'list') => {
@@ -289,16 +282,16 @@ export default function SearchResultsPage() {
   }, [filters]);
 
   // Get listings with relevance scores
-  const enhancedListings = useMemo(() => {
-    if (!results?.data) return [];
-    
-    return results.data.map((listing: any) => ({
+    const enhancedListings = useMemo(() => {
+    if (!(searchHook.data as any)?.data) return [];
+
+    return (searchHook.data as any).data.map((listing: any) => ({
       ...listing,
-      relevanceScore: listing._score || analytics?.averageRelevance || 0,
+              relevanceScore: listing._score || (searchHook as any).analytics?.averageRelevance || 0,
       views: Math.floor(Math.random() * 1000), // TODO: Get real view counts
       favorites: Math.floor(Math.random() * 50) // TODO: Get real favorite counts
     }));
-  }, [results?.data, analytics?.averageRelevance]);
+  }, [searchHook.data, (searchHook as any).analytics?.averageRelevance]);
 
   return (
     <div className="min-h-screen bg-md-sys-surface">
@@ -317,17 +310,17 @@ export default function SearchResultsPage() {
           </div>
         </div>
 
-        {/* Analytics Dashboard */}
-        {showAnalytics && analytics && (
+                {/* Analytics Dashboard */}
+        {/* {showAnalytics && (searchHook as any).analytics && (
           <div className="mb-6">
-            <SearchAnalyticsDashboard 
+            <SearchAnalyticsDashboard
               analytics={{
-                ...analytics,
+                ...(searchHook as any).analytics,
                 searchQuery: filters.query
               }}
             />
           </div>
-        )}
+        )} */}
 
         {/* Filter Toggle (Mobile) */}
         <div className="lg:hidden mb-6">
@@ -336,7 +329,7 @@ export default function SearchResultsPage() {
             className="flex items-center gap-3 px-6 py-4 bg-md-sys-primary-container text-md-sys-on-primary-container rounded-xl hover:bg-md-sys-primary-container/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus-visible:ring-2 focus-visible:ring-md-sys-primary shadow-md hover:shadow-lg border border-md-sys-outline-variant"
           >
             <div className="p-1 bg-md-sys-primary/10 rounded-lg">
-              <MaterialYouIcon name="filter" className="w-5 h-5" />
+              <MaterialYouIcon name="adjustments-horizontal" className="w-5 h-5" />
             </div>
             <div className="flex flex-col items-start">
               <span className="text-md-label-large font-medium">Filters</span>
@@ -360,7 +353,7 @@ export default function SearchResultsPage() {
             <FilterSidebar 
               filters={filters}
               onFilterChange={handleFilterChange}
-              totalItems={results?.pagination?.totalItems || 0}
+              totalItems={(searchHook.data as any)?.pagination?.totalItems || 0}
             />
           </div>
 
@@ -369,18 +362,18 @@ export default function SearchResultsPage() {
             {/* Results Header */}
             <SearchResultsHeader
               searchQuery={filters.query}
-              totalResults={results?.pagination?.totalItems || 0}
+              totalResults={(searchHook.data as any)?.pagination?.totalItems || 0}
               currentPage={currentPage}
               itemsPerPage={itemsPerPage}
               sortBy={filters.sortBy}
               onSortChange={handleSortChange}
               viewMode={viewMode}
               onViewModeChange={handleViewModeChange}
-              loading={loading}
-              executionTime={analytics?.executionTime}
+              loading={searchHook.isLoading}
+              executionTime={(searchHook as any).analytics?.executionTime}
               showAnalytics={showAnalytics}
               onAnalyticsToggle={() => setShowAnalytics(!showAnalytics)}
-              relevanceScore={analytics?.averageRelevance}
+              relevanceScore={(searchHook as any).analytics?.averageRelevance}
             />
 
             {/* Filter Breadcrumbs */}
@@ -391,29 +384,29 @@ export default function SearchResultsPage() {
             />
 
             {/* Loading State */}
-            {loading && (
+            {searchHook.isLoading && (
               <div className="flex justify-center items-center py-20">
                 <LoadingSpinner />
               </div>
             )}
 
             {/* Error State */}
-            {error && (
+            {searchHook.error && (
               <div className="bg-md-sys-error-container border border-md-sys-error/20 rounded-xl p-8 mb-8 shadow-md">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="p-3 bg-md-sys-error/10 rounded-full">
-                    <MaterialYouIcon name="warning" className="w-8 h-8 text-md-sys-error" />
+                    <MaterialYouIcon name="exclamation-triangle" className="w-8 h-8 text-md-sys-error" />
                   </div>
                   <div>
                     <h3 className="text-md-title-large font-medium text-md-sys-on-error-container mb-2">
                       Search Error
                     </h3>
                     <p className="text-md-body-medium text-md-sys-on-error-container/80 mb-6 max-w-md">
-                      {error}
+                      {searchHook.error}
                     </p>
                   </div>
                   <button
-                    onClick={() => executeSearch(searchQuery)}
+                    onClick={() => searchHook.search && searchHook.search(searchQuery as any)}
                     className="flex items-center gap-2 px-6 py-3 bg-md-sys-primary text-md-sys-on-primary rounded-xl hover:bg-md-sys-primary/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus-visible:ring-2 focus-visible:ring-md-sys-primary text-md-label-large font-medium shadow-md hover:shadow-lg"
                   >
                     <MaterialYouIcon name="refresh" className="w-5 h-5" />
@@ -424,7 +417,7 @@ export default function SearchResultsPage() {
             )}
 
             {/* Results Content */}
-            {!loading && !error && (
+            {!searchHook.isLoading && !searchHook.error && (
               <>
                 {enhancedListings.length > 0 ? (
                   <>
@@ -451,12 +444,12 @@ export default function SearchResultsPage() {
                     {/* Pagination */}
                     <AdvancedPagination
                       currentPage={currentPage}
-                      totalPages={results?.pagination?.totalPages || 1}
-                      totalItems={results?.pagination?.totalItems || 0}
+                      totalPages={(searchHook.data as any)?.pagination?.totalPages || 1}
+                      totalItems={(searchHook.data as any)?.pagination?.totalItems || 0}
                       itemsPerPage={itemsPerPage}
                       onPageChange={handlePageChange}
                       onItemsPerPageChange={handleItemsPerPageChange}
-                      loading={loading}
+                      loading={searchHook.isLoading}
                       itemsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}
                       showItemsPerPage={true}
                       showJumpToPage={true}

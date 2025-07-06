@@ -206,7 +206,7 @@ export async function GET(request: NextRequest) {
           .from('modifications')
           .select('listing_id');
         
-        const allListingIds = [...new Set(allModListingIds?.map(item => item.listing_id) || [])];
+        const allListingIds = Array.from(new Set(allModListingIds?.map(item => item.listing_id) || []));
         if (allListingIds.length > 0) {
           searchQuery = searchQuery.in('id', allListingIds);
           countQuery = countQuery.in('id', allListingIds);

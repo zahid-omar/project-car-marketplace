@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
+import { getErrorMessage } from '@/lib/utils';
 
 const sendMessageSchema = z.object({
   listing_id: z.string().uuid(),
@@ -293,7 +294,7 @@ export async function POST(request: NextRequest) {
       threadOrder = (lastMessage?.thread_order || 0) + 1;
     } else {
       // This is a new thread
-      threadId = null; // Will be set to message ID after creation
+      threadId = undefined; // Will be set to message ID after creation
       threadDepth = 0;
       threadOrder = 0;
 
@@ -446,7 +447,7 @@ export async function PATCH(request: NextRequest) {
             console.error('Error archiving conversation:', upsertError);
             return NextResponse.json({ 
               error: 'Failed to archive conversation', 
-              details: upsertError.message 
+              details: getErrorMessage(upsertError) 
             }, { status: 500 });
           }
         }

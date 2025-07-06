@@ -476,7 +476,7 @@ export default function ListingPage({ params }: ListingPageProps) {
                           className="rounded-full object-cover"
                         />
                       ) : (
-                        <MaterialYouIcon name="person" className="w-6 h-6 text-md-sys-on-surface-variant" />
+                        <MaterialYouIcon name="user" className="w-6 h-6 text-md-sys-on-surface-variant" />
                       )}
                     </div>
                     <div>
@@ -524,7 +524,7 @@ export default function ListingPage({ params }: ListingPageProps) {
                         <div className="w-4 h-4 border-2 border-md-sys-on-surface-variant border-t-transparent rounded-full animate-spin" />
                       ) : (
                         <MaterialYouIcon 
-                          name={listing && isFavorited(listing.id) && user ? "heart-filled" : "heart-outline"} 
+                          name={listing && isFavorited(listing.id) && user ? "heart" : "heart-outline"} 
                           className={`w-4 h-4 transition-colors ${
                             listing && isFavorited(listing.id) && user
                               ? 'text-md-sys-error' 
@@ -560,7 +560,7 @@ export default function ListingPage({ params }: ListingPageProps) {
                 <div className="bg-md-sys-surface-container-low rounded-3xl shadow-md-elevation-1 p-6">
                   <h3 className="text-md-title-medium font-semibold text-md-sys-on-surface mb-3">Location</h3>
                   <div className="flex items-center gap-2 text-md-sys-on-surface-variant">
-                    <MaterialYouIcon name="location-pin" className="w-4 h-4" />
+                    <MaterialYouIcon name="map-pin" className="w-4 h-4" />
                     <span className="text-md-body-medium">{listing.location}</span>
                   </div>
                 </div>

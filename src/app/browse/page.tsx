@@ -405,7 +405,7 @@ export default function BrowsePage() {
             className="flex items-center gap-3 px-6 py-4 bg-md-sys-primary-container text-md-sys-on-primary-container rounded-xl hover:bg-md-sys-primary-container/90 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus-visible:ring-2 focus-visible:ring-md-sys-primary shadow-md hover:shadow-lg border border-md-sys-outline-variant"
           >
             <div className="p-1 bg-md-sys-primary/10 rounded-lg">
-              <MaterialYouIcon name="filter" className="w-5 h-5" />
+              <MaterialYouIcon name="adjustments-horizontal" className="w-5 h-5" />
             </div>
             <div className="flex flex-col items-start">
               <span className="text-md-label-large font-medium">Filters</span>
@@ -469,7 +469,7 @@ export default function BrowsePage() {
               <div className="bg-md-sys-error-container border border-md-sys-error/20 rounded-xl p-8 mb-8 shadow-md">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="p-3 bg-md-sys-error/10 rounded-full">
-                    <MaterialYouIcon name="warning" className="w-8 h-8 text-md-sys-error" />
+                    <MaterialYouIcon name="exclamation-triangle" className="w-8 h-8 text-md-sys-error" />
                   </div>
                   <div>
                     <h3 className="text-md-title-large font-medium text-md-sys-on-error-container mb-2">

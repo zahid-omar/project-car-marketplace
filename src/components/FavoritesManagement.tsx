@@ -272,8 +272,8 @@ export default function FavoritesManagement({ className }: FavoritesManagementPr
 
   const clearFilters = () => {
     setSearchQuery('');
-    setPriceRange(filterOptions.priceRange);
-    setYearRange(filterOptions.yearRange);
+    setPriceRange(filterOptions.priceRange as [number, number]);
+    setYearRange(filterOptions.yearRange as [number, number]);
     setSelectedMakes(new Set());
     setSelectedConditions(new Set());
     setStatusMessage('All filters cleared');

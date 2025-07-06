@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate analytics
-    const analytics = calculateOfferAnalytics(allOffers || [], user.id, type);
+    const analytics = calculateOfferAnalytics(allOffers || [], user.id, type || undefined);
 
     // Get offer history for detailed timeline
     const { data: offerHistory, error: historyError } = await supabase
@@ -196,7 +196,7 @@ function calculateOfferAnalytics(offers: any[], userId: string, type?: string) {
 }
 
 function generateMonthlyActivity(offers: any[]) {
-  const monthlyData = {};
+  const monthlyData: Record<string, any> = {};
   
   offers.forEach(offer => {
     const date = new Date(offer.created_at);
@@ -254,7 +254,7 @@ function calculateValueRanges(offers: any[]) {
 }
 
 function calculateTopListings(listingOffers: any[]) {
-  const listingStats = {};
+  const listingStats: Record<string, any> = {};
   
   listingOffers.forEach(offer => {
     const listingId = offer.listing_id;
@@ -287,7 +287,7 @@ function calculateTopListings(listingOffers: any[]) {
   return Object.values(listingStats)
     .map((stats: any) => ({
       ...stats,
-      average_offer: stats.offer_amounts.reduce((sum, amount) => sum + amount, 0) / stats.offer_amounts.length,
+      average_offer: stats.offer_amounts.reduce((sum: number, amount: number) => sum + amount, 0) / stats.offer_amounts.length,
       success_rate: (stats.accepted_offers / stats.total_offers) * 100
     }))
     .sort((a, b) => b.total_offers - a.total_offers)

@@ -187,12 +187,13 @@ export async function GET(request: NextRequest) {
       limit: parseInt(searchParams.get('limit') || '12')
     };
 
-    // Remove undefined values
+        // Remove undefined values
     Object.keys(queryParams).forEach(key => {
-      if (queryParams[key] === undefined || 
-          (typeof queryParams[key] === 'object' && 
-           Object.values(queryParams[key]).every(v => v === undefined))) {
-        delete queryParams[key];
+      const value = (queryParams as any)[key];
+      if (value === undefined ||
+          (typeof value === 'object' &&
+           Object.values(value).every(v => v === undefined))) {
+        delete (queryParams as any)[key];
       }
     });
 

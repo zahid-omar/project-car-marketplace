@@ -414,9 +414,9 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
                           id={`caption-${index}-counter`} 
                           className="text-xs text-gray-400"
                           aria-live="polite"
-                          aria-label={`${image.caption.length} of 100 characters used`}
+                          aria-label={`${image.caption?.length || 0} of 100 characters used`}
                         >
-                          {image.caption.length}/100
+                          {image.caption?.length || 0}/100
                         </div>
                       </div>
                     </div>
