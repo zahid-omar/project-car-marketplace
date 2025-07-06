@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { getErrorMessage } from '@/lib/utils';
 
 // Import the modification categories for validation
 const VALID_MODIFICATION_CATEGORIES = [
@@ -160,7 +161,7 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('API error:', error);
-    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', details: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -282,6 +283,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('API error:', error);
-    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', details: getErrorMessage(error) }, { status: 500 });
   }
 } 

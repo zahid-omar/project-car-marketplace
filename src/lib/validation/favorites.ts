@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getErrorMessage } from '@/lib/utils';
 
 // Zod schemas for favorites validation
 export const FavoriteInputSchema = z.object({
@@ -110,7 +111,7 @@ export async function validateListingExists(supabase: any, listingId: string): P
       if (error.code === 'PGRST116') { // No rows returned
         return { exists: false, error: 'Listing not found' };
       }
-      return { exists: false, error: error.message };
+      return { exists: false, error: getErrorMessage(error) };
     }
 
     return { exists: true, listing };
@@ -177,7 +178,7 @@ export async function validateFavoriteExists(supabase: any, listingId: string, u
       if (error.code === 'PGRST116') { // No rows returned
         return { exists: false, error: 'Favorite not found' };
       }
-      return { exists: false, error: error.message };
+      return { exists: false, error: getErrorMessage(error) };
     }
 
     return { exists: true, favoriteId: favorite.id };

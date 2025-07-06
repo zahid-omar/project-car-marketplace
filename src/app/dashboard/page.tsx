@@ -12,6 +12,7 @@ import OfferAnalytics from '@/components/OfferAnalytics'
 import FavoritesManagement from '@/components/FavoritesManagement'
 import { DashboardListing } from '@/types/dashboard'
 import AppLayout from '@/components/AppLayout'
+import { getErrorMessage } from '@/lib/utils'
 
 function DashboardPage() {
   const { user, signOut } = useAuth()
@@ -111,7 +112,7 @@ function DashboardPage() {
       
     } catch (error) {
       console.error('Error creating test listing:', error)
-      alert(`Failed to create test listing: ${error.message}`)
+      alert(`Failed to create test listing: ${getErrorMessage(error)}`)
     } finally {
       setActionLoading(null)
     }

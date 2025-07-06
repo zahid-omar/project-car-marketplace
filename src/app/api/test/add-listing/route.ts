@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { getErrorMessage } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Database error:', error);
-      return NextResponse.json({ error: 'Failed to create test listing', details: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to create test listing', details: getErrorMessage(error) }, { status: 500 });
     }
 
     console.log('Test listing created successfully:', listing);
@@ -70,6 +71,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('API error:', error);
-    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', details: getErrorMessage(error) }, { status: 500 });
   }
 } 
