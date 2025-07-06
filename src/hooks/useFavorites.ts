@@ -56,6 +56,7 @@ export function useFavorites(): UseFavoritesReturn {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const userIdRef = useRef<string | null>(null);
   const mountedRef = useRef(true);
+  const subscriptionInitializedRef = useRef(false);
 
   // Optimistic updates tracking
   const optimisticUpdatesRef = useRef<Set<string>>(new Set());
@@ -92,8 +93,15 @@ export function useFavorites(): UseFavoritesReturn {
         return;
       }
 
-      userIdRef.current = session.user.id;
+      const currentUserId = session.user.id;
+      userIdRef.current = currentUserId;
       console.log('[FAVORITES HOOK] Fetching from API...');
+
+      // Set up realtime subscription after getting user ID
+      if (!subscriptionInitializedRef.current && currentUserId) {
+        setupRealtimeSubscription(currentUserId);
+        subscriptionInitializedRef.current = true;
+      }
 
       const response = await fetch('/api/favorites', {
         headers: {
@@ -150,25 +158,23 @@ export function useFavorites(): UseFavoritesReturn {
   }, [supabase]);
 
   // Real-time subscription setup
-  const setupRealtimeSubscription = useCallback(async () => {
-    if (!userIdRef.current) return;
+  const setupRealtimeSubscription = useCallback(async (userId: string) => {
+    if (!userId || channelRef.current) {
+      console.log('[FAVORITES] Subscription already exists or no user ID');
+      return;
+    }
 
     try {
-      // Cleanup existing subscription
-      if (channelRef.current) {
-        console.log('[FAVORITES] Cleaning up existing subscription');
-        await supabase.removeChannel(channelRef.current);
-        channelRef.current = null;
-      }
+      console.log('[FAVORITES] Setting up realtime subscription for user:', userId);
 
-      const channel = supabase.channel(`favorites_${userIdRef.current}`)
+      const channel = supabase.channel(`favorites_${userId}`)
         .on(
           'postgres_changes',
           {
             event: '*',
             schema: 'public',
             table: 'favorites',
-            filter: `user_id=eq.${userIdRef.current}`,
+            filter: `user_id=eq.${userId}`,
           },
           handleRealtimeChange
         )
@@ -178,23 +184,35 @@ export function useFavorites(): UseFavoritesReturn {
         .on('broadcast', { event: 'favorites_update' }, handleBroadcastUpdate);
 
       // Subscribe with connection state handling
-      channel.subscribe((status, error) => {
-        if (mountedRef.current) {
+      const subscriptionPromise = new Promise<void>((resolve, reject) => {
+        channel.subscribe((status, error) => {
+          if (!mountedRef.current) {
+            console.log('[FAVORITES] Component unmounted during subscription');
+            return;
+          }
+
+          console.log(`[FAVORITES] Realtime subscription status: ${status}`, error);
+          
           setIsConnected(status === 'SUBSCRIBED');
           setConnectionError(error?.message || null);
           
-          console.log(`[FAVORITES] Realtime subscription status: ${status}`, error);
-          
           if (status === 'SUBSCRIBED') {
             setSyncStatus('synced');
+            resolve();
           } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
             setSyncStatus('error');
             setConnectionError('Real-time connection failed');
+            reject(error || new Error('Subscription failed'));
           }
-        }
+        });
       });
 
       channelRef.current = channel;
+      
+      // Wait for subscription to complete
+      await subscriptionPromise;
+      console.log('[FAVORITES] Realtime subscription established successfully');
+
     } catch (err) {
       console.error('[FAVORITES] Error setting up realtime subscription:', err);
       if (mountedRef.current) {
@@ -535,36 +553,16 @@ export function useFavorites(): UseFavoritesReturn {
     return () => {
       console.log('[FAVORITES HOOK] Cleanup - setting mounted to false');
       mountedRef.current = false;
-    };
-  }, [fetchFavorites]);
-
-  // Setup real-time subscription when user is available (prevent multiple subscriptions)
-  useEffect(() => {
-    const setupSubscription = async () => {
-      if (userIdRef.current && !loading && !channelRef.current) {
-        await setupRealtimeSubscription();
-      }
-    };
-
-    setupSubscription();
-
-    return () => {
+      subscriptionInitializedRef.current = false;
+      
+      // Clean up realtime subscription
       if (channelRef.current) {
+        console.log('[FAVORITES HOOK] Cleaning up realtime subscription');
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
     };
-  }, [userIdRef.current, loading, supabase]); // Remove setupRealtimeSubscription dependency
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
-      }
-    };
-  }, [supabase]);
+  }, [fetchFavorites, supabase]);
 
   return {
     favorites,
