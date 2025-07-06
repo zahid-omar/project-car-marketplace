@@ -18,6 +18,15 @@ import {
   validateRequestSize
 } from '@/lib/validation/favorites';
 
+// Interface for favorite data with listing
+interface FavoriteWithListing {
+  id: string;
+  user_id: string;
+  listing_id: string;
+  created_at: string;
+  listing: any; // This could be null if listing is deleted
+}
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
@@ -107,7 +116,7 @@ export async function GET(request: NextRequest) {
     console.log('[FAVORITES] Raw favorites data:', JSON.stringify(favorites, null, 2));
     
     const validFavorites = favorites
-      ?.filter(fav => {
+      ?.filter((fav: FavoriteWithListing) => {
         const hasListing = !!fav.listing;
         if (!hasListing) {
           console.log('[FAVORITES] Filtering out favorite with null listing:', fav);
