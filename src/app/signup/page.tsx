@@ -107,7 +107,7 @@ export default function SignupPage() {
           {/* Header */}
           <div className="text-center">
             <div className="w-20 h-20 bg-md-sys-primary-container rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-md-elevation-2">
-              <MaterialYouIcon name="user-plus" className="w-10 h-10 text-md-sys-on-primary-container" />
+              <MaterialYouIcon name="user" className="w-10 h-10 text-md-sys-on-primary-container" />
             </div>
             <h1 className="text-md-display-small font-bold text-md-sys-on-surface mb-3">
               Join the Community
@@ -157,7 +157,7 @@ export default function SignupPage() {
                     className="w-full px-4 py-3 pl-12 border border-md-sys-outline rounded-2xl bg-md-sys-surface text-md-sys-on-surface placeholder-md-sys-on-surface-variant focus:outline-none focus:border-md-sys-primary focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200 text-md-body-large shadow-md-elevation-1"
                     placeholder="Enter your email"
                   />
-                  <MaterialYouIcon name="mail" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
+                  <MaterialYouIcon name="envelope" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
                 </div>
               </div>
 
@@ -177,7 +177,7 @@ export default function SignupPage() {
                     className="w-full px-4 py-3 pl-12 border border-md-sys-outline rounded-2xl bg-md-sys-surface text-md-sys-on-surface placeholder-md-sys-on-surface-variant focus:outline-none focus:border-md-sys-primary focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200 text-md-body-large shadow-md-elevation-1"
                     placeholder="How should we call you? (optional)"
                   />
-                  <MaterialYouIcon name="identification" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
+                  <MaterialYouIcon name="user" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
                 </div>
                 <p className="mt-2 text-md-body-small text-md-sys-on-surface-variant">
                   If not provided, we&apos;ll use the part before @ in your email
@@ -279,7 +279,7 @@ export default function SignupPage() {
                   </>
                 ) : (
                   <>
-                    <MaterialYouIcon name="user-plus" className="w-5 h-5" />
+                    <MaterialYouIcon name="user" className="w-5 h-5" />
                     <span>Create Account</span>
                   </>
                 )}

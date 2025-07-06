@@ -116,7 +116,7 @@ export default function LoginPage() {
                     className="w-full px-4 py-3 pl-12 border border-md-sys-outline rounded-2xl bg-md-sys-surface text-md-sys-on-surface placeholder-md-sys-on-surface-variant focus:outline-none focus:border-md-sys-primary focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200 text-md-body-large shadow-md-elevation-1"
                     placeholder="Enter your email"
                   />
-                  <MaterialYouIcon name="mail" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
+                  <MaterialYouIcon name="envelope" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-md-sys-on-surface-variant" />
                 </div>
               </div>
 
