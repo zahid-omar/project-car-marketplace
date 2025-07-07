@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
 import { useRealtimeMessaging } from '@/hooks/useRealtimeMessaging';
 import { ConversationWithDetails, MessageWithProfiles, ThreadedMessage } from '@/types/messages';
@@ -20,15 +20,15 @@ export default function MessagesPage() {
   const { addToast } = useToast();
   const hasMarkedAsRead = useRef<Set<string>>(new Set());
   
-  // Handle new message notifications
-  const handleNewMessage = (message: MessageWithProfiles) => {
+  // Handle new message notifications - memoized to prevent subscription resets
+  const handleNewMessage = useCallback((message: MessageWithProfiles) => {
     addToast({
       type: 'info',
       title: `New message from ${message.sender.display_name}`,
       message: `About ${message.listing?.title}`,
       duration: 5000
     });
-  };
+  }, [addToast]);
 
   // Use the real-time messaging hook with toast notifications
   const {
@@ -106,8 +106,8 @@ export default function MessagesPage() {
     try {
       const conversationKey = conversation.listing_id;
       
-      // Set active conversation first
-      setActiveConversation(conversation);
+      // Set active conversation first with loading state
+      setActiveConversation(prev => ({ ...conversation, messages: [] }));
 
       // Fetch messages for the conversation
       const messages = await fetchMessages(conversation.listing_id);
@@ -118,8 +118,10 @@ export default function MessagesPage() {
       const hasUnreadMessages = conversation.unread_count > 0;
       if (hasUnreadMessages && !hasMarkedAsRead.current.has(conversationKey)) {
         hasMarkedAsRead.current.add(conversationKey);
-        // Mark as read after setting the conversation to avoid interference
-        markConversationAsRead(conversation.listing_id);
+        // Use setTimeout to avoid blocking the UI
+        setTimeout(() => {
+          markConversationAsRead(conversation.listing_id);
+        }, 100);
       }
     } catch (err) {
       console.error('Error selecting conversation:', err);
@@ -139,17 +141,15 @@ export default function MessagesPage() {
     );
     
     if (updatedConversation) {
-      // Only update if the conversation actually changed in meaningful ways
-      // Avoid updating based on unread_count as it can cause loops
-            const hasSignificantChanges =
-        (updatedConversation as any).last_message_created_at !== (activeConversation as any).last_message_created_at ||
-        (updatedConversation.messages?.length || 0) !== (activeConversation.messages?.length || 0);
+      // Only update if there are new messages to avoid loops
+      const currentMessageCount = activeConversation.messages?.length || 0;
+      const newMessageCount = updatedConversation.messages?.length || 0;
       
-      if (hasSignificantChanges) {
-        setActiveConversation(prev => prev ? { ...prev, ...updatedConversation } : updatedConversation);
+      if (newMessageCount > currentMessageCount) {
+        setActiveConversation(updatedConversation);
       }
     }
-  }, [conversations, activeConversation?.listing_id]);
+  }, [conversations, activeConversation?.listing_id, activeConversation?.messages?.length]);
 
   // Clear marked as read when conversations change (new session or refresh)
   useEffect(() => {

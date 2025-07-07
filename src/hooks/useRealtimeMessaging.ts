@@ -34,6 +34,22 @@ export function useRealtimeMessaging({
 
   const channelRef = useRef<RealtimeChannel | null>(null);
   const conversationChannelRef = useRef<RealtimeChannel | null>(null);
+  
+  // Store callbacks in refs to avoid stale closures while maintaining stable dependencies
+  const callbacksRef = useRef({
+    updateConversationWithMessage,
+    updateMessageReadStatus,
+    onNewMessage
+  });
+  
+  // Update callbacks ref when they change
+  useEffect(() => {
+    callbacksRef.current = {
+      updateConversationWithMessage,
+      updateMessageReadStatus,
+      onNewMessage
+    };
+  }, [updateConversationWithMessage, updateMessageReadStatus, onNewMessage]);
 
   // Fetch initial conversations
   const fetchConversations = useCallback(async () => {
@@ -67,7 +83,7 @@ export function useRealtimeMessaging({
     }
   }, [userId]);
 
-  // Update conversation with new message
+  // Update conversation with new message - stable dependency
   const updateConversationWithMessage = useCallback((newMessage: MessageWithProfiles) => {
     setState(prev => {
       const updatedConversations = prev.conversations.map(conversation => {
@@ -103,7 +119,10 @@ export function useRealtimeMessaging({
               ? conversation.unread_count + 1
               : conversation.unread_count;
 
-            console.log(`Message update for conversation ${newMessage.listing_id}: unread ${conversation.unread_count} -> ${newUnreadCount}, shouldIncrement: ${shouldIncrementUnread}`);
+            // Only log if there's a significant change to avoid console spam
+            if (shouldIncrementUnread) {
+              console.log(`Message update for conversation ${newMessage.listing_id}: unread ${conversation.unread_count} -> ${newUnreadCount}`);
+            }
 
             return {
               ...conversation,
@@ -226,14 +245,14 @@ export function useRealtimeMessaging({
                 .single();
 
               if (!error && fullMessage && isActive) {
-                updateConversationWithMessage(fullMessage);
+                callbacksRef.current.updateConversationWithMessage(fullMessage);
                 
                 // Show toast notification if enabled and it's not the user's own message
                 // and they're not currently viewing this conversation
-                if (showToastNotifications && onNewMessage && 
+                if (showToastNotifications && callbacksRef.current.onNewMessage && 
                     fullMessage.sender_id !== userId && 
                     fullMessage.listing_id !== activeConversationId) {
-                  onNewMessage(fullMessage);
+                  callbacksRef.current.onNewMessage(fullMessage);
                 }
               }
             } catch (error) {
@@ -254,7 +273,7 @@ export function useRealtimeMessaging({
             
             console.log('Message updated (read status):', payload.new);
             if (payload.new.is_read && payload.new.read_at) {
-              updateMessageReadStatus(payload.new.id, true);
+              callbacksRef.current.updateMessageReadStatus(payload.new.id, true);
             }
           }
         )
@@ -317,7 +336,7 @@ export function useRealtimeMessaging({
         }, 100);
       }
     };
-      }, [userId, updateConversationWithMessage, updateMessageReadStatus, showToastNotifications, onNewMessage]);
+      }, [userId, showToastNotifications]); // Removed function dependencies to prevent subscription resets
 
   // Set up conversation-specific subscription for active conversation (with better error handling)
   useEffect(() => {
@@ -366,7 +385,7 @@ export function useRealtimeMessaging({
             console.log('Conversation-specific update:', payload);
             
             if (payload.eventType === 'UPDATE' && payload.new.is_read !== payload.old.is_read) {
-              updateMessageReadStatus(payload.new.id, payload.new.is_read);
+              callbacksRef.current.updateMessageReadStatus(payload.new.id, payload.new.is_read);
             }
           }
         )
@@ -404,7 +423,7 @@ export function useRealtimeMessaging({
         }, 50);
       }
     };
-  }, [userId, activeConversationId, updateMessageReadStatus]);
+  }, [userId, activeConversationId]); // Removed function dependency to prevent subscription resets
 
   // Load initial data
   useEffect(() => {
