@@ -36,20 +36,15 @@ export function useRealtimeMessaging({
   const conversationChannelRef = useRef<RealtimeChannel | null>(null);
   
   // Store callbacks in refs to avoid stale closures while maintaining stable dependencies
-  const callbacksRef = useRef({
-    updateConversationWithMessage,
-    updateMessageReadStatus,
-    onNewMessage
+  const callbacksRef = useRef<{
+    updateConversationWithMessage: ((message: MessageWithProfiles) => void) | null;
+    updateMessageReadStatus: ((messageId: string, isRead: boolean) => void) | null;
+    onNewMessage: ((message: MessageWithProfiles) => void) | undefined;
+  }>({
+    updateConversationWithMessage: null,
+    updateMessageReadStatus: null,
+    onNewMessage: undefined
   });
-  
-  // Update callbacks ref when they change
-  useEffect(() => {
-    callbacksRef.current = {
-      updateConversationWithMessage,
-      updateMessageReadStatus,
-      onNewMessage
-    };
-  }, [updateConversationWithMessage, updateMessageReadStatus, onNewMessage]);
 
   // Fetch initial conversations
   const fetchConversations = useCallback(async () => {
@@ -188,6 +183,15 @@ export function useRealtimeMessaging({
     });
   }, [userId]);
 
+  // Update callbacks ref when they change
+  useEffect(() => {
+    callbacksRef.current = {
+      updateConversationWithMessage,
+      updateMessageReadStatus,
+      onNewMessage
+    };
+  }, [updateConversationWithMessage, updateMessageReadStatus, onNewMessage]);
+
   // Set up real-time subscriptions with better stability
   useEffect(() => {
     if (!userId) return;
@@ -245,7 +249,7 @@ export function useRealtimeMessaging({
                 .single();
 
               if (!error && fullMessage && isActive) {
-                callbacksRef.current.updateConversationWithMessage(fullMessage);
+                callbacksRef.current.updateConversationWithMessage?.(fullMessage);
                 
                 // Show toast notification if enabled and it's not the user's own message
                 // and they're not currently viewing this conversation
@@ -273,7 +277,7 @@ export function useRealtimeMessaging({
             
             console.log('Message updated (read status):', payload.new);
             if (payload.new.is_read && payload.new.read_at) {
-              callbacksRef.current.updateMessageReadStatus(payload.new.id, true);
+              callbacksRef.current.updateMessageReadStatus?.(payload.new.id, true);
             }
           }
         )
@@ -385,7 +389,7 @@ export function useRealtimeMessaging({
             console.log('Conversation-specific update:', payload);
             
             if (payload.eventType === 'UPDATE' && payload.new.is_read !== payload.old.is_read) {
-              callbacksRef.current.updateMessageReadStatus(payload.new.id, payload.new.is_read);
+              callbacksRef.current.updateMessageReadStatus?.(payload.new.id, payload.new.is_read);
             }
           }
         )
