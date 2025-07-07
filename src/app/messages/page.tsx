@@ -129,7 +129,7 @@ export default function MessagesPage() {
   }, [markConversationAsRead]);
 
   // Update active conversation when conversations update via real-time
-  // But only when necessary to avoid infinite loops
+  // This ensures new messages appear immediately when received
   useEffect(() => {
     if (!activeConversation || conversations.length === 0) {
       return;
@@ -141,15 +141,21 @@ export default function MessagesPage() {
     );
     
     if (updatedConversation) {
-      // Only update if there are new messages to avoid loops
+      // Check if there are new messages or message status changes
       const currentMessageCount = activeConversation.messages?.length || 0;
       const newMessageCount = updatedConversation.messages?.length || 0;
       
-      if (newMessageCount > currentMessageCount) {
+      // Update if we have new messages OR if message content has changed
+      const hasNewMessages = newMessageCount > currentMessageCount;
+      const lastMessageChanged = updatedConversation.last_message_created_at !== 
+        (activeConversation as any).last_message_created_at;
+      
+      if (hasNewMessages || lastMessageChanged) {
+        console.log('🔄 Updating active conversation with real-time changes');
         setActiveConversation(updatedConversation);
       }
     }
-  }, [conversations, activeConversation?.listing_id, activeConversation?.messages?.length]);
+  }, [conversations, activeConversation?.listing_id]);
 
   // Clear marked as read when conversations change (new session or refresh)
   useEffect(() => {
@@ -235,9 +241,9 @@ export default function MessagesPage() {
         )}
 
         {!loading && !error && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-16rem)]">
             {/* Conversations List */}
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 h-full">
               <ConversationList
                 conversations={conversations}
                 activeConversation={activeConversation}
@@ -248,7 +254,7 @@ export default function MessagesPage() {
             </div>
 
             {/* Message Thread */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 h-full flex flex-col">
               {activeConversation ? (
                 <>
                   {/* Show loading state if data is incomplete */}
@@ -265,29 +271,64 @@ export default function MessagesPage() {
                       </div>
                     </div>
                   ) : (
-                    <MessageThread
-                      conversationId={activeConversation.listing_id}
-                      messages={activeConversation.messages || []}
-                      threadedMessages={buildThreadedMessages(activeConversation.messages || [])}
-                      currentUserId={user.id}
-                      otherParticipant={{
-                        id: activeConversation.other_participant.id || 'unknown',
-                        display_name: activeConversation.other_participant.display_name || 'Unknown User',
-                        profile_image_url: activeConversation.other_participant.profile_image_url,
-                        email: activeConversation.other_participant.email || 'unknown@example.com'
-                      }}
-                      listing={{
-                        id: activeConversation.listing.id || 'unknown',
-                        title: `${activeConversation.listing.year || ''} ${activeConversation.listing.make || ''} ${activeConversation.listing.model || ''}`.trim(),
-                        make: activeConversation.listing.make || 'Unknown',
-                        model: activeConversation.listing.model || 'Unknown',
-                        year: activeConversation.listing.year || 0,
-                        price: activeConversation.listing.price || 0,
-                        status: activeConversation.listing.status || 'active'
-                      }}
-                      onSendMessage={sendMessage}
-                      onMarkAsRead={markConversationAsRead}
-                    />
+                    <>
+                      {/* Listing Info Header */}
+                      <div className="bg-md-sys-surface-container-low border border-md-sys-outline-variant rounded-3xl p-4 mb-4 flex-shrink-0">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <MaterialYouIcon name="directions-car" size="md" className="text-md-sys-primary" />
+                            <div>
+                              <h3 className="text-md-title-small text-md-sys-on-surface font-medium">
+                                {`${activeConversation.listing.year || ''} ${activeConversation.listing.make || ''} ${activeConversation.listing.model || ''}`.trim()}
+                              </h3>
+                              <p className="text-md-body-small text-md-sys-on-surface-variant">
+                                ${activeConversation.listing.price?.toLocaleString() || 'Price not listed'}
+                              </p>
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => window.open(`/listings/${activeConversation.listing.id}`, '_blank')}
+                            className={cn(
+                              "inline-flex items-center px-4 py-2 text-md-label-medium font-medium rounded-2xl",
+                              "bg-md-sys-primary-container text-md-sys-on-primary-container",
+                              "hover:bg-md-sys-primary hover:text-md-sys-on-primary",
+                              "focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20",
+                              "transition-all duration-200"
+                            )}
+                          >
+                            <MaterialYouIcon name="open-in-new" size="sm" className="mr-2" />
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Message Thread - Fixed Height with Scroll */}
+                      <div className="flex-1 min-h-0">
+                        <MessageThread
+                          conversationId={activeConversation.listing_id}
+                          messages={activeConversation.messages || []}
+                          threadedMessages={buildThreadedMessages(activeConversation.messages || [])}
+                          currentUserId={user.id}
+                          otherParticipant={{
+                            id: activeConversation.other_participant.id || 'unknown',
+                            display_name: activeConversation.other_participant.display_name || 'Unknown User',
+                            profile_image_url: activeConversation.other_participant.profile_image_url,
+                            email: activeConversation.other_participant.email || 'unknown@example.com'
+                          }}
+                          listing={{
+                            id: activeConversation.listing.id || 'unknown',
+                            title: `${activeConversation.listing.year || ''} ${activeConversation.listing.make || ''} ${activeConversation.listing.model || ''}`.trim(),
+                            make: activeConversation.listing.make || 'Unknown',
+                            model: activeConversation.listing.model || 'Unknown',
+                            year: activeConversation.listing.year || 0,
+                            price: activeConversation.listing.price || 0,
+                            status: activeConversation.listing.status || 'active'
+                          }}
+                          onSendMessage={sendMessage}
+                          onMarkAsRead={markConversationAsRead}
+                        />
+                      </div>
+                    </>
                   )}
                 </>
               ) : (

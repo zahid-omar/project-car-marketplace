@@ -604,16 +604,16 @@ export default function MessageThread({
               {message.message_type && message.message_type !== 'text' && (
                 <span 
                   className={cn(
-                    "inline-block mt-2 px-2 py-1 text-md-label-small rounded-full",
+                    "inline-block mt-2 px-2 py-0.5 text-xs font-medium rounded-full border",
                     message.message_type === 'inquiry' 
-                      ? 'bg-md-sys-secondary-container text-md-sys-on-secondary-container'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                       : message.message_type === 'offer'
-                      ? 'bg-md-sys-tertiary-container text-md-sys-on-tertiary-container'
-                      : 'bg-md-sys-surface-variant text-md-sys-on-surface-variant'
+                      ? 'bg-orange-50 text-orange-700 border-orange-200'
+                      : 'bg-gray-50 text-gray-700 border-gray-200'
                   )}
                   aria-label={`Message type: ${message.message_type}`}
                 >
-                  {message.message_type}
+                  {message.message_type.charAt(0).toUpperCase() + message.message_type.slice(1)}
                 </span>
               )}
 
