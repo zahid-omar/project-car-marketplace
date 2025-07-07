@@ -148,7 +148,7 @@ export default function MessagesPage() {
       // Update if we have new messages OR if message content has changed
       const hasNewMessages = newMessageCount > currentMessageCount;
       const lastMessageChanged = updatedConversation.last_message_created_at !== 
-        (activeConversation as any).last_message_created_at;
+        activeConversation.last_message_created_at;
       
       if (hasNewMessages || lastMessageChanged) {
         console.log('🔄 Updating active conversation with real-time changes');

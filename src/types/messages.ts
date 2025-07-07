@@ -89,6 +89,10 @@ export interface ConversationWithDetails extends Conversation {
     email: string;
   };
   messages: MessageWithProfiles[];
+  // Additional fields added by real-time updates
+  last_message_text?: string;
+  last_message_created_at?: string;
+  is_archived?: boolean;
 }
 
 export interface SendMessageRequest {
