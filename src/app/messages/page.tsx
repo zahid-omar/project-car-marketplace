@@ -276,7 +276,7 @@ export default function MessagesPage() {
                       <div className="bg-md-sys-surface-container-low border border-md-sys-outline-variant rounded-3xl p-4 mb-4 flex-shrink-0">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
-                            <MaterialYouIcon name="directions-car" size="md" className="text-md-sys-primary" />
+                            <MaterialYouIcon name="car" size="md" className="text-md-sys-primary" />
                             <div>
                               <h3 className="text-md-title-small text-md-sys-on-surface font-medium">
                                 {`${activeConversation.listing.year || ''} ${activeConversation.listing.make || ''} ${activeConversation.listing.model || ''}`.trim()}
@@ -296,7 +296,7 @@ export default function MessagesPage() {
                               "transition-all duration-200"
                             )}
                           >
-                            <MaterialYouIcon name="open-in-new" size="sm" className="mr-2" />
+                            <MaterialYouIcon name="share" size="sm" className="mr-2" />
                             View Details
                           </button>
                         </div>
