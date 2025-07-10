@@ -105,6 +105,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
+        type="button"
         className={cn(
           baseClasses,
           sizeClasses[size],

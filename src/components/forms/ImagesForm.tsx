@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { ListingFormData } from '@/app/sell/page'
 import { PhotoIcon, XMarkIcon, StarIcon } from '@heroicons/react/24/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid'
+import { MaterialYouIcon } from '@/components/ui/MaterialYouIcon'
 
 interface ImagesFormProps {
   data: ListingFormData
@@ -118,9 +119,11 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
       // If we removed the primary image, make the first remaining image primary
       if (newImages.length > 0 && !newImages.some(img => img.is_primary)) {
         newImages[0].is_primary = true
-        setUploadStatus(`Removed image. Set ${newImages[0].file.name} as new primary image.`)
+        const fileName = newImages[0].file?.name || 'existing image'
+        setUploadStatus(`Removed image. Set ${fileName} as new primary image.`)
       } else {
-        setUploadStatus(imageToRemove ? `Removed ${imageToRemove.file.name}` : 'Removed image')
+        const fileName = imageToRemove?.file?.name || 'image'
+        setUploadStatus(`Removed ${fileName}`)
       }
       setTimeout(() => setUploadStatus(''), 3000)
       return newImages
@@ -136,7 +139,8 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
       }))
     )
     if (selectedImage) {
-      setUploadStatus(`Set ${selectedImage.file.name} as primary image`)
+      const fileName = selectedImage.file?.name || 'existing image'
+      setUploadStatus(`Set ${fileName} as primary image`)
       setTimeout(() => setUploadStatus(''), 3000)
     }
   }
@@ -203,13 +207,18 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
       </div>
 
       {/* Header */}
-      <header>
-        <h2 id="images-heading" className="text-2xl font-bold text-gray-900 mb-2">
-          Photos
-        </h2>
-        <p className="text-gray-600">
-          Upload high-quality photos of your vehicle. At least one image is required. The first image will be your primary photo that appears in listings.
-        </p>
+      <header className="flex items-center gap-4 pb-6 border-b border-md-sys-outline-variant">
+        <div className="p-3 bg-md-sys-primary-container rounded-2xl">
+          <MaterialYouIcon name="camera" className="w-6 h-6 text-md-sys-on-primary-container" />
+        </div>
+        <div>
+          <h2 id="images-heading" className="text-md-headline-small font-semibold text-md-sys-on-surface mb-1">
+            Photos
+          </h2>
+          <p className="text-md-body-medium text-md-sys-on-surface-variant">
+            Upload high-quality photos of your vehicle. At least one image is required. The first image will be your primary photo that appears in listings.
+          </p>
+        </div>
       </header>
 
       <form noValidate aria-labelledby="images-heading">
@@ -218,10 +227,10 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
           <legend className="sr-only">Upload Vehicle Photos</legend>
           
           <div
-            className={`relative border-2 border-dashed rounded-lg p-6 transition-all duration-200 ${
+            className={`relative border-2 border-dashed rounded-xl p-6 transition-all duration-200 ${
               dragActive
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
+                ? 'border-md-sys-primary bg-md-sys-primary-container/20'
+                : 'border-md-sys-outline-variant hover:border-md-sys-outline'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -232,9 +241,10 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
             aria-describedby="upload-instructions upload-requirements"
           >
             <div className="text-center">
-              <PhotoIcon 
-                className="mx-auto h-12 w-12 text-gray-400" 
-                aria-hidden="true"
+              <MaterialYouIcon 
+                name="camera" 
+                className="mx-auto h-12 w-12 text-md-sys-on-surface-variant" 
+                aria-hidden={true}
               />
               <div className="mt-4">
                 <h3 id="upload-area-heading" className="sr-only">
@@ -244,7 +254,7 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   aria-describedby="upload-instructions upload-requirements"
-                  className="btn-primary focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus:outline-none transition-all duration-200"
+                  className="px-6 py-3 bg-md-sys-primary text-md-sys-on-primary rounded-xl hover:bg-md-sys-primary-container hover:text-md-sys-on-primary-container focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200"
                 >
                   Choose Images
                 </button>
@@ -272,7 +282,7 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
         {/* Validation Errors */}
         {hasValidationErrors && (
           <div 
-            className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm"
+            className="bg-md-sys-error-container/10 border border-md-sys-error text-md-sys-error px-4 py-3 rounded-xl text-md-body-small"
             role="alert"
             aria-labelledby="error-heading"
           >
@@ -303,8 +313,8 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
                 {images.map((image, index) => (
                   <div
                     key={image.id}
-                    className={`relative group border-2 rounded-lg overflow-hidden transition-all duration-200 ${
-                      image.is_primary ? 'border-blue-500 shadow-lg' : 'border-gray-200'
+                    className={`relative group border-2 rounded-xl overflow-hidden transition-all duration-200 ${
+                      image.is_primary ? 'border-md-sys-primary shadow-md-elevation-2' : 'border-md-sys-outline-variant'
                     }`}
                     role="listitem"
                     aria-labelledby={`image-${index}-label`}
@@ -328,10 +338,10 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
                             onClick={() => setPrimaryImage(image.id)}
                             aria-pressed={image.is_primary}
                             aria-describedby={`primary-button-${index}-desc`}
-                            className={`p-2 rounded-full focus-visible:ring-2 focus-visible:ring-offset-2 focus:outline-none transition-all duration-200 ${
+                            className={`p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200 ${
                               image.is_primary
-                                ? 'bg-yellow-500 text-white focus-visible:ring-yellow-500/50'
-                                : 'bg-white text-gray-700 hover:bg-yellow-50 focus-visible:ring-blue-500/50'
+                                ? 'bg-md-sys-primary text-md-sys-on-primary'
+                                : 'bg-md-sys-surface text-md-sys-on-surface hover:bg-md-sys-primary-container hover:text-md-sys-on-primary-container'
                             }`}
                             title={image.is_primary ? 'Primary image' : 'Set as primary'}
                           >
@@ -356,7 +366,7 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
                             type="button"
                             onClick={() => removeImage(image.id)}
                             aria-describedby={`remove-button-${index}-desc`}
-                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 focus-visible:ring-2 focus-visible:ring-red-500/50 focus-visible:ring-offset-2 focus:outline-none transition-all duration-200"
+                            className="p-2 bg-md-sys-error text-md-sys-on-error rounded-full hover:bg-md-sys-error-container hover:text-md-sys-on-error-container focus:outline-none focus:ring-2 focus:ring-md-sys-error/20 transition-all duration-200"
                             title="Remove image"
                           >
                             <XMarkIcon className="w-4 h-4" aria-hidden="true" />
@@ -384,7 +394,7 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
 
                     {/* Image Label and Status */}
                     <div id={`image-${index}-label`} className="sr-only">
-                      Image {index + 1}: {image.file.name}
+                      Image {index + 1}: {image.file?.name || 'existing image'}
                     </div>
                     <div id={`image-${index}-status`} className="sr-only">
                       {image.is_primary ? 'This is the primary image' : 'Regular image'}. 
@@ -392,7 +402,7 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
                     </div>
 
                     {/* Caption Input */}
-                    <div className="p-2 bg-white">
+                    <div className="p-2 bg-md-sys-surface">
                       <label htmlFor={`caption-${index}`} className="sr-only">
                         Caption for image {index + 1}
                       </label>
@@ -404,7 +414,7 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
                         onChange={(e) => updateCaption(image.id, e.target.value)}
                         maxLength={100}
                         aria-describedby={`caption-${index}-help caption-${index}-counter`}
-                        className="w-full text-xs border border-gray-200 rounded px-2 py-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        className="w-full text-md-body-small border border-md-sys-outline-variant rounded-lg px-3 py-2 bg-md-sys-surface text-md-sys-on-surface focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 focus:border-md-sys-primary transition-all duration-200"
                       />
                       <div className="flex justify-between items-center mt-1">
                         <div id={`caption-${index}-help`} className="sr-only">
@@ -412,7 +422,7 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
                         </div>
                         <div 
                           id={`caption-${index}-counter`} 
-                          className="text-xs text-gray-400"
+                          className="text-md-body-small text-md-sys-on-surface-variant"
                           aria-live="polite"
                           aria-label={`${image.caption?.length || 0} of 100 characters used`}
                         >
@@ -429,13 +439,13 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
 
         {/* Photo Tips */}
         <section 
-          className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+          className="bg-md-sys-surface-container border border-md-sys-outline-variant rounded-xl p-4"
           aria-labelledby="photo-tips-heading"
         >
-          <h4 id="photo-tips-heading" className="text-sm font-medium text-gray-900 mb-2">
+          <h4 id="photo-tips-heading" className="text-md-body-large font-medium text-md-sys-on-surface mb-2">
             Photo Tips:
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-md-body-small text-md-sys-on-surface-variant">
             <ul className="space-y-1" role="list" aria-labelledby="basic-tips-heading">
               <li role="listitem">• Take photos in good lighting</li>
               <li role="listitem">• Include exterior from all angles</li>
@@ -454,12 +464,12 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
         </section>
 
         {/* Navigation */}
-        <div className="flex justify-between pt-6 border-t mt-8">
+        <div className="flex justify-between pt-6 border-t border-md-sys-outline-variant mt-8">
           <button
             type="button"
             onClick={handlePrev}
             aria-describedby="prev-button-help"
-            className="btn-secondary focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-2 focus:outline-none transition-all duration-200"
+            className="px-6 py-3 bg-md-sys-surface-container text-md-sys-on-surface rounded-xl border border-md-sys-outline-variant hover:bg-md-sys-surface-container-high focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200"
           >
             Previous: Modifications
           </button>
@@ -471,7 +481,7 @@ export default function ImagesForm({ data, updateData, onNext, onPrev }: ImagesF
             type="button"
             onClick={handleNext}
             aria-describedby="next-button-help"
-            className="btn-primary focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus:outline-none transition-all duration-200"
+            className="px-6 py-3 bg-md-sys-primary text-md-sys-on-primary rounded-xl hover:bg-md-sys-primary-container hover:text-md-sys-on-primary-container focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20 transition-all duration-200"
           >
             Next: Preview & Submit
           </button>

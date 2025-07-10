@@ -267,18 +267,50 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Return the complete listing with modifications
+    // Create images if any
+    let createdImages = [];
+    const images = body.images || [];
+    if (images.length > 0) {
+      try {
+        const imagesToInsert = images.map((img: any, index: number) => ({
+          listing_id: listing.id,
+          image_url: img.url,
+          image_order: index,
+          is_primary: img.isPrimary || false
+        }));
+
+        const { data: imageData, error: imageError } = await supabase
+          .from('listing_images')
+          .insert(imagesToInsert)
+          .select();
+
+        if (imageError) {
+          console.error('Database error creating images:', imageError);
+          // Don't fail the entire request if we can't create images
+          console.log('Continuing without images...');
+        } else {
+          createdImages = imageData || [];
+        }
+      } catch (imageError) {
+        console.error('Error creating images:', imageError);
+        // Continue without images
+      }
+    }
+
+    // Return the complete listing with modifications and images
     const completeListingData = {
       ...listing,
       modifications: createdModifications,
-      modificationCount: createdModifications.length
+      images: createdImages,
+      modificationCount: createdModifications.length,
+      imageCount: createdImages.length
     };
 
-    console.log(`Successfully created listing ${listing.id} with ${createdModifications.length} modifications`);
+    console.log(`Successfully created listing ${listing.id} with ${createdModifications.length} modifications and ${createdImages.length} images`);
 
     return NextResponse.json({ 
       listing: completeListingData,
-      message: `Listing created successfully${createdModifications.length > 0 ? ` with ${createdModifications.length} modifications` : ''}`
+      message: `Listing created successfully${createdModifications.length > 0 ? ` with ${createdModifications.length} modifications` : ''}${createdImages.length > 0 ? ` and ${createdImages.length} images` : ''}`
     }, { status: 201 });
 
   } catch (error) {

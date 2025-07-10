@@ -10,6 +10,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import ContactSellerModal from '@/components/ContactSellerModal';
 import MakeOfferModal from '@/components/MakeOfferModal';
 import SimilarListings from '@/components/SimilarListings';
+import ModificationsSection from '@/components/ModificationsSection';
 import AppLayout from '@/components/AppLayout';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useAuth } from '@/lib/auth';
@@ -35,9 +36,12 @@ interface Listing {
     is_primary: boolean;
   }[];
   modifications: {
+    id?: string;
     name: string;
     description: string;
     category: string;
+    cost?: number;
+    date_installed?: string;
   }[];
   profiles: {
     id: string;
@@ -108,7 +112,8 @@ export default function ListingPage({ params }: ListingPageProps) {
       // Combine the data
       const combinedData = {
         ...listingData,
-        profiles: profileData || null
+        profiles: profileData || null,
+        modifications: listingData.modifications || []
       };
 
       console.log('Listing data received:', combinedData);
@@ -496,27 +501,13 @@ export default function ListingPage({ params }: ListingPageProps) {
                     {listing.description}
                   </div>
                 </div>
-
-                {/* Modifications */}
-                {listing.modifications && listing.modifications.length > 0 && (
-                  <div>
-                    <h3 className="text-md-title-medium font-semibold text-md-sys-on-surface mb-3">Modifications</h3>
-                    <div className="space-y-3">
-                      {listing.modifications.map((mod, index) => (
-                        <div key={index} className="border border-md-sys-outline-variant rounded-xl p-4 bg-md-sys-surface-container">
-                          <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-medium text-md-sys-on-surface text-md-body-large">{mod.name}</h4>
-                            <span className="text-md-label-small bg-md-sys-primary text-md-sys-on-primary px-3 py-1 rounded-full">
-                              {mod.category}
-                            </span>
-                          </div>
-                          <p className="text-md-sys-on-surface-variant text-md-body-medium">{mod.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
+
+              {/* Modifications Section */}
+              <ModificationsSection
+                modifications={listing.modifications || []}
+                className="mb-8"
+              />
             </div>
 
             {/* Right Sidebar - Seller Info and Actions */}

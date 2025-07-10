@@ -123,7 +123,58 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Failed to update listing' }, { status: 500 });
     }
 
-    return NextResponse.json({ listing: updatedListing });
+    // Handle modifications update if provided
+    if (body.modifications && Array.isArray(body.modifications)) {
+      try {
+        // First, delete existing modifications for this listing
+        await supabase
+          .from('modifications')
+          .delete()
+          .eq('listing_id', params.id);
+
+        // Then, insert new modifications if any
+        if (body.modifications.length > 0) {
+          const modificationsToInsert = body.modifications.map((mod: any) => ({
+            listing_id: params.id,
+            category: mod.category,
+            description: mod.description,
+            cost: mod.cost || null,
+            date_installed: mod.date_installed || null
+          }));
+
+          const { error: modError } = await supabase
+            .from('modifications')
+            .insert(modificationsToInsert);
+
+          if (modError) {
+            console.error('Error updating modifications:', modError);
+            // Don't fail the entire request if modifications update fails
+          }
+        }
+      } catch (modificationError) {
+        console.error('Error handling modifications update:', modificationError);
+        // Don't fail the entire request if modifications table doesn't exist
+      }
+    }
+
+    // Fetch the updated listing with all related data
+    const { data: completeUpdatedListing, error: fetchUpdatedError } = await supabase
+      .from('listings')
+      .select(`
+        *,
+        listing_images(*),
+        modifications(*)
+      `)
+      .eq('id', params.id)
+      .single();
+
+    if (fetchUpdatedError) {
+      console.error('Error fetching updated listing:', fetchUpdatedError);
+      // Return the basic updated listing if we can't fetch the complete one
+      return NextResponse.json({ listing: updatedListing });
+    }
+
+    return NextResponse.json({ listing: completeUpdatedListing });
 
   } catch (error) {
     console.error('API error:', error);

@@ -255,7 +255,11 @@ export default function ModificationsForm({ data, updateData, onNext, onPrev }: 
         </p>
       </header>
 
-      <form noValidate aria-labelledby="modifications-heading">
+      <form 
+        noValidate 
+        aria-labelledby="modifications-heading"
+        onSubmit={(e) => e.preventDefault()}
+      >
         {/* Modifications List */}
         <fieldset>
           <legend className="sr-only">Vehicle Modifications List</legend>
@@ -280,6 +284,7 @@ export default function ModificationsForm({ data, updateData, onNext, onPrev }: 
                 <Button 
                   onClick={addModification} 
                   variant="filled"
+                  type="button"
                   aria-describedby="add-first-mod-help"
                 >
                   <Plus className="w-5 h-5 mr-2" aria-hidden="true" />
@@ -324,6 +329,7 @@ export default function ModificationsForm({ data, updateData, onNext, onPrev }: 
                           onClick={() => removeModification(mod.id)}
                           variant="text"
                           size="sm"
+                          type="button"
                           className="text-md-sys-error hover:text-md-sys-error focus-visible:ring-2 focus-visible:ring-red-500/50 focus-visible:ring-offset-2 focus:outline-none transition-all duration-200"
                           aria-describedby={`remove-mod-${index}-desc`}
                         >
@@ -433,6 +439,7 @@ export default function ModificationsForm({ data, updateData, onNext, onPrev }: 
                   <Button 
                     onClick={addModification} 
                     variant="outlined"
+                    type="button"
                     aria-describedby="add-another-mod-help"
                     className="focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus:outline-none transition-all duration-200"
                   >
@@ -509,6 +516,7 @@ export default function ModificationsForm({ data, updateData, onNext, onPrev }: 
           <Button 
             onClick={handlePrev} 
             variant="outlined"
+            type="button"
             aria-describedby="prev-button-help"
             className="focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-2 focus:outline-none transition-all duration-200"
           >
@@ -521,6 +529,7 @@ export default function ModificationsForm({ data, updateData, onNext, onPrev }: 
           <Button 
             onClick={handleNext} 
             variant="filled"
+            type="button"
             aria-describedby="next-button-help"
             className="focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus:outline-none transition-all duration-200"
           >
