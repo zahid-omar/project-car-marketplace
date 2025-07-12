@@ -12,6 +12,9 @@ import OfferAnalytics from '@/components/OfferAnalytics'
 import FavoritesManagement from '@/components/FavoritesManagement'
 import { DashboardListing } from '@/types/dashboard'
 import AppLayout from '@/components/AppLayout'
+import ConfirmationModal from '@/components/ConfirmationModal'
+import NotificationModal from '@/components/NotificationModal'
+import SoldPriceModal from '@/components/SoldPriceModal'
 import { getErrorMessage } from '@/lib/utils'
 
 function DashboardPage() {
@@ -32,57 +35,170 @@ function DashboardPage() {
 
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [debugMode, setDebugMode] = useState(false)
+  
+  // Modal states
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    listingId: string;
+    listingTitle: string;
+  }>({
+    isOpen: false,
+    listingId: '',
+    listingTitle: ''
+  })
+  
+  const [soldModal, setSoldModal] = useState<{
+    isOpen: boolean;
+    listingId: string;
+    listingTitle: string;
+    originalPrice: number;
+  }>({
+    isOpen: false,
+    listingId: '',
+    listingTitle: '',
+    originalPrice: 0
+  })
+  
+  const [reactivateModal, setReactivateModal] = useState<{
+    isOpen: boolean;
+    listingId: string;
+    listingTitle: string;
+  }>({
+    isOpen: false,
+    listingId: '',
+    listingTitle: ''
+  })
+  
+  const [notificationModal, setNotificationModal] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error' | 'warning' | 'info';
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  })
+  
+  const [signOutModal, setSignOutModal] = useState(false)
 
   const handleDeleteListing = async (listingId: string) => {
-    if (!confirm('Are you sure you want to delete this listing? This action cannot be undone.')) {
-      return
-    }
+    const listing = listings.find(l => l.id === listingId);
+    if (!listing) return;
+    
+    setDeleteModal({
+      isOpen: true,
+      listingId,
+      listingTitle: listing.title
+    });
+  }
 
-    setActionLoading(listingId)
-    const success = await deleteListing(listingId)
-    setActionLoading(null)
+  const confirmDeleteListing = async () => {
+    const listingId = deleteModal.listingId;
+    setDeleteModal({ isOpen: false, listingId: '', listingTitle: '' });
+    
+    setActionLoading(listingId);
+    const success = await deleteListing(listingId);
+    setActionLoading(null);
 
     if (success) {
-      alert('Listing deleted successfully')
+      setNotificationModal({
+        isOpen: true,
+        type: 'success',
+        title: 'Listing Deleted',
+        message: 'Your listing has been successfully deleted.'
+      });
+    } else {
+      setNotificationModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Delete Failed',
+        message: 'Failed to delete the listing. Please try again.'
+      });
     }
   }
 
   const handleMarkAsSold = async (listingId: string) => {
-    const soldPrice = prompt('Enter the sold price (optional):')
-    const price = soldPrice ? parseFloat(soldPrice) : undefined
+    const listing = listings.find(l => l.id === listingId);
+    if (!listing) return;
+    
+    setSoldModal({
+      isOpen: true,
+      listingId,
+      listingTitle: listing.title,
+      originalPrice: listing.price
+    });
+  }
 
-    if (soldPrice && isNaN(price!)) {
-      alert('Please enter a valid price')
-      return
-    }
-
-    setActionLoading(listingId)
-    const success = await markAsSold(listingId, { soldPrice: price })
-    setActionLoading(null)
+  const confirmMarkAsSold = async (soldPrice?: number) => {
+    const listingId = soldModal.listingId;
+    setSoldModal({ isOpen: false, listingId: '', listingTitle: '', originalPrice: 0 });
+    
+    setActionLoading(listingId);
+    const success = await markAsSold(listingId, { soldPrice });
+    setActionLoading(null);
 
     if (success) {
-      alert('Listing marked as sold successfully')
+      setNotificationModal({
+        isOpen: true,
+        type: 'success',
+        title: 'Marked as Sold',
+        message: 'Your listing has been successfully marked as sold.'
+      });
+    } else {
+      setNotificationModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Update Failed',
+        message: 'Failed to mark the listing as sold. Please try again.'
+      });
     }
   }
 
   const handleReactivate = async (listingId: string) => {
-    if (!confirm('Are you sure you want to reactivate this listing?')) {
-      return
-    }
+    const listing = listings.find(l => l.id === listingId);
+    if (!listing) return;
+    
+    setReactivateModal({
+      isOpen: true,
+      listingId,
+      listingTitle: listing.title
+    });
+  }
 
-    setActionLoading(listingId)
-    const success = await reactivateListing(listingId)
-    setActionLoading(null)
+  const confirmReactivate = async () => {
+    const listingId = reactivateModal.listingId;
+    setReactivateModal({ isOpen: false, listingId: '', listingTitle: '' });
+    
+    setActionLoading(listingId);
+    const success = await reactivateListing(listingId);
+    setActionLoading(null);
 
     if (success) {
-      alert('Listing reactivated successfully')
+      setNotificationModal({
+        isOpen: true,
+        type: 'success',
+        title: 'Listing Reactivated',
+        message: 'Your listing has been successfully reactivated.'
+      });
+    } else {
+      setNotificationModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Reactivation Failed',
+        message: 'Failed to reactivate the listing. Please try again.'
+      });
     }
   }
 
   const handleSignOut = async () => {
-    if (confirm('Are you sure you want to sign out?')) {
-      await signOut()
-    }
+    setSignOutModal(true);
+  }
+
+  const confirmSignOut = async () => {
+    setSignOutModal(false);
+    await signOut();
   }
 
   const handleCreateTestListing = async () => {
@@ -105,14 +221,24 @@ function DashboardPage() {
       const result = await response.json()
       console.log('Test listing created:', result)
       
-      alert('Test listing created successfully!')
+      setNotificationModal({
+        isOpen: true,
+        type: 'success',
+        title: 'Test Listing Created',
+        message: 'Your test listing has been created successfully!'
+      });
       
       // Refresh the dashboard to show the new listing
       await refreshData()
       
     } catch (error) {
       console.error('Error creating test listing:', error)
-      alert(`Failed to create test listing: ${getErrorMessage(error)}`)
+      setNotificationModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Creation Failed',
+        message: `Failed to create test listing: ${getErrorMessage(error)}`
+      });
     } finally {
       setActionLoading(null)
     }
@@ -563,6 +689,60 @@ function DashboardPage() {
           </div>
         </div>
       </div>
+      
+      {/* Modal Components */}
+      <ConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, listingId: '', listingTitle: '' })}
+        onConfirm={confirmDeleteListing}
+        title="Delete Listing"
+        message={`Are you sure you want to delete "${deleteModal.listingTitle}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        icon="trash"
+      />
+      
+      <SoldPriceModal
+        isOpen={soldModal.isOpen}
+        onClose={() => setSoldModal({ isOpen: false, listingId: '', listingTitle: '', originalPrice: 0 })}
+        onConfirm={confirmMarkAsSold}
+        listingTitle={soldModal.listingTitle}
+        originalPrice={soldModal.originalPrice}
+        loading={actionLoading === soldModal.listingId}
+      />
+      
+      <ConfirmationModal
+        isOpen={reactivateModal.isOpen}
+        onClose={() => setReactivateModal({ isOpen: false, listingId: '', listingTitle: '' })}
+        onConfirm={confirmReactivate}
+        title="Reactivate Listing"
+        message={`Are you sure you want to reactivate "${reactivateModal.listingTitle}"? This will make it visible to buyers again.`}
+        confirmText="Reactivate"
+        cancelText="Cancel"
+        type="info"
+        icon="check-circle"
+      />
+      
+      <NotificationModal
+        isOpen={notificationModal.isOpen}
+        onClose={() => setNotificationModal({ isOpen: false, type: 'success', title: '', message: '' })}
+        title={notificationModal.title}
+        message={notificationModal.message}
+        type={notificationModal.type}
+      />
+      
+      <ConfirmationModal
+        isOpen={signOutModal}
+        onClose={() => setSignOutModal(false)}
+        onConfirm={confirmSignOut}
+        title="Sign Out"
+        message="Are you sure you want to sign out of your account?"
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        type="warning"
+        icon="exclamation-triangle"
+      />
     </AppLayout>
   )
 }

@@ -8,6 +8,7 @@ import { RealtimeChannel } from '@supabase/supabase-js';
 interface UseRealtimeMessagingProps {
   userId: string | null;
   activeConversationId?: string | null;
+  activeConversationMessages?: MessageWithProfiles[]; // Add this to pass current messages
   showToastNotifications?: boolean;
   onNewMessage?: (message: MessageWithProfiles) => void;
 }
@@ -22,6 +23,7 @@ interface RealtimeMessagingState {
 export function useRealtimeMessaging({ 
   userId, 
   activeConversationId, 
+  activeConversationMessages,
   showToastNotifications = false, 
   onNewMessage 
 }: UseRealtimeMessagingProps) {
@@ -80,7 +82,15 @@ export function useRealtimeMessaging({
 
   // Update conversation with new message - stable dependency
   const updateConversationWithMessage = useCallback((newMessage: MessageWithProfiles) => {
+    console.log('🔄 Updating conversation with new message:', newMessage.id);
     setState(prev => {
+      const conversationFound = prev.conversations.find(conv => conv.listing_id === newMessage.listing_id);
+      if (!conversationFound) {
+        console.log('⚠️ Conversation not found for message:', newMessage.listing_id);
+        // If conversation not found, we might need to refresh conversations
+        return prev;
+      }
+
       const updatedConversations = prev.conversations.map(conversation => {
         if (conversation.listing_id === newMessage.listing_id) {
           // Check if this conversation involves the current user
@@ -91,45 +101,60 @@ export function useRealtimeMessaging({
             newMessage.recipient_id === userId;
 
           if (isUserInConversation) {
-            const updatedMessages = [...(conversation.messages || [])];
+            // If this is the active conversation, use the active conversation's messages
+            // to ensure we have the full message history
+            const existingMessages = (conversation.listing_id === activeConversationId && activeConversationMessages) 
+              ? activeConversationMessages 
+              : (conversation.messages || []);
+              
+            console.log('📋 Existing messages count before update:', existingMessages.length, 
+                       'Using active conversation messages:', conversation.listing_id === activeConversationId);
             
             // Avoid duplicates
-            const messageExists = updatedMessages.some(msg => msg.id === newMessage.id);
+            const messageExists = existingMessages.some(msg => msg.id === newMessage.id);
             if (!messageExists) {
-              updatedMessages.push(newMessage);
+              const updatedMessages = [...existingMessages, newMessage];
+              // Sort messages by created_at to maintain proper order
+              updatedMessages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+              console.log('✅ Added new message to conversation. Total messages:', updatedMessages.length);
+              
+              // Only increment unread count if:
+              // 1. The message is for the current user
+              // 2. The message is not read
+              // 3. The message is not sent by the current user (to avoid counting own messages)
+              // 4. This conversation is not currently being viewed (activeConversationId check)
+              const shouldIncrementUnread = 
+                !newMessage.is_read && 
+                newMessage.recipient_id === userId &&
+                newMessage.sender_id !== userId &&
+                newMessage.listing_id !== activeConversationId;
+
+              const newUnreadCount = shouldIncrementUnread
+                ? conversation.unread_count + 1
+                : conversation.unread_count;
+
+              // Only log if there's a significant change to avoid console spam
+              if (shouldIncrementUnread) {
+                console.log(`Message update for conversation ${newMessage.listing_id}: unread ${conversation.unread_count} -> ${newUnreadCount}`);
+              }
+
+              return {
+                ...conversation,
+                messages: updatedMessages,
+                last_message_text: newMessage.message_text,
+                last_message_created_at: newMessage.created_at,
+                unread_count: newUnreadCount
+              };
+            } else {
+              console.log('ℹ️ Message already exists in conversation:', newMessage.id);
+              return conversation;
             }
-
-            // Only increment unread count if:
-            // 1. The message is for the current user
-            // 2. The message is not read
-            // 3. The message is not sent by the current user (to avoid counting own messages)
-            // 4. This conversation is not currently being viewed (activeConversationId check)
-            const shouldIncrementUnread = 
-              !newMessage.is_read && 
-              newMessage.recipient_id === userId &&
-              newMessage.sender_id !== userId &&
-              newMessage.listing_id !== activeConversationId;
-
-            const newUnreadCount = shouldIncrementUnread
-              ? conversation.unread_count + 1
-              : conversation.unread_count;
-
-            // Only log if there's a significant change to avoid console spam
-            if (shouldIncrementUnread) {
-              console.log(`Message update for conversation ${newMessage.listing_id}: unread ${conversation.unread_count} -> ${newUnreadCount}`);
-            }
-
-            return {
-              ...conversation,
-              messages: updatedMessages,
-              last_message_text: newMessage.message_text,
-              last_message_created_at: newMessage.created_at,
-              unread_count: newUnreadCount
-            };
           }
         }
         return conversation;
       });
+
+      console.log('📊 Conversation update complete. Total conversations:', updatedConversations.length);
 
       // Calculate new total unread count
       const newUnreadCount = updatedConversations.reduce(
@@ -142,7 +167,7 @@ export function useRealtimeMessaging({
         unreadCount: newUnreadCount
       };
     });
-  }, [userId, activeConversationId]);
+  }, [userId, activeConversationId, activeConversationMessages]);
 
   // Update message read status
   const updateMessageReadStatus = useCallback((messageId: string, isRead: boolean) => {
@@ -234,7 +259,7 @@ export function useRealtimeMessaging({
           async (payload) => {
             if (!isActive) return; // Don't process if component unmounted
             
-            console.log('New message received:', payload.new);
+            console.log('📨 New message received via real-time:', payload.new);
             try {
               // Fetch the full message with profile data
               const { data: fullMessage, error } = await supabase
@@ -249,6 +274,7 @@ export function useRealtimeMessaging({
                 .single();
 
               if (!error && fullMessage && isActive) {
+                console.log('📥 Processing new message with full data:', fullMessage);
                 callbacksRef.current.updateConversationWithMessage?.(fullMessage);
                 
                 // Show toast notification if enabled and it's not the user's own message
@@ -258,9 +284,47 @@ export function useRealtimeMessaging({
                     fullMessage.listing_id !== activeConversationId) {
                   callbacksRef.current.onNewMessage(fullMessage);
                 }
+              } else if (error) {
+                console.error('❌ Error fetching full message data:', error);
               }
             } catch (error) {
-              console.error('Error fetching new message:', error);
+              console.error('❌ Error processing new message:', error);
+            }
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `sender_id=eq.${userId}`
+          },
+          async (payload) => {
+            if (!isActive) return; // Don't process if component unmounted
+            
+            console.log('📤 Message sent by current user via real-time:', payload.new);
+            try {
+              // Fetch the full message with profile data for messages sent by current user
+              const { data: fullMessage, error } = await supabase
+                .from('messages')
+                .select(`
+                  *,
+                  sender:profiles!messages_sender_id_fkey(id, display_name, profile_image_url, email),
+                  recipient:profiles!messages_recipient_id_fkey(id, display_name, profile_image_url, email),
+                  listing:listings(id, title, make, model, year, price, status, user_id)
+                `)
+                .eq('id', payload.new.id)
+                .single();
+
+              if (!error && fullMessage && isActive) {
+                console.log('📤 Processing sent message with full data:', fullMessage);
+                callbacksRef.current.updateConversationWithMessage?.(fullMessage);
+              } else if (error) {
+                console.error('❌ Error fetching full sent message data:', error);
+              }
+            } catch (error) {
+              console.error('❌ Error processing sent message:', error);
             }
           }
         )
@@ -517,6 +581,7 @@ export function useRealtimeMessaging({
   };
 
   const sendMessage = async (messageData: any) => {
+    console.log('📤 Sending message:', messageData);
     try {
       const response = await fetch('/api/messages', {
         method: 'POST',
@@ -525,15 +590,24 @@ export function useRealtimeMessaging({
       });
       
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Message send failed:', response.status, errorText);
         throw new Error('Failed to send message');
       }
       
       const data = await response.json();
+      console.log('✅ Message sent successfully, response:', data);
       
-      // The real-time subscription will handle updating the UI
+      // Add immediate local state update as a fallback
+      // This ensures the message appears immediately even if real-time subscription is delayed
+      if (data.message) {
+        console.log('📤 Adding immediate local state update as fallback:', data.message.id);
+        updateConversationWithMessage(data.message);
+      }
+      
       return data.message;
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('❌ Error sending message:', error);
       throw error;
     }
   };

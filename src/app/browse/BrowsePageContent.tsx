@@ -107,7 +107,7 @@ export default function BrowsePageContent() {
   });
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAnalytics, setShowAnalytics] = useState(false);
 
@@ -500,7 +500,7 @@ export default function BrowsePageContent() {
                   <>
                     <div className={`mb-8 ${
                       viewMode === 'grid' 
-                        ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'
+                        ? `grid grid-cols-1 md:grid-cols-2 ${showFilters ? 'lg:grid-cols-3' : 'lg:grid-cols-3 xl:grid-cols-4'} gap-4`
                         : 'space-y-4'
                     }`}>
                       {listings.map((listing) => (

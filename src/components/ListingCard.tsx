@@ -169,7 +169,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
               <div className="flex-1">
                 <h3 
                   id={headingId}
-                  className="text-md-body-large font-semibold text-md-sys-on-surface truncate mb-1"
+                  className="text-md-body-large font-semibold text-md-sys-on-surface line-clamp-2 mb-1 h-12 flex items-start leading-6"
                 >
                   {listing.title}
                 </h3>
@@ -394,7 +394,7 @@ export default function ListingCard({ listing, viewMode = 'grid', className }: L
           <header className="mb-3">
             <h3 
               id={headingId}
-              className="text-md-body-large font-semibold text-md-sys-on-surface line-clamp-2 mb-1 group-hover:text-md-sys-primary transition-colors duration-md-short2 ease-md-standard"
+              className="text-md-body-large font-semibold text-md-sys-on-surface line-clamp-2 mb-1 group-hover:text-md-sys-primary transition-colors duration-md-short2 ease-md-standard h-12 flex items-start leading-6"
             >
               {listing.title}
             </h3>

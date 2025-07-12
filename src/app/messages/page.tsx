@@ -43,6 +43,7 @@ export default function MessagesPage() {
   } = useRealtimeMessaging({
     userId: user?.id || null,
     activeConversationId: activeConversation?.listing_id || null,
+    activeConversationMessages: activeConversation?.messages || [],
     showToastNotifications: true,
     onNewMessage: handleNewMessage
   });
@@ -105,12 +106,18 @@ export default function MessagesPage() {
   const handleConversationSelect = React.useCallback(async (conversation: ConversationWithDetails) => {
     try {
       const conversationKey = conversation.listing_id;
+      console.log('🔄 Selecting conversation:', conversationKey, 'Current messages:', conversation.messages?.length || 0);
       
-      // Set active conversation first with loading state
-      setActiveConversation(prev => ({ ...conversation, messages: [] }));
+      // Set active conversation first - preserve existing messages if available
+      setActiveConversation(prev => ({ 
+        ...conversation, 
+        messages: conversation.messages || [] 
+      }));
 
       // Fetch messages for the conversation
       const messages = await fetchMessages(conversation.listing_id);
+      console.log('📥 Fetched messages for conversation:', conversationKey, 'Count:', messages.length);
+      
       const updatedConversation = { ...conversation, messages };
       setActiveConversation(updatedConversation);
       
@@ -150,12 +157,34 @@ export default function MessagesPage() {
       const lastMessageChanged = updatedConversation.last_message_created_at !== 
         activeConversation.last_message_created_at;
       
+      // Only update if we have new messages AND the updated conversation has more messages
+      // OR if the last message changed but we preserve the longer message history
       if (hasNewMessages || lastMessageChanged) {
-        console.log('🔄 Updating active conversation with real-time changes');
-        setActiveConversation(updatedConversation);
+        // Always preserve the longer message history
+        const messagesToUse = (currentMessageCount > newMessageCount) 
+          ? activeConversation.messages 
+          : updatedConversation.messages;
+          
+        const finalConversation = {
+          ...updatedConversation,
+          messages: messagesToUse
+        };
+        
+        console.log('🔄 Updating active conversation with real-time changes:', {
+          hasNewMessages,
+          lastMessageChanged,
+          currentCount: currentMessageCount,
+          newCount: newMessageCount,
+          activeConversationId: activeConversation.listing_id,
+          updatedConversationMessages: updatedConversation.messages?.length || 0,
+          finalMessageCount: messagesToUse?.length || 0
+        });
+        setActiveConversation(finalConversation);
+      } else {
+        console.log('ℹ️ No significant changes, keeping current active conversation');
       }
     }
-  }, [conversations, activeConversation?.listing_id]);
+  }, [conversations, activeConversation?.listing_id, activeConversation?.other_participant?.id]);
 
   // Clear marked as read when conversations change (new session or refresh)
   useEffect(() => {
@@ -188,9 +217,9 @@ export default function MessagesPage() {
 
   return (
     <AppLayout showNavigation={true} className="bg-md-sys-surface">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <MaterialYouIcon name="inbox" size="lg" className="text-md-sys-primary mr-3" />
@@ -241,109 +270,113 @@ export default function MessagesPage() {
         )}
 
         {!loading && !error && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-16rem)]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Conversations List */}
-            <div className="lg:col-span-1 h-full">
-              <ConversationList
-                conversations={conversations}
-                activeConversation={activeConversation}
-                onConversationSelect={handleConversationSelect}
-                loading={loading}
-                currentUserId={user.id}
-              />
+            <div className="lg:col-span-1">
+              <div className="h-[calc(100vh-6rem)] overflow-hidden">
+                <ConversationList
+                  conversations={conversations}
+                  activeConversation={activeConversation}
+                  onConversationSelect={handleConversationSelect}
+                  loading={loading}
+                  currentUserId={user.id}
+                />
+              </div>
             </div>
 
             {/* Message Thread */}
-            <div className="lg:col-span-2 h-full flex flex-col">
-              {activeConversation ? (
-                <>
-                  {/* Show loading state if data is incomplete */}
-                  {!activeConversation.messages || !activeConversation.other_participant || !activeConversation.listing ? (
-                    <div className="h-full flex items-center justify-center">
-                      <div className="text-center">
-                        <LoadingSpinner />
-                        <h3 className="text-md-title-medium text-md-sys-on-surface mt-4 mb-2">
-                          Loading conversation...
-                        </h3>
-                        <p className="text-md-body-medium text-md-sys-on-surface-variant">
-                          Please wait while we load the messages
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Listing Info Header */}
-                      <div className="bg-md-sys-surface-container-low border border-md-sys-outline-variant rounded-3xl p-4 mb-4 flex-shrink-0">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <MaterialYouIcon name="car" size="md" className="text-md-sys-primary" />
-                            <div>
-                              <h3 className="text-md-title-small text-md-sys-on-surface font-medium">
-                                {`${activeConversation.listing.year || ''} ${activeConversation.listing.make || ''} ${activeConversation.listing.model || ''}`.trim()}
-                              </h3>
-                              <p className="text-md-body-small text-md-sys-on-surface-variant">
-                                ${activeConversation.listing.price?.toLocaleString() || 'Price not listed'}
-                              </p>
-                            </div>
-                          </div>
-                          <button 
-                            onClick={() => window.open(`/listings/${activeConversation.listing.id}`, '_blank')}
-                            className={cn(
-                              "inline-flex items-center px-4 py-2 text-md-label-medium font-medium rounded-2xl",
-                              "bg-md-sys-primary-container text-md-sys-on-primary-container",
-                              "hover:bg-md-sys-primary hover:text-md-sys-on-primary",
-                              "focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20",
-                              "transition-all duration-200"
-                            )}
-                          >
-                            <MaterialYouIcon name="share" size="sm" className="mr-2" />
-                            View Details
-                          </button>
+            <div className="lg:col-span-2">
+              <div className="h-[calc(100vh-6rem)] overflow-hidden flex flex-col">
+                {activeConversation ? (
+                  <>
+                    {/* Show loading state if data is incomplete */}
+                    {!activeConversation.messages || !activeConversation.other_participant || !activeConversation.listing ? (
+                      <div className="h-full flex items-center justify-center">
+                        <div className="text-center">
+                          <LoadingSpinner />
+                          <h3 className="text-md-title-medium text-md-sys-on-surface mt-4 mb-2">
+                            Loading conversation...
+                          </h3>
+                          <p className="text-md-body-medium text-md-sys-on-surface-variant">
+                            Please wait while we load the messages
+                          </p>
                         </div>
                       </div>
+                    ) : (
+                      <>
+                        {/* Listing Info Header */}
+                        <div className="bg-md-sys-surface-container-low border border-md-sys-outline-variant rounded-3xl p-4 mb-4 flex-shrink-0">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <MaterialYouIcon name="car" size="md" className="text-md-sys-primary" />
+                              <div>
+                                <h3 className="text-md-title-small text-md-sys-on-surface font-medium">
+                                  {`${activeConversation.listing.year || ''} ${activeConversation.listing.make || ''} ${activeConversation.listing.model || ''}`.trim()}
+                                </h3>
+                                <p className="text-md-body-small text-md-sys-on-surface-variant">
+                                  ${activeConversation.listing.price?.toLocaleString() || 'Price not listed'}
+                                </p>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={() => window.open(`/listings/${activeConversation.listing.id}`, '_blank')}
+                              className={cn(
+                                "inline-flex items-center px-4 py-2 text-md-label-medium font-medium rounded-2xl",
+                                "bg-md-sys-primary-container text-md-sys-on-primary-container",
+                                "hover:bg-md-sys-primary hover:text-md-sys-on-primary",
+                                "focus:outline-none focus:ring-2 focus:ring-md-sys-primary/20",
+                                "transition-all duration-200"
+                              )}
+                            >
+                              <MaterialYouIcon name="share" size="sm" className="mr-2" />
+                              View Details
+                            </button>
+                          </div>
+                        </div>
 
-                      {/* Message Thread - Fixed Height with Scroll */}
-                      <div className="flex-1 min-h-0">
-                        <MessageThread
-                          conversationId={activeConversation.listing_id}
-                          messages={activeConversation.messages || []}
-                          threadedMessages={buildThreadedMessages(activeConversation.messages || [])}
-                          currentUserId={user.id}
-                          otherParticipant={{
-                            id: activeConversation.other_participant.id || 'unknown',
-                            display_name: activeConversation.other_participant.display_name || 'Unknown User',
-                            profile_image_url: activeConversation.other_participant.profile_image_url,
-                            email: activeConversation.other_participant.email || 'unknown@example.com'
-                          }}
-                          listing={{
-                            id: activeConversation.listing.id || 'unknown',
-                            title: `${activeConversation.listing.year || ''} ${activeConversation.listing.make || ''} ${activeConversation.listing.model || ''}`.trim(),
-                            make: activeConversation.listing.make || 'Unknown',
-                            model: activeConversation.listing.model || 'Unknown',
-                            year: activeConversation.listing.year || 0,
-                            price: activeConversation.listing.price || 0,
-                            status: activeConversation.listing.status || 'active'
-                          }}
-                          onSendMessage={sendMessage}
-                          onMarkAsRead={markConversationAsRead}
-                        />
-                      </div>
-                    </>
-                  )}
-                </>
-              ) : (
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <MaterialYouIcon name="paper-airplane" size="xl" className="mx-auto mb-4 text-md-sys-on-surface-variant" />
-                    <h3 className="text-md-title-medium text-md-sys-on-surface mb-2">
-                      Select a conversation
-                    </h3>
-                    <p className="text-md-body-medium text-md-sys-on-surface-variant">
-                      Choose a conversation from the list to start messaging
-                    </p>
+                        {/* Message Thread - Fixed Height with Scroll */}
+                        <div className="flex-1 min-h-0">
+                          <MessageThread
+                            conversationId={activeConversation.listing_id}
+                            messages={activeConversation.messages || []}
+                            threadedMessages={buildThreadedMessages(activeConversation.messages || [])}
+                            currentUserId={user.id}
+                            otherParticipant={{
+                              id: activeConversation.other_participant.id || 'unknown',
+                              display_name: activeConversation.other_participant.display_name || 'Unknown User',
+                              profile_image_url: activeConversation.other_participant.profile_image_url,
+                              email: activeConversation.other_participant.email || 'unknown@example.com'
+                            }}
+                            listing={{
+                              id: activeConversation.listing.id || 'unknown',
+                              title: `${activeConversation.listing.year || ''} ${activeConversation.listing.make || ''} ${activeConversation.listing.model || ''}`.trim(),
+                              make: activeConversation.listing.make || 'Unknown',
+                              model: activeConversation.listing.model || 'Unknown',
+                              year: activeConversation.listing.year || 0,
+                              price: activeConversation.listing.price || 0,
+                              status: activeConversation.listing.status || 'active'
+                            }}
+                            onSendMessage={sendMessage}
+                            onMarkAsRead={markConversationAsRead}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <div className="h-full flex items-center justify-center">
+                    <div className="text-center">
+                      <MaterialYouIcon name="paper-airplane" size="xl" className="mx-auto mb-4 text-md-sys-on-surface-variant" />
+                      <h3 className="text-md-title-medium text-md-sys-on-surface mb-2">
+                        Select a conversation
+                      </h3>
+                      <p className="text-md-body-medium text-md-sys-on-surface-variant">
+                        Choose a conversation from the list to start messaging
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         )}

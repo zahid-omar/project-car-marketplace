@@ -95,11 +95,17 @@ export default function MessageThread({
   const composerRegionId = useId();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
+  // Scroll to bottom when messages change
   useEffect(() => {
-    scrollToBottom();
+    const timeoutId = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+    return () => clearTimeout(timeoutId);
   }, [messages]);
 
   useEffect(() => {
@@ -237,6 +243,13 @@ export default function MessageThread({
   const handleSendMessage = async () => {
     if (!newMessage.trim() || sending) return;
 
+    console.log('📝 Sending message:', {
+      conversationId,
+      recipientId: otherParticipant?.id,
+      messageText: newMessage.trim(),
+      replyingTo: replyingTo?.id
+    });
+
     setSending(true);
     setStatusMessage('Sending message...');
     
@@ -260,13 +273,20 @@ export default function MessageThread({
         setStatusMessage(`Sending reply to ${replyingTo.sender?.display_name || 'message'}...`);
       }
 
-      await onSendMessage(messageData);
+      const result = await onSendMessage(messageData);
+      console.log('✅ Message sent successfully:', result);
+      
       setNewMessage('');
       setReplyingTo(null);
       setStatusMessage(replyingTo ? 'Reply sent successfully' : 'Message sent successfully');
-      scrollToBottom();
+      
+      // Scroll to bottom after a brief delay to ensure message is added
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+      
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('❌ Error sending message:', error);
       setStatusMessage('Error sending message. Please try again.');
     } finally {
       setSending(false);
@@ -685,7 +705,7 @@ export default function MessageThread({
   const sortedDates = Object.keys(messageGroups).sort();
 
   return (
-    <main className="h-full flex flex-col bg-md-sys-surface" role="main" aria-labelledby={threadHeaderId}>
+    <main className="h-full flex flex-col bg-md-sys-surface border border-md-sys-outline-variant rounded-3xl shadow-md-elevation-1 overflow-hidden" role="main" aria-labelledby={threadHeaderId}>
       {/* Status regions for screen reader announcements */}
       <div
         id={statusRegionId}
@@ -793,7 +813,7 @@ export default function MessageThread({
       <section 
         id={messagesRegionId}
         ref={messagesListRef}
-        className="flex-1 overflow-y-auto p-4 space-y-6"
+        className="flex-1 overflow-y-auto min-h-0 p-4 space-y-6"
         role="log"
         aria-labelledby="messages-heading"
         aria-live="polite"

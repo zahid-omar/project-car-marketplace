@@ -158,7 +158,7 @@ export default function ConversationList({
   }
 
   return (
-    <div className="h-full flex flex-col bg-md-sys-surface-container-low rounded-3xl shadow-md-elevation-1">
+    <div className="h-full flex flex-col bg-md-sys-surface-container-low rounded-3xl shadow-md-elevation-1 overflow-hidden">
       {/* Header */}
       <div className="p-6 border-b border-md-sys-outline-variant bg-md-sys-surface-container-low rounded-t-3xl">
         <div className="flex items-center justify-between mb-4">
@@ -289,7 +289,7 @@ export default function ConversationList({
       </div>
 
       {/* Conversations List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {filteredAndSortedConversations.length === 0 ? (
           <div className="h-full flex items-center justify-center p-6">
             <div className="text-center">
