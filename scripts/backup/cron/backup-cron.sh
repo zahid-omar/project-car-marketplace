@@ -91,11 +91,11 @@ is_cron_enabled() {
 generate_cron_jobs() {
     local cron_jobs=()
     
-    # Full backup job
+    # Full backup job (encrypted)
     if is_cron_enabled "full_backup"; then
         local full_schedule
         full_schedule=$(get_cron_schedule "full_backup")
-        cron_jobs+=("$full_schedule $BACKUP_DIR/scripts/full-backup.sh # $CRON_TAG-full")
+        cron_jobs+=("$full_schedule $BACKUP_DIR/scripts/encrypted-backup.sh create # $CRON_TAG-encrypted-full")
     fi
     
     # Incremental backup job (if implemented)
@@ -120,6 +120,16 @@ generate_cron_jobs() {
         interval_minutes=$(jq -r '.monitoring.health_check.interval_minutes' "$CONFIG_FILE")
         local cron_interval="*/$interval_minutes * * * *"
         cron_jobs+=("$cron_interval $BACKUP_DIR/monitoring/health-check.sh # $CRON_TAG-monitoring")
+    fi
+    
+    # Encryption monitoring
+    local encryption_monitoring_enabled
+    encryption_monitoring_enabled=$(jq -r '.monitoring.encryption_monitoring.enabled' "$CONFIG_FILE")
+    if [[ "$encryption_monitoring_enabled" == "true" ]]; then
+        local encryption_interval_hours
+        encryption_interval_hours=$(jq -r '.monitoring.encryption_monitoring.integrity_check_interval_hours' "$CONFIG_FILE")
+        local encryption_cron_interval="0 */$encryption_interval_hours * * *"
+        cron_jobs+=("$encryption_cron_interval $BACKUP_DIR/scripts/encryption-monitor.sh monitor # $CRON_TAG-encryption")
     fi
     
     printf '%s\n' "${cron_jobs[@]}"

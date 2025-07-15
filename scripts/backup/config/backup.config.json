@@ -71,7 +71,7 @@
     "encryption": {
       "enabled": true,
       "algorithm": "AES-256-GCM",
-      "key_file": "./storage/encryption/backup.key",
+      "key_file": "storage/encryption/backup-key.key",
       "rotate_key_days": 90
     }
   },
@@ -112,8 +112,17 @@
         "storage_usage",
         "file_integrity",
         "wal_archiving",
-        "encryption_keys"
+        "encryption_keys",
+        "backup_freshness",
+        "key_rotation"
       ]
+    },
+    "encryption_monitoring": {
+      "enabled": true,
+      "key_expiry_days": 7,
+      "backup_max_age_hours": 25,
+      "integrity_check_interval_hours": 12,
+      "key_rotation_reminder_days": 80
     },
     "alerts": {
       "enabled": true,
@@ -135,7 +144,10 @@
         "storage_threshold_percent": 85,
         "verification_failure": true,
         "wal_archive_lag_minutes": 60,
-        "encryption_key_expiry_days": 7
+        "encryption_key_expiry_days": 7,
+        "backup_integrity_failure": true,
+        "key_rotation_due": true,
+        "backup_freshness_failure": true
       }
     },
     "logging": {

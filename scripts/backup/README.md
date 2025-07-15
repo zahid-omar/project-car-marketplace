@@ -232,11 +232,87 @@ Automated alerts for:
 
 ## Security Considerations
 
+### Encryption System
+
+The backup system includes comprehensive AES-256-CBC encryption for all backup files:
+
+- **AES-256-CBC Encryption**: All backup files are encrypted using industry-standard AES-256-CBC encryption
+- **Secure Key Management**: Encryption keys are automatically generated and stored with secure permissions (600)
+- **Integrity Verification**: SHA-256 hashes ensure backup integrity
+- **Key Rotation**: Support for rotating encryption keys while maintaining access to existing backups
+- **Compression**: Backups are compressed before encryption to reduce storage requirements
+
+### Key Management
+
+Encryption keys are stored in the `storage/encryption/` directory:
+
+```
+storage/encryption/
+├── backup-key.key          # Current encryption key
+├── backup-key.key.old.*    # Rotated/archived keys
+```
+
+### Usage Examples
+
+#### Creating Encrypted Backups
+
+```bash
+# Create a new encrypted backup
+./scripts/encrypted-backup.sh create
+
+# Create a backup with specific name
+./scripts/encrypted-backup.sh create my-backup-name
+```
+
+#### Verifying and Restoring Backups
+
+```bash
+# Verify backup integrity and encryption
+./scripts/encrypted-backup.sh verify path/to/backup.encrypted
+
+# Restore from encrypted backup
+./scripts/encrypted-backup.sh restore path/to/backup.encrypted output.sql
+```
+
+#### Key Management Operations
+
+```bash
+# Generate new encryption key
+./scripts/backup-encryption.sh generate-key keyfile.key
+
+# Rotate encryption keys
+./scripts/backup-encryption.sh rotate-keys old-key.key new-key.key
+
+# Manual encryption/decryption
+./scripts/backup-encryption.sh encrypt input.txt output.encrypted keyfile.key
+./scripts/backup-encryption.sh decrypt input.encrypted output.txt keyfile.key
+```
+
+#### Testing the Encryption System
+
+A comprehensive test suite validates all encryption functionality:
+
+```bash
+# Run all encryption tests
+./scripts/test-encryption.sh
+
+# Run specific test categories
+./scripts/test-encryption.sh key-generation
+./scripts/test-encryption.sh file-encryption
+./scripts/test-encryption.sh backup-creation
+./scripts/test-encryption.sh key-rotation
+./scripts/test-encryption.sh performance
+```
+
+### Security Best Practices
+
 1. **Access Control**: Restrict backup directory permissions
 2. **Encryption Keys**: Store securely, separate from backups
 3. **Network Security**: Use secure connections for off-site transfers
 4. **Audit Logging**: Monitor all backup operations
 5. **Regular Testing**: Validate backup integrity and restoration
+6. **Key Rotation**: Rotate encryption keys every 90 days
+7. **Monitoring**: Set up alerts for backup failures and key expiry
 
 ## Support
 
