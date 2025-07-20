@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth, supabase } from '@/lib/auth'
 import { MaterialYouIcon } from '@/components/ui/MaterialYouIcon'
 import AppLayout from '@/components/AppLayout'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import GoogleSignInButton from '@/components/ui/GoogleSignInButton'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -15,9 +16,24 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [googleError, setGoogleError] = useState('')
 
   const { refreshSession } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Handle OAuth callback errors
+  useEffect(() => {
+    const oauthError = searchParams.get('error')
+    const errorDescription = searchParams.get('error_description')
+    const successMessage = searchParams.get('message')
+
+    if (oauthError) {
+      setGoogleError(errorDescription || `Authentication failed: ${oauthError}`)
+    } else if (successMessage) {
+      setMessage(successMessage)
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,6 +75,16 @@ export default function LoginPage() {
     }
   }
 
+  const handleGoogleSuccess = () => {
+    setGoogleError('')
+    setMessage('Redirecting to Google...')
+  }
+
+  const handleGoogleError = (error: Error) => {
+    setGoogleError(error.message)
+    setError('')
+  }
+
   return (
     <AppLayout showNavigation={true} className="bg-md-sys-surface">
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -78,6 +104,38 @@ export default function LoginPage() {
 
           {/* Login Form Card */}
           <div className="bg-md-sys-surface-container rounded-3xl shadow-md-elevation-3 border border-md-sys-outline-variant/50 p-8">
+            {/* Google Sign-In Section */}
+            <div className="mb-8">
+              <GoogleSignInButton
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                variant="outlined"
+                size="medium"
+              />
+              
+              {/* Google Error Display */}
+              {googleError && (
+                <div className="mt-4 bg-md-sys-error-container border border-md-sys-error/20 rounded-2xl p-3 shadow-md-elevation-1">
+                  <div className="flex items-start">
+                    <MaterialYouIcon name="exclamation-triangle" className="w-4 h-4 text-md-sys-error mr-2 mt-0.5 flex-shrink-0" />
+                    <p className="text-md-body-small text-md-sys-on-error-container">{googleError}</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Divider */}
+              <div className="relative mt-8 mb-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-md-sys-outline-variant"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="px-4 bg-md-sys-surface-container text-md-body-medium text-md-sys-on-surface-variant">
+                    Or continue with email
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <form className="space-y-6" onSubmit={handleSubmit}>
               {/* Error Alert */}
               {error && (
@@ -218,4 +276,4 @@ export default function LoginPage() {
       </div>
     </AppLayout>
   )
-} 
+}
