@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/auth'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import { parseSupabaseAuthError, logAuthError, getRetryStrategy, OAUTH_ERROR_CODES } from '@/lib/auth-errors'
+import { getOAuthCallbackUrl } from '@/lib/site-config'
 
 interface GoogleSignInButtonProps {
   /**
@@ -60,7 +61,7 @@ export default function GoogleSignInButton({
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
+          redirectTo: getOAuthCallbackUrl(redirectTo),
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
