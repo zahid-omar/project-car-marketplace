@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth, supabase } from '@/lib/auth'
@@ -9,7 +9,7 @@ import AppLayout from '@/components/AppLayout'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import GoogleSignInButton from '@/components/ui/GoogleSignInButton'
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -275,5 +275,33 @@ export default function LoginPage() {
         </div>
       </div>
     </AppLayout>
+  )
+}
+
+// Loading component for Suspense fallback
+function LoginPageFallback() {
+  return (
+    <AppLayout showNavigation={true} className="bg-md-sys-surface">
+      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="w-20 h-20 bg-md-sys-primary-container rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-md-elevation-2">
+              <LoadingSpinner />
+            </div>
+            <h1 className="text-md-display-small font-bold text-md-sys-on-surface mb-3">
+              Loading...
+            </h1>
+          </div>
+        </div>
+      </div>
+    </AppLayout>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginPageFallback />}>
+      <LoginForm />
+    </Suspense>
   )
 }

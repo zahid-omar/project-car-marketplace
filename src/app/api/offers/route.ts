@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic'
+
 // Validation schemas
 const createOfferSchema = z.object({
   listing_id: z.string().uuid(),

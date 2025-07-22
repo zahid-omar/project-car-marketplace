@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useAuth, withAuth } from '@/lib/auth'
 import { useToast } from '@/components/AppLayout'
 import { useSearchParams } from 'next/navigation'
@@ -12,6 +12,7 @@ import ModificationsForm from '@/components/forms/ModificationsForm'
 import ImagesForm from '@/components/forms/ImagesForm'
 import PreviewForm from '@/components/forms/PreviewForm'
 import AppLayout from '@/components/AppLayout'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export type ListingFormData = {
   // Basic Details
@@ -469,5 +470,34 @@ function SellPage() {
   )
 }
 
-// Export the component wrapped with authentication
-export default withAuth(SellPage)
+// Loading component for Suspense fallback
+function SellPageFallback() {
+  return (
+    <AppLayout showNavigation={true} className="bg-md-sys-surface">
+      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl w-full">
+          <div className="text-center">
+            <div className="w-20 h-20 bg-md-sys-primary-container rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-md-elevation-2">
+              <LoadingSpinner />
+            </div>
+            <h1 className="text-md-display-small font-bold text-md-sys-on-surface mb-3">
+              Loading Sell Page...
+            </h1>
+          </div>
+        </div>
+      </div>
+    </AppLayout>
+  )
+}
+
+// Wrapper component with Suspense
+function SellPageWithSuspense() {
+  return (
+    <Suspense fallback={<SellPageFallback />}>
+      <SellPage />
+    </Suspense>
+  )
+}
+
+// Export the component wrapped with authentication and suspense
+export default withAuth(SellPageWithSuspense)
